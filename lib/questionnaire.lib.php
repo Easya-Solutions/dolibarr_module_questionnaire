@@ -57,15 +57,15 @@ function questionnaireAdminPrepareHead()
 /**
  * Return array of tabs to used on pages for third parties cards.
  *
- * @param 	Tquestionnaire	$object		Object company shown
+ * @param 	Questionnaire	$object		Object company shown
  * @return 	array				Array of tabs
  */
-function questionnaire_prepare_head(Tquestionnaire $object)
+function questionnaire_prepare_head(Questionnaire $object)
 {
     global $db, $langs, $conf, $user;
     $h = 0;
     $head = array();
-    $head[$h][0] = dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->getId();
+    $head[$h][0] = dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id;
     $head[$h][1] = $langs->trans("questionnaireCard");
     $head[$h][2] = 'card';
     $h++;
@@ -102,4 +102,46 @@ function getFormConfirmquestionnaire(&$PDOdb, &$form, &$object, $action)
     }
 
     return $formconfirm;
+}
+
+function draw_question(&$q) {
+	
+	global $db;
+	
+	require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
+	dol_include_once('/questionnaire/class/choice.class.php');
+	
+	$form = new Form($db);
+	
+	$res = '<div type="question" id="question'.$q->id.'">';
+	$res.= '<input placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
+	$res.= '<br />';
+	
+	// Liste des choix
+	$q->loadChoices();
+	if(!empty($q->choices)) {
+		print '<ul>';
+		foreach($q->choices as &$choice) {
+			$res.= '<li>';
+			$res.= '<div type="choice" id="choice'.$choice->id.'">';
+			$res.= '<input placeholder="Libellé choix" type="text" name="label" class="field" value="'.$choice->label.'" />&nbsp;('.$choice->type.')';
+			$res.= '</div><br />';
+			$res.= '</li>';
+		}
+		print '</ul>';
+	}
+	$choice = new Choice($db);
+	$res.= $form->selectarray('choice', $choice->TTypes, '', 1);
+	
+	$res.= '<button class="butAction" id="butAddChoice" name="butAddChoice">Ajouter un choix</button>';
+	$res.= '</div><br /><hr /><br />';
+	
+	return $res;
+	
+}
+
+function setField($field, $value) {
+	
+	
+	
 }

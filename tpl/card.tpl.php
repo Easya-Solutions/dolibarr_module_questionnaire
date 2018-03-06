@@ -7,9 +7,9 @@
 				<td>[view.showRef;strconv=no]</td>
 			</tr>
 
-			<tr class="label">
-				<td width="25%">[langs.transnoentities(Label)]</td>
-				<td>[view.showLabel;strconv=no]</td>
+			<tr class="title">
+				<td width="25%">[langs.transnoentities(Title)]</td>
+				<td>[view.showTitle;strconv=no]</td>
 			</tr>
 
 			<tr class="status">
@@ -25,12 +25,12 @@
 <div class="center">
 	
 	<!-- '+-' est l'équivalent d'un signe '>' (TBS oblige) -->
-	[onshow;block=begin;when [object.getId()]+-0]
-	<input type='hidden' name='id' value='[object.getId()]' />
+	[onshow;block=begin;when [object.id]+-0]
+	<input type='hidden' name='id' value='[object.id]' />
 	<input type="submit" value="[langs.transnoentities(Save)]" class="button" />
 	[onshow;block=end]
 	
-	[onshow;block=begin;when [object.getId()]=0]
+	[onshow;block=begin;when [object.id]=0]
 	<input type="submit" value="[langs.transnoentities(CreateDraft)]" class="button" />
 	[onshow;block=end]
 	
@@ -45,23 +45,23 @@
 	
 		[onshow;block=begin;when [object.status]=[Tquestionnaire.STATUS_DRAFT]]
 			
-			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.getId()]&action=validate" class="butAction">[langs.transnoentities(Validate)]</a></div>
-			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.getId()]&action=edit" class="butAction">[langs.transnoentities(Modify)]</a></div>
+			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=validate" class="butAction">[langs.transnoentities(Validate)]</a></div>
+			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=edit" class="butAction">[langs.transnoentities(Modify)]</a></div>
 			
 		[onshow;block=end]
 		
 		[onshow;block=begin;when [object.status]=[Tquestionnaire.STATUS_VALIDATED]]
 			
-			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.getId()]&action=modif" class="butAction">[langs.transnoentities(Reopen)]</a></div>
+			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=modif" class="butAction">[langs.transnoentities(Reopen)]</a></div>
 			
 		[onshow;block=end]
 		
-		<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.getId()]&action=clone" class="butAction">[langs.transnoentities(ToClone)]</a></div>
+		<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=clone" class="butAction">[langs.transnoentities(ToClone)]</a></div>
 		
 		<!-- '-+' est l'équivalent d'un signe '<' (TBS oblige) -->
-		[onshow;block=begin;when [object.status]-+[Tquestionnaire.STATUS_REFUSED]]
+		[onshow;block=begin;when [object.status]-+[Tquestionnaire.STATUS_CLOSED]]
 			
-			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.getId()]&action=delete" class="butActionDelete">[langs.transnoentities(Delete)]</a></div>
+			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=delete" class="butActionDelete">[langs.transnoentities(Delete)]</a></div>
 			
 		[onshow;block=end]
 		

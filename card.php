@@ -4,9 +4,10 @@ require 'config.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 dol_include_once('/questionnaire/class/questionnaire.class.php');
+dol_include_once('/questionnaire/class/choice.class.php');
 dol_include_once('/questionnaire/lib/questionnaire.lib.php');
 
-if(empty($user->rights->questionnaire->read)) accessforbidden();
+//if(empty($user->rights->questionnaire->read)) accessforbidden();
 
 $langs->load('questionnaire@questionnaire');
 
@@ -18,7 +19,7 @@ $mode = 'view';
 if (empty($user->rights->questionnaire->write)) $mode = 'view'; // Force 'view' mode if can't edit object
 else if ($action == 'create' || $action == 'edit') $mode = 'edit';
 
-$object = new questionnaire($db);
+$object = new Questionnaire($db);
 
 if (!empty($id)) $object->load($id);
 elseif (!empty($ref)) $object->loadBy($ref, 'ref');
@@ -38,19 +39,11 @@ if (empty($reshook))
 {
 	$error = 0;
 	switch ($action) {
+		case 'edit':
+			//print_form_add_question();
+			break;
 		case 'save':
 			$object->set_values($_REQUEST); // Set standard attributes
-			
-//			$object->date_other = dol_mktime(GETPOST('starthour'), GETPOST('startmin'), 0, GETPOST('startmonth'), GETPOST('startday'), GETPOST('startyear'));
-
-			// Check parameters
-//			if (empty($object->date_other))
-//			{
-//				$error++;
-//				setEventMessages($langs->trans('warning_date_must_be_fill'), array(), 'warnings');
-//			}
-			
-			// ... 
 			
 			if ($error > 0)
 			{
@@ -60,14 +53,14 @@ if (empty($reshook))
 			
 			$object->save(empty($object->ref));
 			
-			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->getId());
+			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
 			exit;
 			
 			break;
 		case 'confirm_clone':
 			$object->cloneObject();
 			
-			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->getId());
+			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
 			exit;
 			break;
 		case 'modif':
@@ -77,7 +70,7 @@ if (empty($reshook))
 		case 'confirm_validate':
 			if (!empty($user->rights->questionnaire->write)) $object->setValid();
 			
-			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->getId());
+			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
 			exit;
 			break;
 		case 'confirm_delete':
@@ -89,7 +82,7 @@ if (empty($reshook))
 		// link from llx_element_element
 		case 'dellink':
 			$object->generic->deleteObjectLinked(null, '', null, '', GETPOST('dellinkid'));
-			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->getId());
+			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
 			exit;
 			break;
 	}
@@ -139,25 +132,95 @@ print $TBS->render('tpl/card.tpl.php'
 			,'action' => 'save'
 			,'urlcard' => dol_buildpath('/questionnaire/card.php', 1)
 			,'urllist' => dol_buildpath('/questionnaire/list.php', 1)
-			,'showRef' => ($action == 'create') ? $langs->trans('Draft') : $form->showrefnav($object->generic, 'ref', $linkback, 1, 'ref', 'ref', '')
-			,'showLabel' => $formcore->texte('', 'label', $object->label, 80, 255)
+			,'showRef' => ($action == 'create') ? $langs->trans('Draft') : $form->showrefnav($object, 'ref', $linkback, 1, 'ref', 'ref', '')
+			,'showTitle' => $formcore->texte('', 'title', $object->title, 80, 255)
 //			,'showNote' => $formcore->zonetexte('', 'note', $object->note, 80, 8)
 			,'showStatus' => $object->getLibStatut(1)
 		)
 		,'langs' => $langs
 		,'user' => $user
 		,'conf' => $conf
-		,'Tquestionnaire' => array(
-			'STATUS_DRAFT' => Tquestionnaire::STATUS_DRAFT
-			,'STATUS_VALIDATED' => Tquestionnaire::STATUS_VALIDATED
-			,'STATUS_REFUSED' => Tquestionnaire::STATUS_REFUSED
-			,'STATUS_ACCEPTED' => Tquestionnaire::STATUS_ACCEPTED
+		,'Questionnaire' => array(
+			'STATUS_DRAFT' => Questionnaire::STATUS_DRAFT
+			,'STATUS_VALIDATED' => Questionnaire::STATUS_VALIDATED
+			,'STATUS_CLOSED' => Questionnaire::STATUS_CLOSED
 		)
 	)
 );
 
 if ($mode == 'edit') echo $formcore->end_form();
 
-if ($mode == 'view' && $object->getId()) $somethingshown = $form->showLinkedObjectBlock($object->generic);
+//if ($mode == 'view' && $object->id) $somethingshown = $form->showLinkedObjectBlock($object->generic);
+
+// Print list of questions
+$object->loadQuestions();
+print '<div id="allQuestions">';
+if(!empty($object->questions)) {
+	foreach($object->questions as &$q) print draw_question($q);
+}
+print '</div>';
+print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button>';
+
+
+
+?>
+
+<script>
+
+	$(document).ready(function(){
+
+		$("#butAddQuestion").click(function() {
+			$.ajax({
+				dataType:'json'
+				,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+						,data:{
+								fk_questionnaire:<?php echo (int)$object->id ?>
+								,put:"add-question"
+							}
+
+			}).done(function(res) {
+
+				$('#allQuestions').append(res);
+
+			});
+		});
+
+		$(document).on('change', '[class=field]', function() {
+
+			var type_object = $(this).closest('div').attr('type');
+			var id_obj = $(this).closest('div').attr('id');
+			id_obj = id_obj.replace('choice', '');
+			id_obj = id_obj.replace('question', '');
+			var field = $(this).attr('name');
+			var value = $(this).val();
+
+			$input = $(this);
+			
+			$input.css('background-color','grey');
+			
+			$.ajax({
+				dataType:'json'
+				,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+						,data:{
+								fk_object:id_obj
+								,type_object:type_object
+								,put:"set-field"
+								,field:field
+								,value:value
+							}
+
+			}).done(function(res) {
+
+				$input.css('background-color','');
+
+			});
+			
+		});
+		
+	});
+
+</script>
+
+<?php
 
 llxFooter();

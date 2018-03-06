@@ -10,12 +10,25 @@ if(!defined('INC_FROM_DOLIBARR')) {
 
 }
 
-
-/* uncomment
-
+global $db;
 
 dol_include_once('/questionnaire/class/questionnaire.class.php');
+dol_include_once('/questionnaire/class/question.class.php');
+dol_include_once('/questionnaire/class/answer.class.php');
+dol_include_once('/questionnaire/class/choice.class.php');
+dol_include_once('/questionnaire/class/invitation.class.php');
 
-$o=new Tquestionnaire($db);
+$o=new Questionnaire($db);
 $o->init_db_by_vars();
-*/
+
+$o=new Question($db);
+$o->init_db_by_vars();
+
+$o=new Answer($db);
+$o->init_db_by_vars();
+
+$o=new Choice($db);
+$o->init_db_by_vars();
+
+$o=new Invitation($db);
+$o->init_db_by_vars();

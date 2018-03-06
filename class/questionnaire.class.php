@@ -10,7 +10,7 @@ if (!class_exists('TObjetStd'))
 }
 
 
-class questionnaire extends SeedObject
+class Questionnaire extends SeedObject
 {
 	/**
 	 * Draft status
@@ -21,19 +21,14 @@ class questionnaire extends SeedObject
 	 */
 	const STATUS_VALIDATED = 1;
 	/**
-	 * Refused status
+	 * Closed status
 	 */
-	const STATUS_REFUSED = 3;
-	/**
-	 * Accepted status
-	 */
-	const STATUS_ACCEPTED = 4;
+	const STATUS_CLOSED = 2;
 	
 	public static $TStatus = array(
 		self::STATUS_DRAFT => 'Draft'
 		,self::STATUS_VALIDATED => 'Validate'
-		,self::STATUS_REFUSED => 'Refuse'
-		,self::STATUS_ACCEPTED => 'Accept'
+		,self::STATUS_CLOSED=> 'Closed'
 	);
 	
 	public $table_element = 'questionnaire';
@@ -48,9 +43,14 @@ class questionnaire extends SeedObject
 		
 		$this->fields=array(
 				'ref'=>array('type'=>'string','length'=>50,'index'=>true)
-				,'label'=>array('type'=>'string')
-				,'status'=>array('type'=>'integer','index'=>true) // date, integer, string, float, array, text
+				,'title'=>array('type'=>'string')
+				,'description'=>array('type'=>'string')
 				,'entity'=>array('type'=>'integer','index'=>true)
+				,'fk_status'=>array('type'=>'integer','index'=>true) // date, integer, string, float, array, text
+				,'import_key'=>array('type'=>'integer','index'=>true)
+				,'type_object_linked'=>array('type'=>'string')
+				,'fk_object_linked'=>array('type'=>'integer','index'=>true)
+				,'fk_user_author'=>array('type'=>'integer','index'=>true)
 		);
 		
 		$this->init();
@@ -90,7 +90,7 @@ class questionnaire extends SeedObject
 		return $res;
 	}
 	
-	public function load($id, $ref, $loadChild = true)
+	public function load($id, $ref=null, $loadChild = true)
 	{
 		global $db;
 		
@@ -149,30 +149,10 @@ class questionnaire extends SeedObject
 		
 		require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 		
-		$mask = !empty($conf->global->MYMODULE_REF_MASK) ? $conf->global->MYMODULE_REF_MASK : 'MM{yy}{mm}-{0000}';
+		$mask = !empty($conf->global->MYMODULE_REF_MASK) ? $conf->global->MYMODULE_REF_MASK : 'Q{yy}{mm}-{0000}';
 		$numero = get_next_value($db, $mask, 'questionnaire', 'ref');
 		
 		return $numero;
-	}
-	
-	public function setRefused()
-	{
-//		global $user;
-		
-		$this->status = self::STATUS_REFUSED;
-		$this->withChild = false;
-		
-		return self::save();
-	}
-	
-	public function setAccepted()
-	{
-//		global $user;
-		
-		$this->status = self::STATUS_ACCEPTED;
-		$this->withChild = false;
-		
-		return self::save();
 	}
 	
 	public function getNomUrl($withpicto=0, $get_params='')
@@ -220,8 +200,7 @@ class questionnaire extends SeedObject
 
 		if ($status==self::STATUS_DRAFT) { $statustrans='statut0'; $keytrans='questionnaireStatusDraft'; $shortkeytrans='Draft'; }
 		if ($status==self::STATUS_VALIDATED) { $statustrans='statut1'; $keytrans='questionnaireStatusValidated'; $shortkeytrans='Validate'; }
-		if ($status==self::STATUS_REFUSED) { $statustrans='statut5'; $keytrans='questionnaireStatusRefused'; $shortkeytrans='Refused'; }
-		if ($status==self::STATUS_ACCEPTED) { $statustrans='statut6'; $keytrans='questionnaireStatusAccepted'; $shortkeytrans='Accepted'; }
+		if ($status==self::STATUS_CLOSED) { $statustrans='statut6'; $keytrans='questionnaireStatusClosed'; $shortkeytrans='Closed'; }
 
 		
 		if ($mode == 0) return img_picto($langs->trans($keytrans), $statustrans);
@@ -229,6 +208,29 @@ class questionnaire extends SeedObject
 		elseif ($mode == 2) return $langs->trans($keytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
 		elseif ($mode == 3) return img_picto($langs->trans($keytrans), $statustrans).' '.$langs->trans($shortkeytrans);
 		elseif ($mode == 4) return $langs->trans($shortkeytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
+	}
+	
+	function loadQuestions() {
+		
+		global $db;
+		
+		$sql = 'SELECT rowid
+				FROM '.MAIN_DB_PREFIX.'question
+				WHERE fk_questionnaire = '.$this->id;
+		$resql = $db->query($sql);
+		if(!empty($resql) && $db->num_rows($resql) > 0) {
+			$this->questions = array();
+			dol_include_once('/questionnaire/class/question.class.php');
+			while($res = $db->fetch_object($resql)) {
+				$q = new Question($db);
+				$q->load($res->rowid);
+				$this->questions[] = $q;
+			}
+			
+		} else return 0;
+		
+		return 1;
+		
 	}
 	
 }
