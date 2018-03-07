@@ -209,6 +209,31 @@ print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajout
 			});
 			
 		});
+
+		$(document).on('click', '[name*=del_element_]', function() {
+
+			var $div = $(this).closest('div[class=element]')
+			var type_object = $div.attr('type');
+			var id_obj = $div.attr('id');
+			id_obj = id_obj.replace('choice', '');
+			id_obj = id_obj.replace('question', '');
+			
+			$.ajax({
+				dataType:'json'
+				,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+						,data:{
+								fk_object:id_obj
+								,type_object:type_object
+								,put:"del-object"
+							}
+
+			}).done(function(res) {
+
+				$div.remove();
+
+			});
+			
+		});
 		
 		$(document).on('change', '[class=field]', function() {
 

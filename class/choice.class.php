@@ -64,4 +64,11 @@ class Choice extends SeedObject {
 		
 	}
 	
+	public function delete()
+	{
+		global $user;
+		
+		return parent::deleteCommon($user);
+	}
+	
 }

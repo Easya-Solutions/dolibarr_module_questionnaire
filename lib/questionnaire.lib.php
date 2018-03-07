@@ -117,22 +117,22 @@ function draw_question(&$q) {
 	
 	$form = new Form($db);
 	
-	$res = '<div style="background-color:'.$bgcol_questionnaire[$bg_color].';" class="oddeven" type="question" id="question'.$q->id.'">';
+	$res = '<div style="background-color:'.$bgcol_questionnaire[$bg_color].';" class="element" type="question" id="question'.$q->id.'">';
+	$res.= '<div class="refid">Q.&nbsp;';
 	$res.= '<input placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
-	$res.= '<br /><br />';
+	$res.= '<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_delete().'</a>';
+	$res.= '<br /><br /></div>';
 	
 	// Liste des choix
 	$q->loadChoices();
 	if(!empty($q->choices)) {
-		print '<ul>';
 		foreach($q->choices as &$choice)  $res.= draw_choice($choice);
-		print '</ul>';
 	}
 	$choice = new Choice($db);
 	$res.= $form->selectarray('select_choice_q'.$q->id, $choice->TTypes, '', 1);
 	
 	$res.= '<button class="butAction" id="butAddChoice_q'.$q->id.'" name="butAddChoice_q'.$q->id.'">Ajouter un choix</button>';
-	$res.= '</div><br /><br />';
+	$res.= '<br /><br /><br /></div>';
 	
 	$bg_color = !$bg_color;
 	
@@ -142,11 +142,10 @@ function draw_question(&$q) {
 
 function draw_choice(&$choice) {
 	
-	$res.= '<li>';
-	$res.= '<div type="choice" id="choice'.$choice->id.'">';
+	$res.= '<div class="element" type="choice" id="choice'.$choice->id.'">';
+	$res.= '<a id="del_element_'.$choice->id.'" name="del_element_'.$choice->id.'" href="#" onclick="return false;">'.img_delete().'</a>';
 	$res.= '<input placeholder="Libellé choix" type="text" name="label" class="field" value="'.$choice->label.'" />&nbsp;('.$choice->type.')';
-	$res.= '</div><br />';
-	$res.= '</li>';
+	$res.= '<br /><br /></div>';
 	
 	return $res;
 }

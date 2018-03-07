@@ -54,6 +54,13 @@ function _put($case) {
 			$choice->save();
 			_get('new_choice', $choice);
 			break;
+		
+		case 'del-object':
+			$obj = new $type_object($db);
+			$obj->load($fk_object);
+			$res = $obj->delete();
+			print json_encode($res);
+			break;
 			
 		case 'set-field':
 			$res = setField($type_object, $fk_object, $field, $value);
