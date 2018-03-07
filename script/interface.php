@@ -12,6 +12,7 @@ $fk_questionnaire = GETPOST('fk_questionnaire');
 $fk_question = GETPOST('fk_question');
 $is_section = GETPOST('is_section');
 $type_object = GETPOST('type_object');
+$type_choice = GETPOST('type_choice');
 $fk_object = GETPOST('fk_object');
 $field = GETPOST('field');
 $value = GETPOST('value');
@@ -25,13 +26,17 @@ function _get($case, $q=null) {
 		case 'new_question':
 			print json_encode(draw_question($q));
 			break;
+		
+		case 'new_choice':
+			print json_encode(draw_choice($q));
+			break;
 	}
 	
 }
 
 function _put($case) {
 	
-	global $db, $fk_questionnaire, $type_object, $fk_object, $field, $value;
+	global $db, $fk_questionnaire, $type_object, $fk_object, $field, $value, $fk_question, $type_choice;
 	
 	switch($case) {
 		
@@ -42,13 +47,17 @@ function _put($case) {
 			_get('new_question', $q);
 			break;
 		
+		case 'add-choice':
+			$choice = new Choice($db);
+			$choice->fk_question = $fk_question;
+			$choice->type = $type_choice;
+			$choice->save();
+			_get('new_choice', $choice);
+			break;
+			
 		case 'set-field':
-			$type_object= ucfirst($type_object);
-			$choice = new $type_object($db);
-			$choice->load($fk_object);
-			$choice->{$field} = $value;
-			$res = $choice->save();
-			print json_encode('1');
+			$res = setField($type_object, $fk_object, $field, $value);
+			print json_encode($res);
 			break;
 			
 	}

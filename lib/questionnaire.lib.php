@@ -106,42 +106,59 @@ function getFormConfirmquestionnaire(&$PDOdb, &$form, &$object, $action)
 
 function draw_question(&$q) {
 	
-	global $db;
+	global $db, $bg_color;
+	
+	if(!isset($bg_color)) $bg_color = 0;
+	
+	$bgcol_questionnaire = array(0=>'rgb(248,248,248)', 1=>'rgb(255,255,255)');
 	
 	require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 	dol_include_once('/questionnaire/class/choice.class.php');
 	
 	$form = new Form($db);
 	
-	$res = '<div type="question" id="question'.$q->id.'">';
+	$res = '<div style="background-color:'.$bgcol_questionnaire[$bg_color].';" class="oddeven" type="question" id="question'.$q->id.'">';
 	$res.= '<input placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
-	$res.= '<br />';
+	$res.= '<br /><br />';
 	
 	// Liste des choix
 	$q->loadChoices();
 	if(!empty($q->choices)) {
 		print '<ul>';
-		foreach($q->choices as &$choice) {
-			$res.= '<li>';
-			$res.= '<div type="choice" id="choice'.$choice->id.'">';
-			$res.= '<input placeholder="Libellé choix" type="text" name="label" class="field" value="'.$choice->label.'" />&nbsp;('.$choice->type.')';
-			$res.= '</div><br />';
-			$res.= '</li>';
-		}
+		foreach($q->choices as &$choice)  $res.= draw_choice($choice);
 		print '</ul>';
 	}
 	$choice = new Choice($db);
-	$res.= $form->selectarray('choice', $choice->TTypes, '', 1);
+	$res.= $form->selectarray('select_choice_q'.$q->id, $choice->TTypes, '', 1);
 	
-	$res.= '<button class="butAction" id="butAddChoice" name="butAddChoice">Ajouter un choix</button>';
-	$res.= '</div><br /><hr /><br />';
+	$res.= '<button class="butAction" id="butAddChoice_q'.$q->id.'" name="butAddChoice_q'.$q->id.'">Ajouter un choix</button>';
+	$res.= '</div><br /><br />';
+	
+	$bg_color = !$bg_color;
 	
 	return $res;
 	
 }
 
-function setField($field, $value) {
+function draw_choice(&$choice) {
 	
+	$res.= '<li>';
+	$res.= '<div type="choice" id="choice'.$choice->id.'">';
+	$res.= '<input placeholder="Libellé choix" type="text" name="label" class="field" value="'.$choice->label.'" />&nbsp;('.$choice->type.')';
+	$res.= '</div><br />';
+	$res.= '</li>';
 	
+	return $res;
+}
+
+function setField($type_object, $fk_object, $field, $value) {
+	
+	global $db;
+	
+	$type_object = ucfirst($type_object);
+	$obj = new $type_object($db);
+	$obj->load($fk_object);
+	$obj->{$field} = $value;
+	return $obj->save();
 	
 }

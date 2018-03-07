@@ -185,6 +185,31 @@ print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajout
 			});
 		});
 
+		$(document).on('click', '[name*=butAddChoice]', function() {
+
+			$btnAddChoice = $(this);
+			var select_choice = $btnAddChoice.prev('[name*=select_choice]');
+			var $div_question = $btnAddChoice.closest('div[type=question]');
+			var id_question = $div_question.attr('id');
+			id_question = id_question.replace('question', '');
+
+			$.ajax({
+				dataType:'json'
+				,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+						,data:{
+								fk_question:id_question
+								,put:"add-choice"
+								,type_choice:select_choice.val()
+							}
+
+			}).done(function(res) {
+
+				select_choice.before(res);
+
+			});
+			
+		});
+		
 		$(document).on('change', '[class=field]', function() {
 
 			var type_object = $(this).closest('div').attr('type');
