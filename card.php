@@ -39,11 +39,12 @@ if (empty($reshook))
 {
 	$error = 0;
 	switch ($action) {
-		case 'edit':
+		case 'create':
 			//print_form_add_question();
+			$mode = 'edit';
 			break;
 		case 'save':
-			$object->set_values($_REQUEST); // Set standard attributes
+			$object->title = GETPOST('title'); // Set standard attributes
 			
 			if ($error > 0)
 			{
@@ -51,7 +52,7 @@ if (empty($reshook))
 				break;
 			}
 			
-			$object->save(empty($object->ref));
+			$object->save();
 			
 			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
 			exit;

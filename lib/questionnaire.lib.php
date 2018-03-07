@@ -124,7 +124,7 @@ function draw_question(&$q) {
 	$res.= '<input type="checkbox" title="Réponse obligatoire ?" class="field" name="compulsory_answer"';
 	$res.= (int)$q->compulsory_answer > 0 ? 'checked="checked"' : '';
 	$res.= '/>';
-	$res.= '&nbsp;<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_picto('delete_all', 'delete_all@questionnaire').'</a>';
+	$res.= '&nbsp;<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_picto('Supprimer question', 'delete_all@questionnaire').'</a>';
 	$res.= '<br /><br /></div>';
 	
 	// Liste des choix

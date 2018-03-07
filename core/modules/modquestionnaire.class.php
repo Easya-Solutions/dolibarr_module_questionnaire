@@ -201,7 +201,47 @@ class modquestionnaire extends DolibarrModules
 		// Main menu entries
 		$this->menu = array();			// List of menus to add
 		$r=0;
-
+		$this->menu[$r] = array (
+				'fk_menu' => 0,
+				'type' => 'top',
+				'titre' => 'Module104961Name',
+				'mainmenu' => 'questionnaire',
+				'leftmenu' => '0',
+				'url' => '/questionnaire/list.php',
+				'langs' => 'questionnaire@questionnaire',
+				'position' => 100,
+				'enabled' => '1',
+				'perms' => '1',
+				'target' => '',
+				'user' => 0
+		);
+		$r++;
+		$this->menu[$r] = array (
+				'fk_menu' => 'fk_mainmenu=questionnaire',
+				'type' => 'left',
+				'titre' => 'Module104961Name',
+				'leftmenu' => 'questionnairelist',
+				'url' => '/questionnaire/list.php',
+				'langs' => 'questionnaire@questionnaire',
+				'position' => 101,
+				'enabled' => '1',
+				'perms' => '1',
+				'target' => '',
+				'user' => 0
+		);
+		$r++;
+		$this->menu[$r] = array (
+				'fk_menu' => 'fk_mainmenu=questionnaire,fk_leftmenu=questionnairelist',
+				'type' => 'left',
+				'titre' => $langs->trans('Nouveau questionnaire'),
+				'url' => '/questionnaire/card.php?action=create',
+				'langs' => 'questionnaire@questionnaire',
+				'position' => 102,
+				'enabled' => '1',
+				'perms' => '1',
+				'target' => '',
+				'user' => 0
+		);
 		// Add here entries to declare new menus
 		//
 		// Example to declare a new Top Menu entry and its Left menu entry:
