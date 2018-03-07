@@ -161,8 +161,6 @@ if(!empty($object->questions)) {
 print '</div>';
 print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button>';
 
-
-
 ?>
 
 <script>
@@ -212,7 +210,7 @@ print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajout
 
 		$(document).on('click', '[name*=del_element_]', function() {
 
-			var $div = $(this).closest('div[class=element]')
+			var $div = $(this).closest('div[class*=element]')
 			var type_object = $div.attr('type');
 			var id_obj = $div.attr('id');
 			id_obj = id_obj.replace('choice', '');
@@ -237,13 +235,21 @@ print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajout
 		
 		$(document).on('change', '[class=field]', function() {
 
-			var type_object = $(this).closest('div').attr('type');
-			var id_obj = $(this).closest('div').attr('id');
+			var $div = $(this).closest('div[class*=element]');
+			var type_object = $div.attr('type');
+			var id_obj = $div.attr('id');
 			id_obj = id_obj.replace('choice', '');
 			id_obj = id_obj.replace('question', '');
 			var field = $(this).attr('name');
+			
 			var value = $(this).val();
-
+			if($(this).is(":checkbox") === true) {
+				
+				if($(this).prop('checked') === true) value = 1;
+				else value = 0; 
+				
+			}
+			
 			$input = $(this);
 			
 			$input.css('background-color','grey');

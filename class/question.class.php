@@ -82,6 +82,11 @@ class Question extends SeedObject {
 	{
 		global $user;
 		
+		if(empty($this->choices)) $this->loadChoices();
+		if(!empty($this->choices)) {
+			foreach($this->choices as &$choice) $choice->delete();
+		}
+		
 		return parent::deleteCommon($user);
 	}
 	

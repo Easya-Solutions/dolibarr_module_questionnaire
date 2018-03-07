@@ -117,10 +117,14 @@ function draw_question(&$q) {
 	
 	$form = new Form($db);
 	
-	$res = '<div style="background-color:'.$bgcol_questionnaire[$bg_color].';" class="element" type="question" id="question'.$q->id.'">';
+	//$res = '<div style="background-color:'.$bgcol_questionnaire[$bg_color].';" class="element" type="question" id="question'.$q->id.'">';
+	$res = '<div class="element" type="question" id="question'.$q->id.'">';
 	$res.= '<div class="refid">Q.&nbsp;';
-	$res.= '<input placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
-	$res.= '<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_delete().'</a>';
+	$res.= '<input size="100" placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
+	$res.= '<input type="checkbox" title="Réponse obligatoire ?" class="field" name="compulsory_answer"';
+	$res.= (int)$q->compulsory_answer > 0 ? 'checked="checked"' : '';
+	$res.= '/>';
+	$res.= '&nbsp;<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_picto('delete_all', 'delete_all@questionnaire').'</a>';
 	$res.= '<br /><br /></div>';
 	
 	// Liste des choix
@@ -132,7 +136,7 @@ function draw_question(&$q) {
 	$res.= $form->selectarray('select_choice_q'.$q->id, $choice->TTypes, '', 1);
 	
 	$res.= '<button class="butAction" id="butAddChoice_q'.$q->id.'" name="butAddChoice_q'.$q->id.'">Ajouter un choix</button>';
-	$res.= '<br /><br /><br /></div>';
+	$res.= '<br /><br /><br /><br /><br /></div>';
 	
 	$bg_color = !$bg_color;
 	
@@ -143,8 +147,8 @@ function draw_question(&$q) {
 function draw_choice(&$choice) {
 	
 	$res.= '<div class="element" type="choice" id="choice'.$choice->id.'">';
+	$res.= $choice->TTypes[$choice->type].'&nbsp;<input placeholder="Libellé choix" type="text" name="label" class="field" value="'.$choice->label.'" />&nbsp;';
 	$res.= '<a id="del_element_'.$choice->id.'" name="del_element_'.$choice->id.'" href="#" onclick="return false;">'.img_delete().'</a>';
-	$res.= '<input placeholder="Libellé choix" type="text" name="label" class="field" value="'.$choice->label.'" />&nbsp;('.$choice->type.')';
 	$res.= '<br /><br /></div>';
 	
 	return $res;

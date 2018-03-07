@@ -20,15 +20,16 @@ $value = GETPOST('value');
 _get($get);
 _put($put);
 
-function _get($case, $q=null) {
+function _get($case, $obj=null) {
+	
+	global $type_choice;
 	
 	switch($case) {
 		case 'new_question':
-			print json_encode(draw_question($q));
+			print json_encode(draw_question($obj));
 			break;
 		
-		case 'new_choice':
-			print json_encode(draw_choice($q));
+		case 'new_choice':print json_encode(draw_choice($obj));
 			break;
 	}
 	

@@ -31,14 +31,18 @@ class Choice extends SeedObject {
 		
 		$this->entity = $conf->entity;
 		
+		$langs->load('questionnaire@questionnaire');
+		
 		$this->TTypes = array(
 				'string' => $langs->trans('questionnaireTypeString')
 				,'textarea' => $langs->trans('questionnaireTypeTextArea')
 				,'select' => $langs->trans('questionnaireTypeSelect')
 				,'listradio' => $langs->trans('questionnaireTypeRadio')
 				,'listcheckbox' => $langs->trans('questionnaireTypeCheckbox')
-				,'grilleradio' => $langs->trans('questionnaireTypeGrilleRadio')
-				,'grillecheckbox' => $langs->trans('questionnaireTypeGrilleCheckbox')
+				,'grilleradioline' => $langs->trans('questionnaireTypeGrilleRadioLine')
+				,'grilleradiocol' => $langs->trans('questionnaireTypeGrilleRadioCol')
+				,'grillecheckboxline' => $langs->trans('questionnaireTypeGrilleCheckboxLine')
+				,'grillecheckboxcol' => $langs->trans('questionnaireTypeGrilleCheckboxCol')
 				,'date' => $langs->trans('questionnaireTypeDate')
 				,'hour' => $langs->trans('questionnaireTypeHour')
 				,'linearscale' => $langs->trans('questionnaireTypeLinearScale')

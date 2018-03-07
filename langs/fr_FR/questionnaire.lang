@@ -39,3 +39,17 @@ Modify=Modifier
 Reopen=Rouvrir
 ToClone=Cloner
 Delete=Supprimer
+
+# Libellés types choix
+questionnaireTypeString=Chaîne
+questionnaireTypeTextArea=Chaîne longue
+questionnaireTypeSelect=Liste de sélection
+questionnaireTypeRadio=Bouton radio
+questionnaireTypeCheckbox=Case à cocher
+questionnaireTypeGrilleRadioLine=Bouton radio pour grille (ligne)
+questionnaireTypeGrilleRadioCol=Bouton radio pour grille (colonne)
+questionnaireTypeGrilleCheckboxLine=Case à cocher pour grille (ligne)
+questionnaireTypeGrilleCheckboxCol=Case à cocher pour grille (colonne)
+questionnaireTypeDate=Date
+questionnaireTypeHour=Heure
+questionnaireTypeLinearScale=Echelle linéaire
