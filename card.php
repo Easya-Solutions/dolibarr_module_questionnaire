@@ -160,6 +160,9 @@ if(!empty($object->questions)) {
 	foreach($object->questions as &$q) print draw_question($q);
 }
 print '</div>';
+
+$q = new Question($db);
+print $form->selectarray('select_choice', $q->TTypes);
 print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button>';
 
 ?>
@@ -169,11 +172,15 @@ print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajout
 	$(document).ready(function(){
 
 		$("#butAddQuestion").click(function() {
+			
+			var select_choice = $(this).prev('[name*=select_choice]');
+			
 			$.ajax({
 				dataType:'json'
 				,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
 						,data:{
 								fk_questionnaire:<?php echo (int)$object->id ?>
+								,type_question:select_choice.val()
 								,put:"add-question"
 							}
 
@@ -187,23 +194,26 @@ print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajout
 		$(document).on('click', '[name*=butAddChoice]', function() {
 
 			$btnAddChoice = $(this);
-			var select_choice = $btnAddChoice.prev('[name*=select_choice]');
 			var $div_question = $btnAddChoice.closest('div[type=question]');
 			var id_question = $div_question.attr('id');
 			id_question = id_question.replace('question', '');
 
+			var choice_type = '';
+			if($btnAddChoice.attr('name').indexOf('Line') > 0) choice_type = 'line';
+			else choice_type = 'column';
+			
 			$.ajax({
 				dataType:'json'
 				,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
 						,data:{
 								fk_question:id_question
 								,put:"add-choice"
-								,type_choice:select_choice.val()
+								,type_choice:choice_type
 							}
 
 			}).done(function(res) {
 
-				select_choice.before(res);
+				$btnAddChoice.before(res);
 
 			});
 			

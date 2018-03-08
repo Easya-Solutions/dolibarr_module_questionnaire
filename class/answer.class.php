@@ -11,7 +11,7 @@ if (!class_exists('TObjetStd'))
 
 class Answer extends SeedObject {
 	
-	public $table_element = 'answer';
+	public $table_element = 'quest_answer';
 	
 	public $element = 'answer';
 	

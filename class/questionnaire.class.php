@@ -31,7 +31,7 @@ class Questionnaire extends SeedObject
 		,self::STATUS_CLOSED=> 'Closed'
 	);
 	
-	public $table_element = 'questionnaire';
+	public $table_element = 'quest_questionnaire';
 
 	public $element = 'questionnaire';
 	

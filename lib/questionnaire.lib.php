@@ -115,11 +115,13 @@ function draw_question(&$q) {
 	require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 	dol_include_once('/questionnaire/class/choice.class.php');
 	
+	$question_est_une_grille = strpos($q->type, 'grille') !== false;
+	
 	$form = new Form($db);
 	
 	//$res = '<div style="background-color:'.$bgcol_questionnaire[$bg_color].';" class="element" type="question" id="question'.$q->id.'">';
 	$res = '<div class="element" type="question" id="question'.$q->id.'">';
-	$res.= '<div class="refid">Q.&nbsp;';
+	$res.= '<div class="refid">Question : '.$q->TTypes[$q->type].'<br />';
 	$res.= '<input size="100" placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
 	$res.= '<input type="checkbox" title="Réponse obligatoire ?" class="field" name="compulsory_answer"';
 	$res.= (int)$q->compulsory_answer > 0 ? 'checked="checked"' : '';
@@ -127,16 +129,34 @@ function draw_question(&$q) {
 	$res.= '&nbsp;<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_picto('Supprimer question', 'delete_all@questionnaire').'</a>';
 	$res.= '<br /><br /></div>';
 	
-	// Liste des choix
+	// Liste des choix (lignes)
+	$style_div_lines = ' width: 300px; ';
+	if($question_est_une_grille) $style_div_lines.= ' float: left; ';
+	$res.= '<div class="refid" style="'.$style_div_lines.'" id="allChoicesLeft_q'.$q->id.' name="allChoicesLeft_q'.$q->id.'">';
+	$res.= 'Lignes<br /><br />';
 	$q->loadChoices();
 	if(!empty($q->choices)) {
-		foreach($q->choices as &$choice)  $res.= draw_choice($choice);
+		foreach($q->choices as &$choice) {
+			if($choice->type === 'line') $res.= draw_choice($choice);
+		}
 	}
-	$choice = new Choice($db);
-	$res.= $form->selectarray('select_choice_q'.$q->id, $choice->TTypes, '', 1);
+	$res.= '<button class="butAction" id="butAddChoiceLine_q'.$q->id.'" name="butAddChoiceLine_q'.$q->id.'">Ajouter une ligne</button>';
+	$res.= '</div>';
 	
-	$res.= '<button class="butAction" id="butAddChoice_q'.$q->id.'" name="butAddChoice_q'.$q->id.'">Ajouter un choix</button>';
-	$res.= '<br /><br /><br /><br /><br /></div>';
+	// Liste des choix (colonnes => Uniquement pour les grilles)
+	if($question_est_une_grille) {
+		$res.= '<div style="float: left;" class="refid" id="allChoicesRight_q'.$q->id.'">';
+		$res.= 'Colonnes<br /><br />';
+		if(!empty($q->choices)) {
+			foreach($q->choices as &$choice) {
+				if($choice->type === 'column') $res.= draw_choice($choice);
+			}
+		}
+		$res.= '<button class="butAction" id="butAddChoiceColumn_q'.$q->id.'" name="butAddChoiceColumn_q'.$q->id.'">Ajouter un colonne</button>';
+		$res.= '</div>';
+	}
+	
+	$res.= '<div style="clear: both;"></div><br /><br /></div>';
 	
 	$bg_color = !$bg_color;
 	
@@ -147,7 +167,7 @@ function draw_question(&$q) {
 function draw_choice(&$choice) {
 	
 	$res.= '<div class="element" type="choice" id="choice'.$choice->id.'">';
-	$res.= $choice->TTypes[$choice->type].'&nbsp;<input placeholder="Libellé choix" type="text" name="label" class="field" value="'.$choice->label.'" />&nbsp;';
+	$res.= '<input placeholder="Libellé choix" type="text" name="label" class="field" value="'.$choice->label.'" />&nbsp;';
 	$res.= '<a id="del_element_'.$choice->id.'" name="del_element_'.$choice->id.'" href="#" onclick="return false;">'.img_delete().'</a>';
 	$res.= '<br /><br /></div>';
 	

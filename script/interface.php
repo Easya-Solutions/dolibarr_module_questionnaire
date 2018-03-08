@@ -11,6 +11,7 @@ $put = GETPOST('put');
 $fk_questionnaire = GETPOST('fk_questionnaire');
 $fk_question = GETPOST('fk_question');
 $is_section = GETPOST('is_section');
+$type_question = GETPOST('type_question');
 $type_object = GETPOST('type_object');
 $type_choice = GETPOST('type_choice');
 $fk_object = GETPOST('fk_object');
@@ -37,13 +38,14 @@ function _get($case, $obj=null) {
 
 function _put($case) {
 	
-	global $db, $fk_questionnaire, $type_object, $fk_object, $field, $value, $fk_question, $type_choice;
+	global $db, $fk_questionnaire, $type_object, $fk_object, $field, $value, $fk_question, $type_choice, $type_question;
 	
 	switch($case) {
 		
 		case 'add-question':
 			$q = new Question($db);
 			$q->fk_questionnaire = $fk_questionnaire;
+			$q->type = $type_question;
 			$q->save();
 			_get('new_question', $q);
 			break;

@@ -12,7 +12,7 @@ if (!class_exists('TObjetStd'))
 
 class Invitation extends SeedObject {
 	
-	public $table_element = 'invitation';
+	public $table_element = 'quest_invitation';
 	
 	public $element = 'invitation';
 	

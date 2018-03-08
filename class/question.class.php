@@ -11,13 +11,13 @@ if (!class_exists('TObjetStd'))
 
 class Question extends SeedObject {
 	
-	public $table_element = 'question';
+	public $table_element = 'quest_question';
 	
 	public $element = 'question';
 	
 	public function __construct(&$db)
 	{
-		global $conf;
+		global $conf, $langs;
 		
 		$this->db = $db;
 		
@@ -29,6 +29,19 @@ class Question extends SeedObject {
 				,'compulsory_answer'=>array('type'=>'integer') // Rép. obligatoire ou non
 				,'fk_object_linked'=>array('type'=>'integer')
 				,'type_object_linked'=>array('type'=>'integer')
+		);
+		
+		$this->TTypes = array(
+				'string' => $langs->trans('questionnaireTypeString')
+				,'textarea' => $langs->trans('questionnaireTypeTextArea')
+				,'select' => $langs->trans('questionnaireTypeSelect')
+				,'listradio' => $langs->trans('questionnaireTypeRadio')
+				,'listcheckbox' => $langs->trans('questionnaireTypeCheckbox')
+				,'grilleradio' => $langs->trans('questionnaireTypeGrilleRadio')
+				,'grillecheckbox' => $langs->trans('questionnaireTypeGrilleCheckbox')
+				,'date' => $langs->trans('questionnaireTypeDate')
+				,'hour' => $langs->trans('questionnaireTypeHour')
+				,'linearscale' => $langs->trans('questionnaireTypeLinearScale')
 		);
 		
 		$this->init();
