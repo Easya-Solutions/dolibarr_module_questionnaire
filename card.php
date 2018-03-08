@@ -155,17 +155,27 @@ if ($mode == 'edit') echo $formcore->end_form();
 //if ($mode == 'view' && $object->id) $somethingshown = $form->showLinkedObjectBlock($object->generic);
 
 // Print list of questions
-$object->loadQuestions();
-print '<div id="allQuestions">';
-if(!empty($object->questions)) {
-	foreach($object->questions as &$q) print draw_question($q);
-}
-print '</div>';
-
-if($action !== 'create') {
-	$q = new Question($db);
-	print $form->selectarray('select_choice', $q->TTypes);
-	print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button>';
+if(empty($action) || $action === 'view') {
+	if(empty($object->questions)) $object->loadQuestions();
+	print '<div id="allQuestions">';
+	if(!empty($object->questions)) {
+		foreach($object->questions as &$q) print draw_question($q);
+	}
+	print '</div>';
+	
+	if($action !== 'create') {
+		$q = new Question($db);
+		print $form->selectarray('select_choice', $q->TTypes);
+		print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button>';
+	}
+} elseif($action === 'apercu') {
+	if(empty($object->questions)) $object->loadQuestions();
+	print '<div id="allQuestions">';
+	if(!empty($object->questions)) {
+		foreach($object->questions as &$q) print draw_question_for_user($q);
+	}
+	print '</div>';
+	
 }
 
 ?>

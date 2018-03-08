@@ -174,6 +174,74 @@ function draw_choice(&$choice) {
 	return $res;
 }
 
+function draw_question_for_user(&$q) {
+	
+	if(empty($q->choices)) $q->loadChoices();
+	if(!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea'/*Pas de choix pour ces types là*/) {
+		$res = '<div class="element" type="question" id="question'.$q->id.'">';
+		$res.= '<div class="refid">'.$q->label.'</div>';
+		
+		switch($q->type) {
+			
+			case 'string':
+				$res.= draw_string_for_user($q);
+				break;
+				
+			case 'select':
+				$res.= draw_select_for_user($q);
+				break;
+				
+			case 'listradio':
+				$res.= draw_listradio_for_user($q);
+				break;
+				
+			case 'listcheckbox':
+				$res.= draw_listcheckbox_for_user($q);
+				break;
+				
+		}
+		
+		$res.= '</div>';
+	}
+	return $res;
+}
+
+function draw_string_for_user(&$q) {
+	
+	return $q->choices[0]->label.'&nbsp;<input type="text" name="rep_q'.$q->id.'" id="rep_q'.$q->id.'" />';
+	
+}
+
+function draw_select_for_user(&$q) {
+	
+	global $form;
+	
+	$tab = array();
+	foreach($q->choices as &$choix) {
+		$tab[$choix->id] = $choix->label;
+	}
+	return $form->selectarray('select_q'.$q->id, $tab);
+	
+}
+
+function draw_listradio_for_user(&$q) {
+	
+	$res = '<br />';
+	foreach($q->choices as &$choix) $res .= '<input type="radio" id="'.$choix->id.'" name="'.$choix->id.'">&nbsp;'.$choix->label.'<br />';
+	
+	return $res;
+	
+}
+
+function draw_listcheckbox_for_user(&$q) {
+	
+	$res = '<br />';
+	foreach($q->choices as &$choix) $res .= '<input type="checkbox" id="'.$choix->id.'" name="'.$choix->id.'" />&nbsp;'.$choix->label.'<br />';
+	
+	return $res;
+	
+}
+
 function setField($type_object, $fk_object, $field, $value) {
 	
 	global $db;
