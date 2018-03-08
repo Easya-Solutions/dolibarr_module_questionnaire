@@ -178,129 +178,133 @@ if(empty($action) || $action === 'view') {
 	
 }
 
-?>
+if(empty($action) || $action === 'view') {
 
-<script>
-
-	$(document).ready(function(){
-
-		$("#butAddQuestion").click(function() {
-			
-			var select_choice = $(this).prev('[name*=select_choice]');
-			
-			$.ajax({
-				dataType:'json'
-				,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
-						,data:{
-								fk_questionnaire:<?php echo (int)$object->id ?>
-								,type_question:select_choice.val()
-								,put:"add-question"
-							}
-
-			}).done(function(res) {
-
-				$('#allQuestions').append(res);
-
-			});
-		});
-
-		$(document).on('click', '[name*=butAddChoice]', function() {
-
-			$btnAddChoice = $(this);
-			var $div_question = $btnAddChoice.closest('div[type=question]');
-			var id_question = $div_question.attr('id');
-			id_question = id_question.replace('question', '');
-
-			var choice_type = '';
-			if($btnAddChoice.attr('name').indexOf('Line') > 0) choice_type = 'line';
-			else choice_type = 'column';
-			
-			$.ajax({
-				dataType:'json'
-				,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
-						,data:{
-								fk_question:id_question
-								,put:"add-choice"
-								,type_choice:choice_type
-							}
-
-			}).done(function(res) {
-
-				$btnAddChoice.before(res);
-
-			});
-			
-		});
-
-		$(document).on('click', '[name*=del_element_]', function() {
-
-			var $div = $(this).closest('div[class*=element]')
-			var type_object = $div.attr('type');
-			var id_obj = $div.attr('id');
-			id_obj = id_obj.replace('choice', '');
-			id_obj = id_obj.replace('question', '');
-			
-			$.ajax({
-				dataType:'json'
-				,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
-						,data:{
-								fk_object:id_obj
-								,type_object:type_object
-								,put:"del-object"
-							}
-
-			}).done(function(res) {
-
-				$div.remove();
-
-			});
-			
-		});
-		
-		$(document).on('change', '[class=field]', function() {
-
-			var $div = $(this).closest('div[class*=element]');
-			var type_object = $div.attr('type');
-			var id_obj = $div.attr('id');
-			id_obj = id_obj.replace('choice', '');
-			id_obj = id_obj.replace('question', '');
-			var field = $(this).attr('name');
-			
-			var value = $(this).val();
-			if($(this).is(":checkbox") === true) {
+	?>
+	
+	<script>
+	
+		$(document).ready(function(){
+	
+			$("#butAddQuestion").click(function() {
 				
-				if($(this).prop('checked') === true) value = 1;
-				else value = 0; 
+				var select_choice = $(this).prev('[name*=select_choice]');
 				
-			}
+				$.ajax({
+					dataType:'json'
+					,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+							,data:{
+									fk_questionnaire:<?php echo (int)$object->id ?>
+									,type_question:select_choice.val()
+									,put:"add-question"
+								}
+	
+				}).done(function(res) {
+	
+					$('#allQuestions').append(res);
+	
+				});
+			});
+	
+			$(document).on('click', '[name*=butAddChoice]', function() {
+	
+				$btnAddChoice = $(this);
+				var $div_question = $btnAddChoice.closest('div[type=question]');
+				var id_question = $div_question.attr('id');
+				id_question = id_question.replace('question', '');
+	
+				var choice_type = '';
+				if($btnAddChoice.attr('name').indexOf('Line') > 0) choice_type = 'line';
+				else choice_type = 'column';
+				
+				$.ajax({
+					dataType:'json'
+					,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+							,data:{
+									fk_question:id_question
+									,put:"add-choice"
+									,type_choice:choice_type
+								}
+	
+				}).done(function(res) {
+	
+					$btnAddChoice.before(res);
+	
+				});
+				
+			});
+	
+			$(document).on('click', '[name*=del_element_]', function() {
+	
+				var $div = $(this).closest('div[class*=element]')
+				var type_object = $div.attr('type');
+				var id_obj = $div.attr('id');
+				id_obj = id_obj.replace('choice', '');
+				id_obj = id_obj.replace('question', '');
+				
+				$.ajax({
+					dataType:'json'
+					,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+							,data:{
+									fk_object:id_obj
+									,type_object:type_object
+									,put:"del-object"
+								}
+	
+				}).done(function(res) {
+	
+					$div.remove();
+	
+				});
+				
+			});
 			
-			$input = $(this);
-			
-			$input.css('background-color','grey');
-			
-			$.ajax({
-				dataType:'json'
-				,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
-						,data:{
-								fk_object:id_obj
-								,type_object:type_object
-								,put:"set-field"
-								,field:field
-								,value:value
-							}
-
-			}).done(function(res) {
-
-				$input.css('background-color','');
-
+			$(document).on('change', '[class=field]', function() {
+	
+				var $div = $(this).closest('div[class*=element]');
+				var type_object = $div.attr('type');
+				var id_obj = $div.attr('id');
+				id_obj = id_obj.replace('choice', '');
+				id_obj = id_obj.replace('question', '');
+				var field = $(this).attr('name');
+				
+				var value = $(this).val();
+				if($(this).is(":checkbox") === true) {
+					
+					if($(this).prop('checked') === true) value = 1;
+					else value = 0; 
+					
+				}
+				
+				$input = $(this);
+				
+				$input.css('background-color','grey');
+				
+				$.ajax({
+					dataType:'json'
+					,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+							,data:{
+									fk_object:id_obj
+									,type_object:type_object
+									,put:"set-field"
+									,field:field
+									,value:value
+								}
+	
+				}).done(function(res) {
+	
+					$input.css('background-color','');
+	
+				});
+				
 			});
 			
 		});
-		
-	});
+	
+	</script>
+	
+	<?php
 
-</script>
-
-<?php
-
+}
+	
 llxFooter();

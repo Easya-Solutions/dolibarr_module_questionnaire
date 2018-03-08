@@ -129,31 +129,35 @@ function draw_question(&$q) {
 	$res.= '&nbsp;<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_picto('Supprimer question', 'delete_all@questionnaire').'</a>';
 	$res.= '<br /><br /></div>';
 	
-	// Liste des choix (lignes)
-	$style_div_lines = ' width: 300px; ';
-	if($question_est_une_grille) $style_div_lines.= ' float: left; ';
-	$res.= '<div class="refid" style="'.$style_div_lines.'" id="allChoicesLeft_q'.$q->id.' name="allChoicesLeft_q'.$q->id.'">';
-	$res.= 'Lignes<br /><br />';
-	$q->loadChoices();
-	if(!empty($q->choices)) {
-		foreach($q->choices as &$choice) {
-			if($choice->type === 'line') $res.= draw_choice($choice);
-		}
-	}
-	$res.= '<button class="butAction" id="butAddChoiceLine_q'.$q->id.'" name="butAddChoiceLine_q'.$q->id.'">Ajouter une ligne</button>';
-	$res.= '</div>';
+	// Pas de choix pour les types string et textarea
 	
-	// Liste des choix (colonnes => Uniquement pour les grilles)
-	if($question_est_une_grille) {
-		$res.= '<div style="float: left;" class="refid" id="allChoicesRight_q'.$q->id.'">';
-		$res.= 'Colonnes<br /><br />';
-		if(!empty($q->choices)) {
-			foreach($q->choices as &$choice) {
-				if($choice->type === 'column') $res.= draw_choice($choice);
+	if($q->type !== 'string' && $q->type !== 'textarea') {
+			// Liste des choix (lignes)
+			$style_div_lines = ' width: 300px; ';
+			if($question_est_une_grille) $style_div_lines.= ' float: left; ';
+			$res.= '<div class="refid" style="'.$style_div_lines.'" id="allChoicesLeft_q'.$q->id.' name="allChoicesLeft_q'.$q->id.'">';
+			$res.= 'Lignes<br /><br />';
+			$q->loadChoices();
+			if(!empty($q->choices)) {
+				foreach($q->choices as &$choice) {
+					if($choice->type === 'line') $res.= draw_choice($choice);
+				}
 			}
-		}
-		$res.= '<button class="butAction" id="butAddChoiceColumn_q'.$q->id.'" name="butAddChoiceColumn_q'.$q->id.'">Ajouter un colonne</button>';
-		$res.= '</div>';
+			$res.= '<button class="butAction" id="butAddChoiceLine_q'.$q->id.'" name="butAddChoiceLine_q'.$q->id.'">Ajouter une ligne</button>';
+			$res.= '</div>';
+			
+			// Liste des choix (colonnes => Uniquement pour les grilles)
+			if($question_est_une_grille) {
+				$res.= '<div style="float: left;" class="refid" id="allChoicesRight_q'.$q->id.'">';
+				$res.= 'Colonnes<br /><br />';
+				if(!empty($q->choices)) {
+					foreach($q->choices as &$choice) {
+						if($choice->type === 'column') $res.= draw_choice($choice);
+					}
+				}
+				$res.= '<button class="butAction" id="butAddChoiceColumn_q'.$q->id.'" name="butAddChoiceColumn_q'.$q->id.'">Ajouter un colonne</button>';
+				$res.= '</div>';
+			}
 	}
 	
 	$res.= '<div style="clear: both;"></div><br /><br /></div>';
@@ -187,6 +191,10 @@ function draw_question_for_user(&$q) {
 				$res.= draw_string_for_user($q);
 				break;
 				
+			case 'textarea':
+				$res.= draw_textarea_for_user($q);
+				break;
+				
 			case 'select':
 				$res.= draw_select_for_user($q);
 				break;
@@ -195,8 +203,16 @@ function draw_question_for_user(&$q) {
 				$res.= draw_listradio_for_user($q);
 				break;
 				
+			case 'grilleradio':
+				$res.= draw_grilleradio_for_user($q);
+				break;
+				
 			case 'listcheckbox':
 				$res.= draw_listcheckbox_for_user($q);
+				break;
+				
+			case 'grillecheckbox':
+				$res.= draw_grillecheckbox_for_user($q);
 				break;
 				
 		}
@@ -208,7 +224,13 @@ function draw_question_for_user(&$q) {
 
 function draw_string_for_user(&$q) {
 	
-	return $q->choices[0]->label.'&nbsp;<input type="text" name="rep_q'.$q->id.'" id="rep_q'.$q->id.'" />';
+	return '<input type="text" name="rep_q'.$q->id.'" id="rep_q'.$q->id.'" />';
+	
+}
+
+function draw_textarea_for_user(&$q) {
+	
+	return '<textarea rows="7" cols="50" type="text" name="rep_q'.$q->id.'" id="rep_q'.$q->id.'"></textarea>';
 	
 }
 
@@ -227,7 +249,7 @@ function draw_select_for_user(&$q) {
 function draw_listradio_for_user(&$q) {
 	
 	$res = '<br />';
-	foreach($q->choices as &$choix) $res .= '<input type="radio" id="'.$choix->id.'" name="'.$choix->id.'">&nbsp;'.$choix->label.'<br />';
+	foreach($q->choices as &$choix) $res.= '<input type="radio" id="choix_'.$choix->id.'" name="q_'.$q->id.'" value="'.$choix->id.'">&nbsp;'.$choix->label.'<br />';
 	
 	return $res;
 	
@@ -236,7 +258,65 @@ function draw_listradio_for_user(&$q) {
 function draw_listcheckbox_for_user(&$q) {
 	
 	$res = '<br />';
-	foreach($q->choices as &$choix) $res .= '<input type="checkbox" id="'.$choix->id.'" name="'.$choix->id.'" />&nbsp;'.$choix->label.'<br />';
+	foreach($q->choices as &$choix) $res.= '<input type="checkbox" id="'.$choix->id.'" name="'.$choix->id.'" />&nbsp;'.$choix->label.'<br />';
+	
+	return $res;
+	
+}
+
+function draw_grilleradio_for_user(&$q) {
+	
+	$res = '<br /><table class="noborder"><tr><td></td>';
+	foreach($q->choices as &$choix_col) {
+		if($choix_col->type === 'column') $res.= '<td>'.$choix_col->label.'</td>';
+	}
+	$res.= '</tr>';
+	
+	$first_line=true;
+	foreach($q->choices as &$choix_line) {
+		
+		if($choix_line->type === 'line') $res.= '<tr><td>'.$choix_line->label.'</td>';
+		else continue;
+		
+		foreach($q->choices as &$choix_col) {
+			if($choix_col->type === 'column')  $res.= '<td><input type="radio" name="q_'.$q->id.'_line_'.$choix_line->id.'" value="'.$choix_line->id.'_'.$choix_col->id.'"/></td>';
+			else continue;
+		}
+		
+		$first_line=false;
+		$res.= '</tr>';
+		
+	}
+	$res.= '</table>';
+	
+	return $res;
+	
+}
+
+function draw_grillecheckbox_for_user(&$q) {
+	
+	$res = '<br /><table class="noborder"><tr><td></td>';
+	foreach($q->choices as &$choix_col) {
+		if($choix_col->type === 'column') $res.= '<td>'.$choix_col->label.'</td>';
+	}
+	$res.= '</tr>';
+	
+	$first_line=true;
+	foreach($q->choices as &$choix_line) {
+		
+		if($choix_line->type === 'line') $res.= '<tr><td>'.$choix_line->label.'</td>';
+		else continue;
+		
+		foreach($q->choices as &$choix_col) {
+			if($choix_col->type === 'column')  $res.= '<td><input type="checkbox" name="choix_'.$choix_line->id.'_'.$choix_col->id.'" value="'.$choix_line->id.'_'.$choix_col->id.'"/></td>';
+			else continue;
+		}
+		
+		$first_line=false;
+		$res.= '</tr>';
+		
+	}
+	$res.= '</table>';
 	
 	return $res;
 	
