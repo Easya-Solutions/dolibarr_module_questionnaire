@@ -1,8 +1,9 @@
-<?php
+ <?php
 
 require 'config.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
+dol_include_once('/questionnaire/class/question.class.php');
 dol_include_once('/questionnaire/class/questionnaire.class.php');
 dol_include_once('/questionnaire/class/choice.class.php');
 dol_include_once('/questionnaire/lib/questionnaire.lib.php');
@@ -161,9 +162,11 @@ if(!empty($object->questions)) {
 }
 print '</div>';
 
-$q = new Question($db);
-print $form->selectarray('select_choice', $q->TTypes);
-print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button>';
+if($action !== 'create') {
+	$q = new Question($db);
+	print $form->selectarray('select_choice', $q->TTypes);
+	print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button>';
+}
 
 ?>
 

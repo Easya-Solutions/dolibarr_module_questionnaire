@@ -72,13 +72,17 @@ class Question extends SeedObject {
 		
 		global $db;
 		
+		dol_include_once('/questionnaire/class/question.class.php');
+		
+		$choice = new Choice($db);
+		
 		$sql = 'SELECT rowid
-				FROM '.MAIN_DB_PREFIX.'choice
+				FROM '.MAIN_DB_PREFIX.$choice->table_element.'
 				WHERE fk_question = '.$this->id;
 		$resql = $db->query($sql);
 		if(!empty($resql) && $db->num_rows($resql) > 0) {
 			$this->questions = array();
-			dol_include_once('/questionnaire/class/question.class.php');
+			
 			while($res = $db->fetch_object($resql)) {
 				$choice = new Choice($db);
 				$choice->load($res->rowid);

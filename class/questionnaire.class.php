@@ -214,13 +214,16 @@ class Questionnaire extends SeedObject
 		
 		global $db;
 		
+		dol_include_once('/questionnaire/class/question.class.php');
+		$q = new Question($db);
+		
 		$sql = 'SELECT rowid
-				FROM '.MAIN_DB_PREFIX.'question
+				FROM '.MAIN_DB_PREFIX.$q->table_element.'
 				WHERE fk_questionnaire = '.$this->id;
 		$resql = $db->query($sql);
 		if(!empty($resql) && $db->num_rows($resql) > 0) {
 			$this->questions = array();
-			dol_include_once('/questionnaire/class/question.class.php');
+			
 			while($res = $db->fetch_object($resql)) {
 				$q = new Question($db);
 				$q->load($res->rowid);
