@@ -131,7 +131,7 @@ function draw_question(&$q) {
 	
 	// Pas de choix pour les types string et textarea
 	
-	if($q->type !== 'string' && $q->type !== 'textarea') {
+	if($q->type !== 'string' && $q->type !== 'textarea' && $q->type !== 'date' && $q->type !== 'hour' && $q->type !== 'linearscale') {
 			// Liste des choix (lignes)
 			$style_div_lines = ' width: 300px; ';
 			if($question_est_une_grille) $style_div_lines.= ' float: left; ';
@@ -181,7 +181,7 @@ function draw_choice(&$choice) {
 function draw_question_for_user(&$q) {
 	
 	if(empty($q->choices)) $q->loadChoices();
-	if(!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea'/*Pas de choix pour ces types là*/) {
+	if(!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale'/*Pas de choix pour ces types là*/) {
 		$res = '<div class="element" type="question" id="question'.$q->id.'">';
 		$res.= '<div class="refid">'.$q->label.'</div>';
 		
@@ -213,6 +213,18 @@ function draw_question_for_user(&$q) {
 				
 			case 'grillecheckbox':
 				$res.= draw_grillecheckbox_for_user($q);
+				break;
+				
+			case 'date':
+				$res.= draw_date_for_user($q);
+				break;
+			
+			case 'hour':
+				$res.= draw_hour_for_user($q);
+				break;
+			
+			case 'linearscale':
+				$res.= draw_linearscale_for_user($q);
 				break;
 				
 		}
@@ -322,6 +334,26 @@ function draw_grillecheckbox_for_user(&$q) {
 	
 }
 
+function draw_date_for_user(&$q) {
+	
+	global $form;
+	
+	return '<br />'.$form->select_date('', 'date_q'.$q->id, 0, 0, 0, "", 1, 0, 1);
+	
+}
+
+function draw_hour_for_user(&$q) {
+	
+	global $form;
+	
+	return $form->select_duration('time_q'.$q->id, '', 0, 'select', 0, 1);
+	
+}
+
+function draw_linearscale_for_user(&$q) {
+	return '<br />'.radio_js_bloc_number('linearscal_q'.$q->id,0,5,$pDefault,$pId=null,$pStep=1,$plusJs=null,$plusCss=null,$trad=array(),$controleSaisie=true);
+}
+
 function setField($type_object, $fk_object, $field, $value) {
 	
 	global $db;
@@ -332,4 +364,103 @@ function setField($type_object, $fk_object, $field, $value) {
 	$obj->{$field} = $value;
 	return $obj->save();
 	
+}
+
+function radio_js_bloc_number($pName,$pMin,$pMax,$pDefault,$pId=null,$pStep=1,$plusJs=null,$plusCss=null,$trad=array(),$controleSaisie=true){
+	// Exemple pour input en name tableau : name="TNote[1]" ...TNote[5]
+	// obligatoire si on à un tablea dynamique avec plusieurs de ce type
+	global $conf;
+	$field ="<!-- field jquery -->\n";
+	// Calcul affichage pour nombre élevé
+	
+	$nb_aff = ($pMax - $pMin)/$pStep;
+	$must_split = ($nb_aff>10)?true:false;
+	$nb_split = (($nb_aff/2)<10)?round($nb_aff/2):10;
+	
+	// Init var base
+	$i=$pMin;
+	$pName_unique=$pName;
+	if($pDefault<$pMin || $pDefault>$pMax) $pDefault=null;
+	if(isset($pId))
+	{
+		$pName_unique=$pName.'_'.$pId;
+		$pName=$pName.'['.$pId.']';
+	}
+	
+	// Affichage edit/create
+	$j=0;
+	while ($i<=$pMax){
+		
+		if ($i == $pDefault){
+			$checked = "selected";
+		}
+		else{
+			$checked = "";
+		}
+		$field .= '<span title="'.$trad[$j].'" class="radio_js_bloc_number '.$pName_unique.' '.$checked.'">'.$i.'</span>';
+		
+		if($must_split && $i%$nb_split==0)$field.='<br/>';
+		$i++;
+		$j++;
+	}
+	$field .= '<input type="hidden" id="'.$pName_unique.'" name="'.$pName.'" value="'.$pDefault.'" />';
+	$field .= '
+		<script type="text/javascript">
+			$(document).ready(function(){
+				$(".radio_js_bloc_number").tooltip();
+				var error,same;
+				$(".'.$pName_unique.'").on("click",function(){
+					same=false;
+					val = $(this).html();
+					if($(this).hasClass("selected"))same=true;
+					$(".'.$pName_unique.'").removeClass("selected");
+					if(same)
+					{
+						$("#'.$pName_unique.'").val("");
+					}else {
+						$(this).addClass("selected");
+						$("#'.$pName_unique.'").val(val);
+					}
+				});';
+	
+	if($controleSaisie)
+	{
+		$field .= '$("#'.$pName_unique.'").closest("form").on("submit", function(){
+					$("#'.$pName_unique.'").each(function(){
+						if(this.value == "")
+						{
+							console.log("error"+this.value);
+							$(this).closest("td").animate({
+								backgroundColor:"#F78181"
+							}, 500, function(){
+								console.log("error"+this.value);
+							})
+							error=true;
+						}
+					});
+					if(error)
+					{
+						error=false;
+						$.jnotify("Vous devez saisir une note à chaque ligne !", "error");
+						return false;
+					}
+				});';
+	}
+	$field .= '
+				'.$plusJs.'
+			});
+		</script>';
+	if(isset($plusCss)) $field .= '<style type="text/css">'.$plusCss.'</style>';
+		
+	$field .= '
+		<script type="text/javascript">
+			$(document).ready(function(){
+				<!-- Insertion du css une seule fois -->
+				if (!$("link[href=\''.dol_buildpath('/abricot/includes/css/radio_js_number.css',1).'\']").length)
+				{
+	    			$(\'<link href="'.dol_buildpath('/abricot/includes/css/radio_js_number.css',1).'" rel="stylesheet">\').appendTo("head");
+	    		}
+			});
+		</script>';
+	return $field;
 }

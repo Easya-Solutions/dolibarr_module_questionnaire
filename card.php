@@ -172,7 +172,7 @@ if(empty($action) || $action === 'view') {
 	if(empty($object->questions)) $object->loadQuestions();
 	print '<div id="allQuestions">';
 	if(!empty($object->questions)) {
-		foreach($object->questions as &$q) print draw_question_for_user($q);
+		foreach($object->questions as &$q) print draw_question_for_user($q).'<br />';
 	}
 	print '</div>';
 	
