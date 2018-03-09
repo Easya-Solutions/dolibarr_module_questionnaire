@@ -26,6 +26,7 @@ class Answer extends SeedObject {
 				,'fk_choix'=>array('type'=>'integer')
 				,'fk_choix_col'=>array('type'=>'integer')
 				,'fk_user'=>array('type'=>'integer')
+				,'value'=>array('type'=>'string') // for types string or textarea etc...
 		);
 		
 		$this->init();
@@ -33,7 +34,7 @@ class Answer extends SeedObject {
 		$this->entity = $conf->entity;
 	}
 	
-	public function load($id, $ref, $loadChild = true)
+	public function load($id, $ref=null, $loadChild = true)
 	{
 		global $db;
 		
@@ -49,6 +50,34 @@ class Answer extends SeedObject {
 		global $user;
 		
 		return $this->id>0 ? $this->updateCommon($user) : $this->createCommon($user);
+		
+	}
+	
+	public function delete() {
+		
+		global $user;
+		
+		return parent::deleteCommon($user);
+	}
+	
+	static public function deleteAllAnswersUser($fk_user, $fk_question) {
+		
+		global $db, $user;
+		
+		$obj = new self($db);
+		
+		$sql = 'SELECT rowid
+				FROM '.MAIN_DB_PREFIX.$obj->table_element.'
+				WHERE fk_question = '.$fk_question.'
+				AND fk_user = '.$fk_user;
+		$resql = $db->query($sql);
+		if(!empty($resql) && $db->num_rows($resql) > 0) {
+			while($res = $db->fetch_object($resql)) {
+				$obj = new self($db);
+				$obj->load($res->rowid);
+				$obj->delete($user);
+			}
+		}
 		
 	}
 	

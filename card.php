@@ -4,6 +4,7 @@ require 'config.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 dol_include_once('/questionnaire/class/question.class.php');
+dol_include_once('/questionnaire/class/answer.class.php');
 dol_include_once('/questionnaire/class/questionnaire.class.php');
 dol_include_once('/questionnaire/class/choice.class.php');
 dol_include_once('/questionnaire/lib/questionnaire.lib.php');
@@ -59,6 +60,44 @@ if (empty($reshook))
 			exit;
 			
 			break;
+		case 'save_answer':
+			var_dump($_REQUEST);exit;
+			$TAnswer = GETPOST('TAnswer');
+			if(!empty($TAnswer)) {
+				foreach($TAnswer as $fk_question=>&$v) {
+					
+					// Suppression anciennes réponses
+					if(is_array($v) && !empty($v)) {
+						foreach($v as &$onsenfout) Answer::deleteAllAnswersUser($user->id, $fk_question);
+					}
+					
+					// Ajout nouvelles réponses
+					if(is_array($v) && !empty($v)) {
+						foreach($v as &$answer_user) {
+							
+							$answer = new Answer($db);
+							$answer->fk_user = $user->id;
+							$answer->fk_question = $fk_question;
+							
+							if(strpos($answer_user, '_') !== false) {
+								$TDetailRep = explode('_', $answer_user);
+								$answer->fk_choix = $TDetailRep[0];
+								$answer->fk_choix_col = $TDetailRep[1];
+							} else $answer->fk_choix = $answer_user;
+							
+							$answer->save();
+							
+						}
+					} elseif(!is_array($v)) {
+						
+					}
+					
+				}
+			}
+			
+			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=answer');
+			exit;
+			break;
 		case 'confirm_clone':
 			$object->cloneObject();
 			
@@ -95,7 +134,7 @@ if (empty($reshook))
  * View
  */
 
-$title=$langs->trans("questionnaire");
+$title=$langs->trans("Module104961Name");
 llxHeader('',$title);
 
 if ($action == 'create' && $mode == 'edit')
@@ -136,7 +175,6 @@ print $TBS->render('tpl/card.tpl.php'
 			,'urllist' => dol_buildpath('/questionnaire/list.php', 1)
 			,'showRef' => ($action == 'create') ? $langs->trans('Draft') : $form->showrefnav($object, 'ref', $linkback, 1, 'ref', 'ref', '')
 			,'showTitle' => $formcore->texte('', 'title', $object->title, 80, 255)
-//			,'showNote' => $formcore->zonetexte('', 'note', $object->note, 80, 8)
 			,'showStatus' => $object->getLibStatut(1)
 		)
 		,'langs' => $langs
@@ -176,6 +214,17 @@ if(empty($action) || $action === 'view') {
 	}
 	print '</div>';
 	
+} elseif($action === 'answer') {
+	print '<form name="answerQuestionnaire" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.$id.'">';
+	print '<input type="HIDDEN" name="action" value="save_answer"/>';
+	if(empty($object->questions)) $object->loadQuestions();
+	print '<div id="allQuestions">';
+	if(!empty($object->questions)) {
+		foreach($object->questions as &$q) print draw_question_for_user($q).'<br />';
+	}
+	print '</div>';
+	print '<div class="center"><input class="butAction" name="subSave" type="SUBMIT" value="Enregistrer"/><input class="butAction" name="subSave" type="SUBMIT" value="Valider"/></div>';
+	print '</form>';
 }
 
 if(empty($action) || $action === 'view') {
