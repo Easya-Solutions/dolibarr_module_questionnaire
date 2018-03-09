@@ -61,7 +61,7 @@ if (empty($reshook))
 			
 			break;
 		case 'save_answer':
-			//var_dump($_REQUEST);exit;
+			var_dump($_REQUEST);exit;
 			$TAnswer = GETPOST('TAnswer');
 			if(!empty($TAnswer)) {
 				foreach($TAnswer as $fk_question=>&$v) {
@@ -205,8 +205,8 @@ if(empty($action) || $action === 'view') {
 	
 	if($action !== 'create') {
 		$q = new Question($db);
-		print $form->selectarray('select_choice', $q->TTypes);
-		print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button>';
+		print '<br /><div class="center">'.$form->selectarray('select_choice', $q->TTypes);
+		print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button></div>';
 	}
 } elseif($action === 'apercu') {
 	if(empty($object->questions)) $object->loadQuestions();
@@ -225,6 +225,7 @@ if(empty($action) || $action === 'view') {
 		foreach($object->questions as &$q) {
 			if(empty($q->answers)) $q->loadAnswers($user->id);
 			print draw_question_for_user($q).'<br />';
+			print '<br /><b><hr style="height:1px;border:none;color:#333;background-color:#333;" /></b><br />';
 		}
 	}
 	print '</div>';
@@ -236,9 +237,9 @@ if(empty($action) || $action === 'view') {
 
 	?>
 	
-	<script>
+	<script type="text/javascript">
 	
-		$(document).ready(function(){
+		$(document).ready(function() {
 	
 			$("#butAddQuestion").click(function() {
 				
@@ -256,6 +257,7 @@ if(empty($action) || $action === 'view') {
 				}).done(function(res) {
 	
 					$('#allQuestions').append(res);
+					setQuestionDivCSS();
 	
 				});
 			});
@@ -308,6 +310,7 @@ if(empty($action) || $action === 'view') {
 				}).done(function(res) {
 	
 					$div.remove();
+					setQuestionDivCSS();
 	
 				});
 				
@@ -352,13 +355,39 @@ if(empty($action) || $action === 'view') {
 				});
 				
 			});
+
+			setQuestionDivCSS();
 			
 		});
-	
+		
 	</script>
 	
 	<?php
 
 }
+
+?>
+
+<script type="text/javascript">
+
+	function setQuestionDivCSS() {
+
+		$(document).find('div[type=question]').each(function(i, item) {
+			
+			// Suppression anciennes classes
+			$(item).removeClass('pair');
+			$(item).removeClass('impair');
+
+			// Ajout nouvelles classes
+			if(i % 2 == 0) $(item).addClass('pair');
+			else $(item).addClass('impair');
+			
+		});
+		
+	}
+
+</script>
+
+<?php
 	
 llxFooter();
