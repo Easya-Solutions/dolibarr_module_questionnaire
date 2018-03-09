@@ -105,7 +105,7 @@ class Question extends SeedObject {
 		
 		$sql = 'SELECT rowid
 				FROM '.MAIN_DB_PREFIX.$answer->table_element.'
-				WHERE fk_question = '.$this->rowid;
+				WHERE fk_question = '.$this->id;
 		if(!empty($fk_user)) $sql.= ' AND fk_user = '.$fk_user;
 		
 		$resql = $db->query($sql);

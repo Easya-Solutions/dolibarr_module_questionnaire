@@ -236,13 +236,13 @@ function draw_question_for_user(&$q) {
 
 function draw_string_for_user(&$q) {
 	
-	return '<input type="text" name="TAnswer['.$q->id.']" />';
+	return '<input type="text" name="TAnswer['.$q->id.']" value="'.$q->answers[0]->value.'" />';
 	
 }
 
 function draw_textarea_for_user(&$q) {
 	
-	return '<textarea rows="7" cols="50" type="text" name="TAnswer['.$q->id.']" id="rep_q'.$q->id.'"></textarea>';
+	return '<textarea rows="7" cols="50" type="text" name="TAnswer['.$q->id.']" id="rep_q'.$q->id.'">'.$q->answers[0]->value.'</textarea>';
 	
 }
 
@@ -254,14 +254,23 @@ function draw_select_for_user(&$q) {
 	foreach($q->choices as &$choix) {
 		$tab[$choix->id] = $choix->label;
 	}
-	return $form->selectarray('TAnswer['.$q->id.'][]', $tab);
+	return $form->selectarray('TAnswer['.$q->id.'][]', $tab, $q->answers[0]->fk_choix);
 	
 }
 
 function draw_listradio_for_user(&$q) {
 	
 	$res = '<br />';
-	foreach($q->choices as &$choix) $res.= '<input type="radio" name="TAnswer['.$q->id.'][]" value="'.$choix->id.'">&nbsp;'.$choix->label.'<br />';
+	//var_dump($q->choices);exit;
+	foreach($q->choices as &$choix) {
+		$res.= '<input type="radio" ';
+		if(!empty($q->answers)) {
+			if($choix->id == $q->answers[0]->fk_choix) {
+				$res.= 'checked';
+			}
+		}
+		$res.= ' name="TAnswer['.$q->id.'][]" value="'.$choix->id.'">&nbsp;'.$choix->label.'<br />';
+	}
 	
 	return $res;
 	
@@ -270,7 +279,18 @@ function draw_listradio_for_user(&$q) {
 function draw_listcheckbox_for_user(&$q) {
 	
 	$res = '<br />';
-	foreach($q->choices as &$choix) $res.= '<input type="checkbox" name="TAnswer['.$q->id.'][]" value="'.$choix->id.'" />&nbsp;'.$choix->label.'<br />';
+	foreach($q->choices as &$choix) {
+		$res.= '<input type="checkbox" ';
+		if(!empty($q->answers)) {
+			foreach($q->answers as &$answer) {
+				if($choix->id == $answer->fk_choix) {
+					$res.= 'checked';
+					break;
+				}
+			}
+		}
+		$res.= ' name="TAnswer['.$q->id.'][]" value="'.$choix->id.'" />&nbsp;'.$choix->label.'<br />';
+	}
 	
 	return $res;
 	
@@ -291,7 +311,18 @@ function draw_grilleradio_for_user(&$q) {
 		else continue;
 		
 		foreach($q->choices as &$choix_col) {
-			if($choix_col->type === 'column')  $res.= '<td><input type="radio" name="TAnswer['.$q->id.']['.$choix_line->id.']" value="'.$choix_line->id.'_'.$choix_col->id.'"/></td>';
+			if($choix_col->type === 'column')  {
+				$res.= '<td><input type="radio" ';
+				if(!empty($q->answers)) {
+					foreach($q->answers as &$answer) {
+						if($answer->fk_choix == $choix_line->id && $answer->fk_choix_col == $choix_col->id) {
+							$res.= 'checked';
+							break;
+						}
+					}
+				}
+				$res.= ' name="TAnswer['.$q->id.']['.$choix_line->id.']" value="'.$choix_line->id.'_'.$choix_col->id.'"/></td>';
+			}
 			else continue;
 		}
 		
@@ -320,7 +351,18 @@ function draw_grillecheckbox_for_user(&$q) {
 		else continue;
 		
 		foreach($q->choices as &$choix_col) {
-			if($choix_col->type === 'column')  $res.= '<td><input type="checkbox" name="TAnswer['.$q->id.']['.$choix_line->id.'_'.$choix_col->id.']" value="'.$choix_line->id.'_'.$choix_col->id.'"/></td>';
+			if($choix_col->type === 'column') {
+				$res.= '<td><input type="checkbox" ';
+				if(!empty($q->answers)) {
+					foreach($q->answers as &$answer) {
+						if($answer->fk_choix == $choix_line->id && $answer->fk_choix_col == $choix_col->id) {
+							$res.= 'checked';
+							break;
+						}
+					}
+				}
+				$res.= ' name="TAnswer['.$q->id.']['.$choix_line->id.'_'.$choix_col->id.']" value="'.$choix_line->id.'_'.$choix_col->id.'"/></td>';
+			}
 			else continue;
 		}
 		

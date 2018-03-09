@@ -223,7 +223,7 @@ if(empty($action) || $action === 'view') {
 	print '<div id="allQuestions">';
 	if(!empty($object->questions)) {
 		foreach($object->questions as &$q) {
-			if(empty($q->answers)) $q->loadAnswers();
+			if(empty($q->answers)) $q->loadAnswers($user->id);
 			print draw_question_for_user($q).'<br />';
 		}
 	}
