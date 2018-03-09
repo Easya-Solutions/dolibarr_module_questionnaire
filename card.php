@@ -61,15 +61,13 @@ if (empty($reshook))
 			
 			break;
 		case 'save_answer':
-			var_dump($_REQUEST);exit;
+			//var_dump($_REQUEST);exit;
 			$TAnswer = GETPOST('TAnswer');
 			if(!empty($TAnswer)) {
 				foreach($TAnswer as $fk_question=>&$v) {
 					
 					// Suppression anciennes réponses
-					if(is_array($v) && !empty($v)) {
-						foreach($v as &$onsenfout) Answer::deleteAllAnswersUser($user->id, $fk_question);
-					}
+					Answer::deleteAllAnswersUser($user->id, $fk_question);
 					
 					// Ajout nouvelles réponses
 					if(is_array($v) && !empty($v)) {
@@ -89,7 +87,11 @@ if (empty($reshook))
 							
 						}
 					} elseif(!is_array($v)) {
-						
+						$answer = new Answer($db);
+						$answer->fk_user = $user->id;
+						$answer->fk_question = $fk_question;
+						$answer->value = $v;
+						$answer->save();
 					}
 					
 				}
@@ -220,7 +222,10 @@ if(empty($action) || $action === 'view') {
 	if(empty($object->questions)) $object->loadQuestions();
 	print '<div id="allQuestions">';
 	if(!empty($object->questions)) {
-		foreach($object->questions as &$q) print draw_question_for_user($q).'<br />';
+		foreach($object->questions as &$q) {
+			if(empty($q->answers)) $q->loadAnswers();
+			print draw_question_for_user($q).'<br />';
+		}
 	}
 	print '</div>';
 	print '<div class="center"><input class="butAction" name="subSave" type="SUBMIT" value="Enregistrer"/><input class="butAction" name="subSave" type="SUBMIT" value="Valider"/></div>';

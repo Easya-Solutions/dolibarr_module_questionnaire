@@ -236,6 +236,12 @@ class Questionnaire extends SeedObject
 		
 	}
 	
+	function loadAnswers() {
+		
+		
+		
+	}
+	
 }
 
 

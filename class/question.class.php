@@ -95,6 +95,34 @@ class Question extends SeedObject {
 		
 	}
 	
+	function loadAnswers($fk_user=null) {
+		
+		global $db;
+		
+		dol_include_once('/questionnaire/class/answer.class.php');
+		
+		$answer = new Answer($db);
+		
+		$sql = 'SELECT rowid
+				FROM '.MAIN_DB_PREFIX.$answer->table_element.'
+				WHERE fk_question = '.$this->rowid;
+		if(!empty($fk_user)) $sql.= ' AND fk_user = '.$fk_user;
+		
+		$resql = $db->query($sql);
+		if(!empty($resql) && $db->num_rows($resql) > 0) {
+			$this->answers = array();
+			
+			while($res = $db->fetch_object($resql)) {
+				$answer = new Answer($db);
+				$answer->load($res->rowid);
+				$this->answers[] = $answer;
+			}
+		} else return 0;
+		
+		return 1;
+		
+	}
+	
 	public function delete()
 	{
 		global $user;
