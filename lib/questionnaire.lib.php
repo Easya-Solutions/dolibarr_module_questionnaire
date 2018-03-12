@@ -380,7 +380,7 @@ function draw_date_for_user(&$q) {
 	
 	global $form;
 	
-	return '<br />'.$form->select_date('', 'TAnswer_'.$q->id.'_', 0, 0, 0, "", 1, 0, 1);
+	return '<br />'.$form->select_date($q->answers[0]->value, 'date_q'.$q->id, 0, 0, 0, "", 1, 0, 1);
 	
 }
 
@@ -388,12 +388,12 @@ function draw_hour_for_user(&$q) {
 	
 	global $form;
 	
-	return $form->select_duration('TAnswer_'.$q->id.'_', '', 0, 'select', 0, 1);
+	return $form->select_duration('time_q'.$q->id, $q->answers[0]->value, 0, 'text', 0, 1);
 	
 }
 
 function draw_linearscale_for_user(&$q) {
-	return '<br />'.radio_js_bloc_number('linearscal_q'.$q->id,0,5,$pDefault,null,1,$plusJs=null,null,array(),false);
+	return '<br />'.radio_js_bloc_number('linearscal_q'.$q->id,0,5,$q->answers[0]->value,null,1,$plusJs=null,null,array(),false);
 }
 
 function setField($type_object, $fk_object, $field, $value) {

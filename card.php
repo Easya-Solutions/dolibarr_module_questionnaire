@@ -61,40 +61,62 @@ if (empty($reshook))
 			
 			break;
 		case 'save_answer':
-			var_dump($_REQUEST);exit;
+			//var_dump($_REQUEST);exit;
 			$TAnswer = GETPOST('TAnswer');
-			if(!empty($TAnswer)) {
-				foreach($TAnswer as $fk_question=>&$v) {
+			foreach($_REQUEST as $k=>&$v) {
+				
+				if($k === 'TAnswer') {
 					
-					// Suppression anciennes réponses
-					Answer::deleteAllAnswersUser($user->id, $fk_question);
+					foreach($v as $fk_question=>&$content) {
 					
-					// Ajout nouvelles réponses
-					if(is_array($v) && !empty($v)) {
-						foreach($v as &$answer_user) {
-							
+						// Suppression anciennes réponses
+						Answer::deleteAllAnswersUser($user->id, $fk_question);
+						
+						// Ajout nouvelles réponses
+						if(is_array($content) && !empty($content)) {
+							foreach($content as &$answer_user) {
+								
+								$answer = new Answer($db);
+								$answer->fk_user = $user->id;
+								$answer->fk_question = $fk_question;
+								if(strpos($answer_user, '_') !== false) {
+									$TDetailRep = explode('_', $answer_user);
+									$answer->fk_choix = $TDetailRep[0];
+									$answer->fk_choix_col = $TDetailRep[1];
+								} else $answer->fk_choix = $answer_user;
+								$answer->save();
+								
+							}
+						} elseif(!is_array($content)) {
 							$answer = new Answer($db);
 							$answer->fk_user = $user->id;
 							$answer->fk_question = $fk_question;
-							
-							if(strpos($answer_user, '_') !== false) {
-								$TDetailRep = explode('_', $answer_user);
-								$answer->fk_choix = $TDetailRep[0];
-								$answer->fk_choix_col = $TDetailRep[1];
-							} else $answer->fk_choix = $answer_user;
-							
+							$answer->value = $content;
 							$answer->save();
-							
 						}
-					} elseif(!is_array($v)) {
-						$answer = new Answer($db);
-						$answer->fk_user = $user->id;
-						$answer->fk_question = $fk_question;
-						$answer->value = $v;
-						$answer->save();
+						
 					}
 					
+				} elseif(strpos($k, 'linearscal_q') !== false || strpos($k, 'date_q') !== false || strpos($k, 'time_q') !== false) { // Ajout réponses non gérées dans le TAnswer (car pas possible ou galère en js)
+					
+					// Pour ne pas faire 4 fois l'enregistrement pour les dates
+					if((strpos($k, 'date_q') !== false && (strpos($k, 'day') !== false || strpos($k, 'month') !== false || strpos($k, 'year') !== false))
+						|| (strpos($k, 'time_q') !== false && strpos($k, 'min') !== false)) continue;
+					
+					// Suppression anciennes réponses
+					$fk_question = strtr($k, array('linearscal_q'=>'', 'date_q'=>'', 'time_q'=>'', 'hour'=>'', 'min'=>''));
+					Answer::deleteAllAnswersUser($user->id, $fk_question);
+					
+					$answer = new Answer($db);
+					$answer->fk_user = $user->id;
+					$answer->value = $v;
+					if(strpos($k, 'date_q') !== false) $answer->value = strtotime(GETPOST('date_q'.$fk_question.'year').'-'.GETPOST('date_q'.$fk_question.'month').'-'.GETPOST('date_q'.$fk_question.'day'));
+					if(strpos($k, 'time_q') !== false) $answer->value = ((int)GETPOST('time_q'.$fk_question.'hour') * 60 * 60) + ((int)GETPOST('time_q'.$fk_question.'min') * 60);
+					$answer->fk_question = $fk_question;
+					$answer->save();
+					
 				}
+				
 			}
 			
 			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=answer');
