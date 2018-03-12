@@ -135,7 +135,7 @@ function draw_question(&$q) {
 			// Liste des choix (lignes)
 			$style_div_lines = ' width: 300px; ';
 			if($question_est_une_grille) $style_div_lines.= ' float: left; ';
-			$res.= '<div class="refid" style="'.$style_div_lines.'" id="allChoicesLeft_q'.$q->id.' name="allChoicesLeft_q'.$q->id.'">';
+			$res.= '<div class="refid" style="'.$style_div_lines.'" id="allChoicesLeft_q'.$q->id.'" name="allChoicesLeft_q'.$q->id.'">';
 			$res.= 'Lignes<br /><br />';
 			$q->loadChoices();
 			if(!empty($q->choices)) {
@@ -158,6 +158,17 @@ function draw_question(&$q) {
 				$res.= '<button class="butAction" id="butAddChoiceColumn_q'.$q->id.'" name="butAddChoiceColumn_q'.$q->id.'">Ajouter un colonne</button>';
 				$res.= '</div>';
 			}
+			
+	} elseif($q->type === 'linearscale') {
+		
+		$res.= '<div style="'.$style_div_lines.'" id="allChoicesLeft_q'.$q->id.'" name="allChoicesLeft_q'.$q->id.'">';
+		
+		if(empty($q->choices)) $q->loadChoices();
+		$res.= draw_choice($q->choices[0], 'linearscale', 'De');
+		$res.= draw_choice($q->choices[1], 'linearscale', 'à');
+		$res.= draw_choice($q->choices[2], 'linearscale', 'Pas');
+		$res.= '</div>';
+		
 	}
 	
 	$res.= '<div style="clear: both;"></div><br /><br /></div>';
@@ -168,7 +179,14 @@ function draw_question(&$q) {
 	
 }
 
-function draw_choice(&$choice) {
+function draw_choice(&$choice, $type='', $title='') {
+	
+	if(empty($type)) return draw_standard_choice($choice);
+	elseif($type === 'linearscale') return draw_linearscale_choice($choice, $title);
+	
+}
+
+function draw_standard_choice(&$choice) {
 	
 	$res.= '<div class="element" type="choice" id="choice'.$choice->id.'">';
 	$res.= '<input placeholder="Libellé choix" type="text" name="label" class="field" value="'.$choice->label.'" />&nbsp;';
@@ -176,6 +194,16 @@ function draw_choice(&$choice) {
 	$res.= '<br /><br /></div>';
 	
 	return $res;
+	
+}
+
+function draw_linearscale_choice(&$choice, $title) {
+	
+	$res.= '<div style="float:left;" class="element" type="choice" id="choice'.$choice->id.'">';
+	$res.= $title.'&nbsp;&nbsp;<input type="number" style="width:50px;" name="label" class="field" value="'.$choice->label.'" />&nbsp;&nbsp;</div>';
+	
+	return $res;
+	
 }
 
 function draw_question_for_user(&$q) {
@@ -393,7 +421,8 @@ function draw_hour_for_user(&$q) {
 }
 
 function draw_linearscale_for_user(&$q) {
-	return '<br />'.radio_js_bloc_number('linearscal_q'.$q->id,0,5,$q->answers[0]->value,null,1,$plusJs=null,null,array(),false);
+	if(empty($q->choices)) $q->loadChoices();
+	return '<br />'.radio_js_bloc_number('linearscal_q'.$q->id,$q->choices[0]->label,$q->choices[1]->label,$q->answers[0]->value,null,1,$plusJs=null,null,array(),false);
 }
 
 function setField($type_object, $fk_object, $field, $value) {

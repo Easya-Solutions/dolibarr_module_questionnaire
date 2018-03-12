@@ -43,25 +43,23 @@ function _put($case) {
 	switch($case) {
 		
 		case 'add-question':
-			$q = new Question($db);
-			$q->fk_questionnaire = $fk_questionnaire;
-			$q->type = $type_question;
-			$q->save();
+			$q = add_question($fk_questionnaire, $type_question);
+			if($type_question === 'linearscale') {
+				$q->choices = array();
+				$q->choices[] = add_choice($q->id, 'from');
+				$q->choices[] = add_choice($q->id, 'to');
+				$q->choices[] = add_choice($q->id, 'step'); //Pas entre les chiffres, pour l'instant on oublie, marche pas bien avec la fonction radio_js_bloc_number()
+			}
 			_get('new_question', $q);
 			break;
 		
 		case 'add-choice':
-			$choice = new Choice($db);
-			$choice->fk_question = $fk_question;
-			$choice->type = $type_choice;
-			$choice->save();
+			$choice = add_choice($fk_question, $type_choice);
 			_get('new_choice', $choice);
 			break;
 		
 		case 'del-object':
-			$obj = new $type_object($db);
-			$obj->load($fk_object);
-			$res = $obj->delete();
+			$res = del_object($type_object, $fk_object);
 			print json_encode($res);
 			break;
 			
@@ -71,5 +69,42 @@ function _put($case) {
 			break;
 			
 	}
+	
+}
+
+function add_question($fk_questionnaire, $type_question) {
+	
+	global $db;
+	
+	$q = new Question($db);
+	$q->fk_questionnaire = $fk_questionnaire;
+	$q->type = $type_question;
+	$q->save();
+	
+	return $q;
+	
+}
+
+function add_choice($fk_question, $type_choice, $label='') {
+	
+	global $db;
+	
+	$choice = new Choice($db);
+	$choice->fk_question = $fk_question;
+	$choice->type = $type_choice;
+	if(!empty($label)) $choice->label = $label;
+	$choice->save();
+	
+	return $choice;
+	
+}
+
+function del_object($type_object, $fk_object) {
+	
+	global $db;
+	
+	$obj = new $type_object($db);
+	$obj->load($fk_object);
+	return  $obj->delete();
 	
 }
