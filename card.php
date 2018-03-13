@@ -161,6 +161,49 @@ if (empty($reshook))
 $title=$langs->trans("Module104961Name");
 llxHeader('',$title);
 
+?>
+
+<style>
+.slidecontainer {
+    width: 50%;
+}
+
+.slider-color {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 10px;
+  border-radius: 20px;
+  background: #d3d3d3;
+  outline: none;
+  opacity:0.7;
+  -webkit-transition: opacity .15s ease-in-out;
+  transition: opacity .15s ease-in-out;
+}
+.slider-color:hover {
+  opacity:1;
+}
+.slider-color::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #000000;
+  cursor: pointer;
+}
+.slider-color::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border: 0;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+</style>
+
+<?php
+
 if ($action == 'create' && $mode == 'edit')
 {
 	load_fiche_titre($langs->trans("Newquestionnaire"));
@@ -407,6 +450,16 @@ if(empty($action) || $action === 'view') {
 		});
 		
 	}
+
+	$(document).ready(function () {
+		
+		// Echelles linéaires
+		$(document).on('change', 'input[type=range]', function() {
+			var qid = $(this).attr('name').replace('linearscal_q', '');
+			$('span[id="val_linearscal_q'+qid+'"]').html($(this).val());
+		});
+		
+	});
 
 </script>
 
