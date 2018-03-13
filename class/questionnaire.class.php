@@ -46,7 +46,7 @@ class Questionnaire extends SeedObject
 				,'title'=>array('type'=>'string')
 				,'description'=>array('type'=>'string')
 				,'entity'=>array('type'=>'integer','index'=>true)
-				,'fk_status'=>array('type'=>'integer','index'=>true) // date, integer, string, float, array, text
+				,'fk_statut'=>array('type'=>'integer','index'=>true) // date, integer, string, float, array, text
 				,'import_key'=>array('type'=>'integer','index'=>true)
 				,'type_object_linked'=>array('type'=>'string')
 				,'fk_object_linked'=>array('type'=>'integer','index'=>true)
@@ -55,7 +55,7 @@ class Questionnaire extends SeedObject
 		
 		$this->init();
 		
-		$this->status = self::STATUS_DRAFT;
+		$this->fk_statut = self::STATUS_DRAFT;
 		$this->entity = $conf->entity;
 	}
 
@@ -71,7 +71,7 @@ class Questionnaire extends SeedObject
 		{
 			$this->ref = '(PROV'.$this->id.')';
 			
-			if (!empty($this->is_clone)) $this->status = self::STATUS_DRAFT;
+			if (!empty($this->is_clone)) $this->fk_statut = self::STATUS_DRAFT;
 			
 			$wc = $this->withChild;
 			$this->withChild = false;
@@ -112,9 +112,9 @@ class Questionnaire extends SeedObject
 	
 	public function setDraft()
 	{
-		if ($this->status == self::STATUS_VALIDATED)
+		if ($this->fk_statut == self::STATUS_VALIDATED)
 		{
-			$this->status = self::STATUS_DRAFT;
+			$this->fk_statut = self::STATUS_DRAFT;
 			$this->withChild = false;
 			
 			return self::save();
@@ -128,7 +128,7 @@ class Questionnaire extends SeedObject
 //		global $user;
 		
 		$this->ref = $this->getNumero();
-		$this->status = self::STATUS_VALIDATED;
+		$this->fk_statut = self::STATUS_VALIDATED;
 		
 		return self::save();
 	}
@@ -149,8 +149,8 @@ class Questionnaire extends SeedObject
 		
 		require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 		
-		$mask = !empty($conf->global->MYMODULE_REF_MASK) ? $conf->global->MYMODULE_REF_MASK : 'Q{yy}{mm}-{0000}';
-		$numero = get_next_value($db, $mask, 'questionnaire', 'ref');
+		$mask = !empty($conf->global->QUESTIONNAIRE_REF_MASK) ? $conf->global->QUESTIONNAIRE_REF_MASK : 'QU{yy}{mm}-{0000}';
+		$numero = get_next_value($db, $mask, 'quest_questionnaire', 'ref');
 		
 		return $numero;
 	}
@@ -190,7 +190,7 @@ class Questionnaire extends SeedObject
 	
 	public function getLibStatut($mode=0)
     {
-        return self::LibStatut($this->status, $mode);
+        return self::LibStatut($this->fk_statut, $mode);
     }
 	
 	public static function LibStatut($status, $mode)
@@ -248,7 +248,7 @@ class Questionnaire extends SeedObject
 		$this->entity = '';
 		$this->title = '';
 		$this->element_type = '';
-		$this->status = '';
+		$this->fk_statut = '';
 		$this->import_key = '';
 		$this->fk_user_author = '';
 		$this->datec = '';
@@ -264,7 +264,7 @@ class Questionnaire extends SeedObject
 	 * @param societe $objsoc Object
 	 * @return string Reference libre pour la lead
 	 */
-	function getNextNumRef($fk_user = '', $element_type = '') {
+	function getNextNumRef() {
 		global $conf, $langs;
 		$langs->load("questionnaire@questionnaire");
 		
@@ -293,7 +293,7 @@ class Questionnaire extends SeedObject
 								$obj = new $classname();
 								
 								$numref = "";
-								$numref = $obj->getNextValue($fk_user, $element_type, $this);
+								$numref = $obj->getNextValue();
 								
 								if ($numref != "") {
 									return $numref;

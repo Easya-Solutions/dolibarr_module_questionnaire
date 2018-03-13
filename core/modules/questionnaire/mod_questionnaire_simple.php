@@ -30,7 +30,7 @@ class mod_questionnaire_simple extends ModeleNumRefQuestionnaire
 {
 
 	var $version = 'dolibarr'; // 'development', 'experimental', 'dolibarr'
-	var $prefix = 'QU-';
+	var $prefix = 'QU';
 
 	var $error = '';
 
@@ -102,20 +102,13 @@ class mod_questionnaire_simple extends ModeleNumRefQuestionnaire
 	 * @param Reference letters $referenceletters
 	 * @return string Valeur
 	 */
-	function getNextValue($fk_user, $element_type, $questionnaire_element)
+	function getNextValue()
 	{
 		global $db, $conf;
 		
-		if (!empty($element_type)) {
-			$this->prefix .= mb_strtoupper(substr($element_type,0,3)).'-';
-			$posindice = 12 + count(mb_strtoupper(substr($element_type,0,3)))+1;
-		} else {
-			$posindice = 12;
-		}
-		
 		// D'abord on recupere la valeur max
 		
-		$sql = "SELECT MAX(SUBSTRING(ref FROM " . $posindice . ")) as max";
+		$sql = "SELECT MAX(SUBSTRING(ref FROM 8)) as max";
 		$sql.= " FROM " . MAIN_DB_PREFIX . "quest_questionnaire";
 		$sql.= " WHERE ref like '" . $this->prefix . "____-%'";
 		$sql.= " AND entity = ".$conf->entity;
@@ -124,16 +117,14 @@ class mod_questionnaire_simple extends ModeleNumRefQuestionnaire
 		$resql = $db->query($sql);
 		if ($resql) {
 			$obj = $db->fetch_object($resql);
-			if ($obj)
-				$max = intval($obj->max);
-			else
-				$max = 0;
+			if ($obj) $max = intval($obj->max);
+			else $max = 0;
 		} else {
 			dol_syslog("mod_questionnaire_simple::getNextValue sql=" . $sql);
 			return - 1;
 		}
 		
-		$date = empty($questionnaire_element->datec) ? dol_now() : $questionnaire_element->datec;
+		$date = dol_now();
 		
 		// $yymm = strftime("%y%m",time());
 		$yymm = strftime("%y%m", $date);

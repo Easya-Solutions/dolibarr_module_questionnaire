@@ -163,7 +163,7 @@ if (empty($reshook))
 			break;
 			
 		case 'confirm_validate':
-			if (!empty($user->rights->questionnaire->write)) $object->setValid();
+			$object->setValid();
 			
 			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
 			exit;

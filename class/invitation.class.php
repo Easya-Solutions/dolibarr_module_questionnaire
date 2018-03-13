@@ -26,7 +26,7 @@ class Invitation extends SeedObject {
 				'token'=>array('type'=>'string')
 				,'date_limite_reponse'=>array('type'=>'date')
 				,'fk_user'=>array('type'=>'integer','index'=>true)
-				,'fk_status'=>array('type'=>'integer','index'=>true) // Indique si l'utilisateur a enregistré ses données pour terminer plus tard, ou s'il a terminé et validé son questionnaire
+				,'fk_statut'=>array('type'=>'integer','index'=>true) // Indique si l'utilisateur a enregistré ses données pour terminer plus tard, ou s'il a terminé et validé son questionnaire
 		);
 		
 		$this->init();

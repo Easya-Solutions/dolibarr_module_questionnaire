@@ -13,7 +13,7 @@ TopMenuquestionnaire=questionnaire
 
 # STATUS
 questionnaireStatusDraft=Brouillon (à valider)
-questionnaireStatusValidated=Validée (à accepter)
+questionnaireStatusValidated=Validé
 questionnaireStatusRefused=Refusée (fermée)
 questionnaireStatusAccepted=Acceptée (fermée)
 

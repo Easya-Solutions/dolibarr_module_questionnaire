@@ -3,13 +3,13 @@
 require 'config.php';
 dol_include_once('/questionnaire/class/questionnaire.class.php');
 
-if(empty($user->rights->questionnaire->read)) accessforbidden();
+//if(empty($user->rights->questionnaire->read)) accessforbidden();
 
 $langs->load('abricot@abricot');
 $langs->load('questionnaire@questionnaire');
 
 $PDOdb = new TPDOdb;
-$object = new Tquestionnaire;
+$object = new Questionnaire($db);
 
 $hookmanager->initHooks(array('questionnairelist'));
 
@@ -37,61 +37,62 @@ llxHeader('',$langs->trans('questionnaireList'),'','');
 //if (empty($user->rights->questionnaire->all->read)) $type = 'mine';
 
 // TODO ajouter les champs de son objet que l'on souhaite afficher
-$sql = 'SELECT t.rowid, t.ref, t.label, t.date_cre, t.date_maj, \'\' AS action';
-
-$sql.= ' FROM '.MAIN_DB_PREFIX.'questionnaire t ';
-
+//$sql = 'SELECT t.rowid, t.ref, t.title, t.date_creation, t.tms, \'\' AS action';
+$sql = 'SELECT t.rowid, t.fk_statut, \'\' AS action';
+$sql.= ' FROM '.MAIN_DB_PREFIX.'quest_questionnaire t ';
 $sql.= ' WHERE 1=1';
-//$sql.= ' AND t.entity IN ('.getEntity('questionnaire', 1).')';
-//if ($type == 'mine') $sql.= ' AND t.fk_user = '.$user->id;
+$sql.= ' AND t.entity IN ('.getEntity('questionnaire', 1).')';
 
+$resql = $db->query($sql);
+$TData=array();
+if(!empty($resql) && $db->num_rows($resql) > 0) {
+	while($res = $db->fetch_object($resql)) {
+		$TData[] = $res;
+	}
+}
 
 $formcore = new TFormCore($_SERVER['PHP_SELF'], 'form_list_questionnaire', 'GET');
 
 $nbLine = !empty($user->conf->MAIN_SIZE_LISTE_LIMIT) ? $user->conf->MAIN_SIZE_LISTE_LIMIT : $conf->global->MAIN_SIZE_LISTE_LIMIT;
 
 $r = new Listview($db, 'questionnaire');
-echo $r->render($sql, array(
-	'view_type' => 'list' // default = [list], [raw], [chart]
-	,'limit'=>array(
-		'nbLine' => $nbLine
-	)
-	,'subQuery' => array()
-	,'link' => array()
-	,'type' => array(
-		'date_cre' => 'date' // [datetime], [hour], [money], [number], [integer]
-		,'date_maj' => 'date'
-	)
-	,'search' => array(
-		'date_cre' => array('recherche' => 'calendars', 'allow_is_null' => true)
-		,'date_maj' => array('recherche' => 'calendars', 'allow_is_null' => false)
-		,'ref' => array('recherche' => true, 'table' => 't', 'field' => 'ref')
-		,'label' => array('recherche' => true, 'table' => array('t', 't'), 'field' => array('label', 'description')) // input text de recherche sur plusieurs champs
-		,'status' => array('recherche' => TQuestionnaire::$TStatus, 'to_translate' => true) // select html, la clé = le status de l'objet, 'to_translate' à true si nécessaire
-	)
-	,'translate' => array()
-	,'hide' => array(
-		'rowid'
-	)
-	,'liste' => array(
-		'titre' => $langs->trans('questionnaireList')
-		,'image' => img_picto('','title_generic.png', '', 0)
-		,'picto_precedent' => '<'
-		,'picto_suivant' => '>'
-		,'noheader' => 0
-		,'messageNothing' => $langs->trans('Noquestionnaire')
-		,'picto_search' => img_picto('','search.png', '', 0)
-	)
-	,'title'=>array(
-		'ref' => $langs->trans('Ref.')
-		,'label' => $langs->trans('Label')
-		,'date_cre' => $langs->trans('DateCre')
-		,'date_maj' => $langs->trans('DateMaj')
-	)
-	,'eval'=>array(
-//		'fk_user' => '_getUserNomUrl(@val@)' // Si on a un fk_user dans notre requête
-	)
+$r = new TListviewTBS('questionnaire_list', dol_buildpath('/questionnaire/tpl/questionnaire_list.tpl.php'));
+
+print $r->renderArray($db, $TData, array(
+		'limit'=>array(
+				'page'=>1
+				,'nbLine'=>'20'
+		)
+		,'translate'=>array(
+				
+		)
+		,'link'=>array(
+		)
+		//,'hide'=>$THide
+		,'type'=>array()
+		,'liste'=>array(
+				'titre'=>$langs->trans('TitleConformiteNormeList')
+				,'image'=>img_picto('','title.png', '', 0)
+				,'picto_precedent'=>img_picto('','previous.png', '', 0)
+				,'picto_suivant'=>img_picto('','next.png', '', 0)
+				,'order_down'=>img_picto('','1downarrow.png', '', 0)
+				,'order_up'=>img_picto('','1uparrow.png', '', 0)
+				,'noheader'=>FALSE
+				,'messageNothing'=>$langs->transnoentities('noElement')
+				,'picto_search'=>img_picto('','search.png', '', 0)
+		)
+		,'title'=>array(
+				'rowid'=>$langs->trans('Ref')
+				,'title'=>$langs->trans('label')
+				,'fk_statut'=>$langs->trans('Status')
+		)
+		,'orderBy'=> array('cn.rowid' => 'DESC')
+		,'eval'=>array(
+				'rowid'=>'_getQuestionnaireNomUrl(@rowid@)'
+				,'fk_statut'=>'_getLibStatus(@rowid@, @fk_statut@)'
+		)
 ));
+
 
 $parameters=array('sql'=>$sql);
 $reshook=$hookmanager->executeHooks('printFieldListFooter', $parameters, $object);    // Note that $action and $object may have been modified by hook
@@ -101,18 +102,22 @@ $formcore->end_form();
 
 llxFooter('');
 
-/**
- * TODO remove if unused
- */
-function _getUserNomUrl($fk_user)
+function _getQuestionnaireNomUrl($fk_questionnaire)
 {
 	global $db;
 	
-	$u = new User($db);
-	if ($u->fetch($fk_user) > 0)
-	{
-		return $u->getNomUrl(1);
-	}
+	$q = new Questionnaire($db);
+	if ($q->fetch($fk_questionnaire) > 0) return $q->getNomUrl();
+	
+	return '';
+}
+
+function _getLibStatus($fk_questionnaire, $fk_statut)
+{
+	global $db;
+	
+	$q = new Questionnaire($db);
+	if ($q->fetch($fk_questionnaire) > 0) return $q->LibStatut($fk_statut, 1);
 	
 	return '';
 }
