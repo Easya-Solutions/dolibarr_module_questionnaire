@@ -90,7 +90,7 @@ class modquestionnaire extends DolibarrModules
 		//							'dir' => array('output' => 'othermodulename'),      // To force the default directories names
 		//							'workflow' => array('WORKFLOW_MODULE1_YOURACTIONTYPE_MODULE2'=>array('enabled'=>'! empty($conf->module1->enabled) && ! empty($conf->module2->enabled)', 'picto'=>'yourpicto@questionnaire')) // Set here all workflow context managed by module
 		//                        );
-		$this->module_parts = array();
+		$this->module_parts = array('models'=>1);
 
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/questionnaire/temp");
@@ -114,6 +114,24 @@ class modquestionnaire extends DolibarrModules
 		//                             1=>array('MYMODULE_MYNEWCONST2','chaine','myvalue','This is another constant to add',0, 'current', 1)
 		// );
 		$this->const = array();
+		$this->const[] = array (
+				'REF_LETTER_ADDON',
+				'chaine',
+				'mod_referenceletters_simple',
+				'Use simple mask for reference letters ref',
+				0,
+				'current',
+				1
+		);
+		$this->const[] = array (
+				'REF_LETTER_UNIVERSAL_MASK',
+				'chaine',
+				'',
+				'Mask of reference letters reference',
+				0,
+				'current',
+				1
+		);
 
 		// Array to add new pages in new tabs
 		// Example: $this->tabs = array('objecttype:+tabname1:Title1:questionnaire@questionnaire:$user->rights->questionnaire->read:/questionnaire/mynewtab1.php?id=__ID__',  	// To add a new tab identified by code tabname1

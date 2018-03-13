@@ -236,10 +236,81 @@ class Questionnaire extends SeedObject
 		
 	}
 	
-	function loadAnswers() {
+	/**
+	 * Initialise object with example values
+	 * Id must be 0 if object instance is a specimen
+	 *
+	 * @return void
+	 */
+	function initAsSpecimen() {
+		$this->id = 0;
 		
+		$this->entity = '';
+		$this->title = '';
+		$this->element_type = '';
+		$this->status = '';
+		$this->import_key = '';
+		$this->fk_user_author = '';
+		$this->datec = '';
+		$this->fk_user_mod = '';
+		$this->tms = '';
+	}
+	
+	/**
+	 * Returns the reference to the following non used model letters used depending on the active numbering module
+	 * defined into REF_LETTER_ADDON
+	 *
+	 * @param int $fk_user Id
+	 * @param societe $objsoc Object
+	 * @return string Reference libre pour la lead
+	 */
+	function getNextNumRef($fk_user = '', $element_type = '') {
+		global $conf, $langs;
+		$langs->load("questionnaire@questionnaire");
 		
+		$dirmodels = array_merge(array (
+				'/'
+		), ( array ) $conf->modules_parts['models']);
 		
+		if (! empty($conf->global->QUESTIONNAIRE_ADDON)) {
+			foreach ( $dirmodels as $reldir ) {
+				$dir = dol_buildpath($reldir . "core/modules/questionnaire/");
+				if (is_dir($dir)) {
+					$handle = opendir($dir);
+					if (is_resource($handle)) {
+						$var = true;
+						
+						while ( ($file = readdir($handle)) !== false ) {
+							if ($file == $conf->global->QUESTIONNAIRE_ADDON. '.php') {
+								$file = substr($file, 0, dol_strlen($file) - 4);
+								require_once $dir . $file . '.php';
+								
+								$module = new $file();
+								
+								// Chargement de la classe de numerotation
+								$classname = $conf->global->QUESTIONNAIRE_ADDON;
+								
+								$obj = new $classname();
+								
+								$numref = "";
+								$numref = $obj->getNextValue($fk_user, $element_type, $this);
+								
+								if ($numref != "") {
+									return $numref;
+								} else {
+									$this->error = $obj->error;
+									return "";
+								}
+							}
+						}
+					}
+				}
+			}
+		} else {
+			$langs->load("errors");
+			print $langs->trans("Error") . " " . $langs->trans("ErrorModuleSetupNotComplete");
+			return "";
+		}
 	}
 	
 }

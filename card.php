@@ -17,6 +17,8 @@ $action = GETPOST('action');
 $id = GETPOST('id', 'int');
 $ref = GETPOST('ref');
 
+$form = new Form($db);
+
 $mode = 'view';
 if (empty($user->rights->questionnaire->write)) $mode = 'view'; // Force 'view' mode if can't edit object
 else if ($action == 'create' || $action == 'edit') $mode = 'edit';
@@ -54,7 +56,7 @@ if (empty($reshook))
 				break;
 			}
 			
-			$object->save();
+			$object->save(true);
 			
 			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
 			exit;
@@ -132,6 +134,34 @@ if (empty($reshook))
 			if (!empty($user->rights->questionnaire->write)) $object->setDraft();
 				
 			break;
+		case 'validate' :
+			$error = 0;
+			
+			// We verifie whether the object is provisionally numbering
+			$ref = substr($object->ref, 1, 4);
+			if ($ref == 'PROV') {
+				$numref = $object->getNextNumRef();
+				
+				if (empty($numref)) {
+					$error ++;
+					setEventMessages($object->error, $object->errors, 'errors');
+				}
+			} else {
+				$numref = $object->ref;
+			}
+			
+			$text = $langs->trans('ConfirmValidateQuestionnaire', $numref);
+			/*if (! empty($conf->notification->enabled)) {
+				require_once DOL_DOCUMENT_ROOT . '/core/class/notify.class.php';
+				$notify = new Notify($db);
+				$text .= '<br>';
+				$text .= $notify->confirmMessage('QUESTIONNAIRE_VALIDATE', $object->socid, $object);
+			}*/
+			
+			if (! $error) $formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('ValidateQuestionnaire'), $text, 'confirm_validate', '', 0, 1, 200, 520);
+			
+			break;
+			
 		case 'confirm_validate':
 			if (!empty($user->rights->questionnaire->write)) $object->setValid();
 			
@@ -160,6 +190,8 @@ if (empty($reshook))
 
 $title=$langs->trans("Module104961Name");
 llxHeader('',$title);
+
+print $formconfirm;
 
 ?>
 
@@ -218,8 +250,6 @@ else
 
 $formcore = new TFormCore;
 $formcore->Set_typeaff($mode);
-
-$form = new Form($db);
 
 $formconfirm = getFormConfirmquestionnaire($PDOdb, $form, $object, $action);
 if (!empty($formconfirm)) echo $formconfirm;
