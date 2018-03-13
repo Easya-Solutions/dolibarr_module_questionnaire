@@ -454,7 +454,7 @@ if(empty($action) || $action === 'view') {
 	$(document).ready(function () {
 		
 		// Echelles linéaires
-		$(document).on('change', 'input[type=range]', function() {
+		$(document).on('input', 'input[type=range]', function() {
 			var qid = $(this).attr('name').replace('linearscal_q', '');
 			$('span[id="val_linearscal_q'+qid+'"]').html($(this).val());
 		});
