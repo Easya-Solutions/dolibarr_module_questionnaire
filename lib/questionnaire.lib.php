@@ -62,13 +62,23 @@ function questionnaireAdminPrepareHead()
  */
 function questionnaire_prepare_head(Questionnaire $object)
 {
-    global $db, $langs, $conf, $user;
-    $h = 0;
-    $head = array();
-    $head[$h][0] = dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id;
-    $head[$h][1] = $langs->trans("questionnaireCard");
-    $head[$h][2] = 'card';
-    $h++;
+	global $db, $langs, $conf, $user;
+	
+	$h = 0;
+	$head = array();
+	$head[$h][0] = dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("questionnaireCard");
+	$head[$h][2] = 'card';
+	$h++;
+	
+	if($object->fk_statut > 0) {
+		
+		$head[$h][0] = dol_buildpath('/questionnaire/invitation.php', 1).'?id='.$object->id;
+		$head[$h][1] = $langs->trans("questionnaireInvitationCard");
+		$head[$h][2] = 'invitation';
+		$h++;
+		
+	}
 	
 	// Show more tabs from modules
     // Entries must be declared in modules descriptor with line

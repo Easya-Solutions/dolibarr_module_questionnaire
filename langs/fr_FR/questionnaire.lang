@@ -30,6 +30,7 @@ Noquestionnaire=(vide)
 # CARD
 Newquestionnaire=Création questionnaire
 questionnaireCard=Fiche questionnaire
+questionnaireInvitationCard=Invitations
 
 # CARD TPL
 Save=Enregistrer
