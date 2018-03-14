@@ -276,20 +276,21 @@ if(empty($action) || $action === 'view' || $action === 'validate' || $action ===
 	print '<div id="allQuestions">';
 	
 	if(!empty($object->questions)) {
-		foreach($object->questions as &$q) print draw_question($q);
+		foreach($object->questions as &$q) print draw_question($q, $object->fk_statut);
 	}
 	
 	print '</div>';
 	
 	if($action !== 'create') {
 		
-		$q = new Question($db);
-		print '<br /><div class="center">'.$form->selectarray('select_choice', $q->TTypes);
-		print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button></div>';
-		print '<div class="tabsAction">';
 		if(empty($object->fk_statut)) {
+			$q = new Question($db);
+			print '<br /><div class="center">'.$form->selectarray('select_choice', $q->TTypes);
+			print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button></div>';
+			print '<div class="tabsAction">';
 			print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=validate" class="butAction">'.$langs->trans('Validate').'</a>';
 		} else {
+			print '<div class="tabsAction">';
 			print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=modif" class="butAction">'.$langs->trans('Modify').'</a>';
 		}
 		print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=delete" class="butActionDelete">'.$langs->trans('Delete').'</a>';
@@ -322,7 +323,7 @@ if(empty($action) || $action === 'view' || $action === 'validate' || $action ===
 	print '</form>';
 }
 
-if(empty($action) || $action === 'view') {
+if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 
 	?>
 	
@@ -444,8 +445,6 @@ if(empty($action) || $action === 'view') {
 				});
 				
 			});
-
-			setQuestionDivCSS();
 			
 		});
 		
@@ -458,6 +457,8 @@ if(empty($action) || $action === 'view') {
 ?>
 
 <script type="text/javascript">
+
+	<?php if($action !== 'apercu' && $action !== 'answer') print 'setQuestionDivCSS();'; ?>
 
 	function setQuestionDivCSS() {
 

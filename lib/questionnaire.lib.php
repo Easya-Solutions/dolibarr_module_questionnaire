@@ -124,7 +124,7 @@ function getFormConfirmquestionnaire(&$form, &$object, $action)
     return $formconfirm;
 }
 
-function draw_question(&$q) {
+function draw_question(&$q, $fk_statut_questionnaire=0) {
 	
 	global $db, $bg_color;
 	
@@ -141,13 +141,16 @@ function draw_question(&$q) {
 	
 	//$res = '<div style="background-color:'.$bgcol_questionnaire[$bg_color].';" class="element" type="question" id="question'.$q->id.'">';
 	$res = '<div class="element" type="question" id="question'.$q->id.'">';
-	$res.= '<div class="refid">Question : '.$q->TTypes[$q->type].'<br />';
-	$res.= '<input size="100" placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
-	$res.= '<input type="checkbox" title="Réponse obligatoire ?" class="field" name="compulsory_answer"';
+	$res.= '<div class="refid">Question : '.$q->TTypes[$q->type].'<br /></div>';
+	if(empty($fk_statut_questionnaire)) $res.= '<input size="100" placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
+	else $res.= '<STRONG>'.$q->label.'</STRONG>&nbsp;';
+	$res.= '<input type="checkbox" title="Réponse obligatoire ?" class="field"';
+	if(!empty($fk_statut_questionnaire)) $res.= 'disabled';
+	$res.= ' name="compulsory_answer"';
 	$res.= (int)$q->compulsory_answer > 0 ? 'checked="checked"' : '';
 	$res.= '/>';
-	$res.= '&nbsp;<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_picto('Supprimer question', 'delete_all@questionnaire').'</a>';
-	$res.= '<br /><br /></div>';
+	if(empty($fk_statut_questionnaire)) $res.= '&nbsp;<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_picto('Supprimer question', 'delete_all@questionnaire').'</a>';
+	$res.= '<br /><br />';
 	
 	// Pas de choix pour les types string et textarea
 	
@@ -155,27 +158,27 @@ function draw_question(&$q) {
 			// Liste des choix (lignes)
 			$style_div_lines = ' width: 300px; ';
 			if($question_est_une_grille) $style_div_lines.= ' float: left; ';
-			$res.= '<div class="refid" style="'.$style_div_lines.'" id="allChoicesLeft_q'.$q->id.'" name="allChoicesLeft_q'.$q->id.'">';
-			$res.= 'Lignes<br /><br />';
+			$res.= '<div style="'.$style_div_lines.'" id="allChoicesLeft_q'.$q->id.'" name="allChoicesLeft_q'.$q->id.'">';
+			$res.= '<div class="refid">Lignes<br /><br /></div>';
 			$q->loadChoices();
 			if(!empty($q->choices)) {
 				foreach($q->choices as &$choice) {
-					if($choice->type === 'line') $res.= draw_choice($choice);
+					if($choice->type === 'line') $res.= draw_choice($choice, $fk_statut_questionnaire);
 				}
 			}
-			$res.= '<button class="butAction" id="butAddChoiceLine_q'.$q->id.'" name="butAddChoiceLine_q'.$q->id.'">Ajouter une ligne</button>';
+			if(empty($fk_statut_questionnaire)) $res.= '<button class="butAction" id="butAddChoiceLine_q'.$q->id.'" name="butAddChoiceLine_q'.$q->id.'">Ajouter une ligne</button>';
 			$res.= '</div>';
 			
 			// Liste des choix (colonnes => Uniquement pour les grilles)
 			if($question_est_une_grille) {
-				$res.= '<div style="float: left;" class="refid" id="allChoicesRight_q'.$q->id.'">';
-				$res.= 'Colonnes<br /><br />';
+				$res.= '<div style="float: left;" id="allChoicesRight_q'.$q->id.'">';
+				$res.= '<div class="refid">Colonnes<br /><br /></div>';
 				if(!empty($q->choices)) {
 					foreach($q->choices as &$choice) {
-						if($choice->type === 'column') $res.= draw_choice($choice);
+						if($choice->type === 'column') $res.= draw_choice($choice, $fk_statut_questionnaire);
 					}
 				}
-				$res.= '<button class="butAction" id="butAddChoiceColumn_q'.$q->id.'" name="butAddChoiceColumn_q'.$q->id.'">Ajouter un colonne</button>';
+				if(empty($fk_statut_questionnaire)) $res.= '<button class="butAction" id="butAddChoiceColumn_q'.$q->id.'" name="butAddChoiceColumn_q'.$q->id.'">Ajouter un colonne</button>';
 				$res.= '</div>';
 			}
 			
@@ -184,9 +187,9 @@ function draw_question(&$q) {
 		$res.= '<div style="'.$style_div_lines.'" id="allChoicesLeft_q'.$q->id.'" name="allChoicesLeft_q'.$q->id.'">';
 		
 		if(empty($q->choices)) $q->loadChoices();
-		$res.= draw_choice($q->choices[0], 'linearscale', 'De');
-		$res.= draw_choice($q->choices[1], 'linearscale', 'à');
-		$res.= draw_choice($q->choices[2], 'linearscale', 'Pas');
+		$res.= draw_choice($q->choices[0], $fk_statut_questionnaire, 'linearscale', 'De');
+		$res.= draw_choice($q->choices[1], $fk_statut_questionnaire, 'linearscale', 'à');
+		$res.= draw_choice($q->choices[2], $fk_statut_questionnaire, 'linearscale', 'Pas');
 		$res.= '</div>';
 		
 	}
@@ -199,28 +202,35 @@ function draw_question(&$q) {
 	
 }
 
-function draw_choice(&$choice, $type='', $title='') {
+function draw_choice(&$choice, $fk_statut_questionnaire=0, $type='', $title='') {
 	
-	if(empty($type)) return draw_standard_choice($choice);
-	elseif($type === 'linearscale') return draw_linearscale_choice($choice, $title);
+	if(empty($type)) return draw_standard_choice($choice, $fk_statut_questionnaire);
+	elseif($type === 'linearscale') return draw_linearscale_choice($choice, $title, $fk_statut_questionnaire);
 	
 }
 
-function draw_standard_choice(&$choice) {
+function draw_standard_choice(&$choice, $fk_statut_questionnaire=0) {
 	
 	$res.= '<div class="element" type="choice" id="choice'.$choice->id.'">';
-	$res.= '<input placeholder="Libellé choix" type="text" name="label" class="field" value="'.$choice->label.'" />&nbsp;';
-	$res.= '<a id="del_element_'.$choice->id.'" name="del_element_'.$choice->id.'" href="#" onclick="return false;">'.img_delete().'</a>';
+	
+	if(empty($fk_statut_questionnaire)) {
+		$res.= '<input placeholder="Libellé choix" type="text" name="label" class="field" value="'.$choice->label.'" />&nbsp;';
+		$res.= '<a id="del_element_'.$choice->id.'" name="del_element_'.$choice->id.'" href="#" onclick="return false;">'.img_delete().'</a>';
+	}
+	else $res.= $choice->label;
 	$res.= '<br /><br /></div>';
 	
 	return $res;
 	
 }
 
-function draw_linearscale_choice(&$choice, $title) {
+function draw_linearscale_choice(&$choice, $title, $fk_statut_questionnaire=0) {
 	
 	$res.= '<div style="float:left;" class="element" type="choice" id="choice'.$choice->id.'">';
-	$res.= $title.'&nbsp;&nbsp;<input type="number" style="width:50px;" name="label" class="field" value="'.$choice->label.'" />&nbsp;&nbsp;</div>';
+	$res.= $title;
+	if(empty($fk_statut_questionnaire)) $res.= '&nbsp;&nbsp;<input type="number" style="width:50px;" name="label" class="field" value="'.$choice->label.'" />&nbsp;&nbsp;';
+	else $res.= '&nbsp;&nbsp;<STRONG>'.$choice->label.'</STRONG>&nbsp;&nbsp;';
+	$res.= '</div>';
 	
 	return $res;
 	
