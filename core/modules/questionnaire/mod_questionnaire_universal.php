@@ -52,7 +52,7 @@ class mod_questionnaire_universal extends ModeleNumRefQuestionnaire
 		$texte .= '<form action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
 		$texte .= '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 		$texte .= '<input type="hidden" name="action" value="updateMask">';
-		$texte .= '<input type="hidden" name="maskconstrefletter" value="REF_LETTER_UNIVERSAL_MASK">';
+		$texte .= '<input type="hidden" name="maskconstrefletter" value="QUESTIONNAIRE_UNIVERSAL_MASK">';
 		$texte .= '<table class="nobordernopadding" width="100%">';
 		
 		$tooltip = $langs->trans("GenericMaskCodes", $langs->transnoentities("Module103258Name"), $langs->transnoentities("Module103258Name"));
@@ -63,7 +63,7 @@ class mod_questionnaire_universal extends ModeleNumRefQuestionnaire
 		
 		// Parametrage du prefix
 		$texte .= '<tr><td>' . $langs->trans("Mask") . ':</td>';
-		$texte .= '<td align="right">' . $form->textwithpicto('<input type="text" class="flat" size="24" name="maskrefletter" value="' . $conf->global->REF_LETTER_UNIVERSAL_MASK . '">', $tooltip, 1, 1) . '</td>';
+		$texte .= '<td align="right">' . $form->textwithpicto('<input type="text" class="flat" size="24" name="maskrefletter" value="' . $conf->global->QUESTIONNAIRE_UNIVERSAL_MASK . '">', $tooltip, 1, 1) . '</td>';
 		
 		$texte .= '<td align="left" rowspan="2">&nbsp; <input type="submit" class="button" value="' . $langs->trans("Modify") . '" name="Button"></td>';
 		
@@ -105,21 +105,21 @@ class mod_questionnaire_universal extends ModeleNumRefQuestionnaire
 	 * @param Lead $lead        	
 	 * @return string Valeur
 	 */
-	function getNextValue($fk_user, $element_type, $objsoc, $questionnaire='')
+	function getNextValue()
 	{
 		global $db, $conf;
 		
-		require_once (DOL_DOCUMENT_ROOT . "/core/lib/functions2.lib.php");
+		require_once DOL_DOCUMENT_ROOT . "/core/lib/functions2.lib.php";
 		
 		// On defini critere recherche compteur
-		$mask = $conf->global->REF_LETTER_UNIVERSAL_MASK;
+		$mask = $conf->global->QUESTIONNAIRE_UNIVERSAL_MASK;
 		
 		if (! $mask) {
 			$this->error = 'NotConfigured';
 			return 0;
 		}
 		
-		$numFinal = get_next_value($db, $mask, 'questionnaire_elements', 'ref_int', '', $objsoc->code_client, dol_now());
+		$numFinal = get_next_value($db, $mask, 'quest_questionnaire', 'ref');
 		
 		return $numFinal;
 	}

@@ -48,19 +48,27 @@ $value = GETPOST('value', 'alpha');
 /*
  * Actions
  */
-if($action === 'setmod') dolibarr_set_const($db, "QUESTIONNAIRE_ADDON", $value, 'chaine', 0, '', $conf->entity);
-else if (preg_match('/set_(.*)/',$action,$reg))
-{
+if ($action == 'updateMask') {
+	
+	$maskconstrefleter = GETPOST('maskconstrefletter', 'alpha');
+	$maskrefletter = GETPOST('maskrefletter', 'alpha');
+	if ($maskconstrefleter) $res = dolibarr_set_const($db, $maskconstrefleter, $maskrefletter, 'chaine', 0, '', $conf->entity);
+		
+	if (! $res > 0) $error ++;
+	if (! $error) setEventMessage($langs->trans("SetupSaved"), 'mesgs');
+	else setEventMessage($langs->trans("Error"), 'errors');
+	
+} elseif($action === 'setmod') dolibarr_set_const($db, "QUESTIONNAIRE_ADDON", $value, 'chaine', 0, '', $conf->entity);
+else if (preg_match('/set_(.*)/',$action,$reg)) {
+	
 	$code=$reg[1];
 	if (dolibarr_set_const($db, $code, GETPOST($code), 'chaine', 0, '', $conf->entity) > 0)
 	{
 		header("Location: ".$_SERVER["PHP_SELF"]);
 		exit;
 	}
-	else
-	{
-		dol_print_error($db);
-	}
+	else dol_print_error($db);
+	
 }
 	
 if (preg_match('/del_(.*)/',$action,$reg))

@@ -148,8 +148,11 @@ class Questionnaire extends SeedObject
 		global $db,$conf;
 		
 		require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
+		/*echo '<pre>';
+		print_r($conf->global);exit;*/
+		if($conf->global->QUESTIONNAIRE_ADDON === 'mod_questionnaire_universal') $mask = $conf->global->QUESTIONNAIRE_UNIVERSAL_MASK;
+		else $mask = 'QU{yy}{mm}-{0000}';
 		
-		$mask = !empty($conf->global->QUESTIONNAIRE_REF_MASK) ? $conf->global->QUESTIONNAIRE_REF_MASK : 'QU{yy}{mm}-{0000}';
 		$numero = get_next_value($db, $mask, 'quest_questionnaire', 'ref');
 		
 		return $numero;
