@@ -41,7 +41,7 @@ print load_fiche_titre($langs->trans("QuestionnaireArea"),'',dol_buildpath('/que
 
 // TODO ajouter les champs de son objet que l'on souhaite afficher
 //$sql = 'SELECT t.rowid, t.ref, t.title, t.date_creation, t.tms, \'\' AS action';
-$sql = 'SELECT t.rowid, t.fk_statut, \'\' AS action';
+$sql = 'SELECT t.rowid, t.title, t.fk_statut, \'\' AS action';
 $sql.= ' FROM '.MAIN_DB_PREFIX.'quest_questionnaire t ';
 $sql.= ' WHERE 1=1';
 $sql.= ' AND t.entity IN ('.getEntity('questionnaire', 1).')';
@@ -85,7 +85,7 @@ print $r->renderArray($db, $TData, array(
 		)
 		,'title'=>array(
 				'rowid'=>$langs->trans('Ref')
-				,'title'=>$langs->trans('label')
+				,'title'=>$langs->trans('Title')
 				,'fk_statut'=>$langs->trans('Status')
 		)
 		,'orderBy'=> array('cn.rowid' => 'DESC')

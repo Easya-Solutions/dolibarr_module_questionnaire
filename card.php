@@ -252,6 +252,7 @@ print $TBS->render('tpl/card.tpl.php'
 			,'showRef' => ($action == 'create') ? $langs->trans('Draft') : $form->showrefnav($object, 'ref', $linkback, 1, 'ref', 'ref', '')
 			,'showTitle' => $formcore->texte('', 'title', $object->title, 80, 255)
 			,'showStatus' => $object->getLibStatut(1)
+			,'apercuLabel' => $action === 'apercu' ? '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'">Retour au mode édition</a>' : '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=apercu">Visualiser un aperçu</a>'
 		)
 		,'langs' => $langs
 		,'user' => $user
