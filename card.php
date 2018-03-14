@@ -244,8 +244,8 @@ if ($action == 'create' && $mode == 'edit')
 else
 {
 	$head = questionnaire_prepare_head($object);
-	$picto = 'generic';
-	dol_fiche_head($head, 'card', $langs->trans("questionnaire"), 0, $picto);
+	$picto = dol_buildpath('/questionnaire/img/object_questionnaire.png', 1);
+	dol_fiche_head($head, 'card', $langs->trans("questionnaire"), 0, $picto, 1);
 }
 
 $formcore = new TFormCore;

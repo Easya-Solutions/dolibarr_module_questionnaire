@@ -33,6 +33,9 @@ if (empty($reshook))
 
 llxHeader('',$langs->trans('questionnaireList'),'','');
 
+print load_fiche_titre($langs->trans("QuestionnaireArea"),'',dol_buildpath('/questionnaire/img/questionnaire.png', 1), 1);
+//print_barre_liste($langs->trans("QuestionnaireArea"), $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, dol_buildpath('/questionnaire/img/questionnaire.png'), 1, '', '', $limit);
+
 //$type = GETPOST('type');
 //if (empty($user->rights->questionnaire->all->read)) $type = 'mine';
 
@@ -55,7 +58,6 @@ $formcore = new TFormCore($_SERVER['PHP_SELF'], 'form_list_questionnaire', 'GET'
 
 $nbLine = !empty($user->conf->MAIN_SIZE_LISTE_LIMIT) ? $user->conf->MAIN_SIZE_LISTE_LIMIT : $conf->global->MAIN_SIZE_LISTE_LIMIT;
 
-$r = new Listview($db, 'questionnaire');
 $r = new TListviewTBS('questionnaire_list', dol_buildpath('/questionnaire/tpl/questionnaire_list.tpl.php'));
 
 print $r->renderArray($db, $TData, array(

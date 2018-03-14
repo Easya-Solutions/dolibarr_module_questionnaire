@@ -6,7 +6,8 @@ ATMAbout = Ce module a été développé par <a href="http://www.atm-consulting.
 questionnaireSetup = Configuration du module questionnaire
 questionnaireAbout = A propos du module questionnaire
 
-questionnaire=questionnaire
+questionnaire=Questionnaire
+QuestionnaireArea=Liste des questionnaires
 
 # MENU
 TopMenuquestionnaire=questionnaire

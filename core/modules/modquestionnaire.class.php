@@ -260,6 +260,19 @@ class modquestionnaire extends DolibarrModules
 				'target' => '',
 				'user' => 0
 		);
+		$r++;
+		$this->menu[$r] = array (
+				'fk_menu' => 'fk_mainmenu=questionnaire,fk_leftmenu=questionnairelist',
+				'type' => 'left',
+				'titre' => $langs->trans('List'),
+				'url' => '/questionnaire/list.php',
+				'langs' => 'questionnaire@questionnaire',
+				'position' => 103,
+				'enabled' => '1',
+				'perms' => '1',
+				'target' => '',
+				'user' => 0
+		);
 		// Add here entries to declare new menus
 		//
 		// Example to declare a new Top Menu entry and its Left menu entry:
