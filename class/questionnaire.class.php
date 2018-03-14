@@ -105,7 +105,10 @@ class Questionnaire extends SeedObject
 	{
 		global $user;
 		
-		$this->generic->deleteObjectLinked();
+		if(empty($this->questions)) $this->loadQuestions();
+		if(!empty($this->questions)) {
+			foreach($this->questions as &$question) $question->delete();
+		}
 		
 		parent::deleteCommon($user);
 	}

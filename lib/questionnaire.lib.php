@@ -79,26 +79,46 @@ function questionnaire_prepare_head(Questionnaire $object)
 	return $head;
 }
 
-function getFormConfirmquestionnaire(&$PDOdb, &$form, &$object, $action)
+function getFormConfirmquestionnaire(&$form, &$object, $action)
 {
     global $langs,$conf,$user;
 
     $formconfirm = '';
 
-    if ($action == 'validate' && !empty($user->rights->questionnaire->write))
+    if ($action == 'validate'/* && !empty($user->rights->questionnaire->write)*/)
     {
-        $text = $langs->trans('ConfirmValidatequestionnaire', $object->ref);
-        $formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('Validatequestionnaire'), $text, 'confirm_validate', '', 0, 1);
+    	$error = 0;
+    	
+    	// We verifie whether the object is provisionally numbering
+    	$ref = substr($object->ref, 1, 4);
+    	if ($ref == 'PROV') {
+    		$numref = $object->getNextNumRef();
+    		
+    		if (empty($numref)) {
+    			$error ++;
+    			setEventMessages($object->error, $object->errors, 'errors');
+    		}
+    	} else {
+    		$numref = $object->ref;
+    	}
+    	
+    	$text = $langs->trans('ConfirmValidateQuestionnaire', $numref);
+        $formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('ValidateQuestionnaire'), $text, 'confirm_validate', '', 0, 1);
     }
-    elseif ($action == 'delete' && !empty($user->rights->questionnaire->write))
+    elseif ($action == 'delete'/* && !empty($user->rights->questionnaire->write)*/)
     {
-        $text = $langs->trans('ConfirmDeletequestionnaire');
-        $formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('Deletequestionnaire'), $text, 'confirm_delete', '', 0, 1);
+        $text = $langs->trans('ConfirmDeleteQuestionnaire');
+        $formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('DeleteQuestionnaire'), $text, 'confirm_delete', '', 0, 1);
     }
-    elseif ($action == 'clone' && !empty($user->rights->questionnaire->write))
+    elseif ($action == 'clone'/* && !empty($user->rights->questionnaire->write)*/)
     {
-        $text = $langs->trans('ConfirmClonequestionnaire', $object->ref);
-        $formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('Clonequestionnaire'), $text, 'confirm_clone', '', 0, 1);
+    	$text = $langs->trans('ConfirmClonequestionnaire', $object->ref);
+    	$formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('Clonequestionnaire'), $text, 'confirm_clone', '', 0, 1);
+    }
+    elseif ($action == 'modif'/* && !empty($user->rights->questionnaire->write)*/)
+    {
+    	$text = $langs->trans('ConfirmModifyQuestionnaire');
+    	$formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('ModifyQuestionnaire'), $text, 'confirm_modif', '', 0, 1);
     }
 
     return $formconfirm;

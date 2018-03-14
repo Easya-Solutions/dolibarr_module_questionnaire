@@ -54,5 +54,9 @@ questionnaireTypeHour=Heure
 questionnaireTypeLinearScale=Echelle linéaire
 
 # form confirm
-ConfirmValidateQuestionnaire=Êtes-vous sûr de vouloir valider ce questionnaire sous la référence <STRONG>%s</STRONG>
+ConfirmValidateQuestionnaire=Êtes-vous sûr de vouloir valider ce questionnaire sous la référence <STRONG>%s</STRONG> ?
 ValidateQuestionnaire=Valider questionnaire
+ConfirmDeleteQuestionnaire=Êtes-vous sûr de vouloir supprimer ce questionnaire ?
+DeleteQuestionnaire=Supprimer questionnaire
+ConfirmModifyQuestionnaire=Êtes-vous sûr de vouloir repasser ce questionnaire au statut brouillon ?
+ModifyQuestionnaire=Repasser questionnaire en brouillon

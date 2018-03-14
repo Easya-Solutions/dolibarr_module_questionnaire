@@ -131,37 +131,16 @@ if (empty($reshook))
 			exit;
 			break;
 		case 'modif':
-			if (!empty($user->rights->questionnaire->write)) $object->setDraft();
-				
+		case 'delete':
+		case 'validate':
+			$formconfirm = getFormConfirmquestionnaire($form, $object, $action);
 			break;
-		case 'validate' :
-			$error = 0;
+		case 'confirm_modif':
+			$object->setDraft();
 			
-			// We verifie whether the object is provisionally numbering
-			$ref = substr($object->ref, 1, 4);
-			if ($ref == 'PROV') {
-				$numref = $object->getNextNumRef();
-				
-				if (empty($numref)) {
-					$error ++;
-					setEventMessages($object->error, $object->errors, 'errors');
-				}
-			} else {
-				$numref = $object->ref;
-			}
-			
-			$text = $langs->trans('ConfirmValidateQuestionnaire', $numref);
-			/*if (! empty($conf->notification->enabled)) {
-				require_once DOL_DOCUMENT_ROOT . '/core/class/notify.class.php';
-				$notify = new Notify($db);
-				$text .= '<br>';
-				$text .= $notify->confirmMessage('QUESTIONNAIRE_VALIDATE', $object->socid, $object);
-			}*/
-			
-			if (! $error) $formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('ValidateQuestionnaire'), $text, 'confirm_validate', '', 0, 1, 200, 520);
-			
+			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
+			exit;
 			break;
-			
 		case 'confirm_validate':
 			$object->setValid();
 			
@@ -169,7 +148,7 @@ if (empty($reshook))
 			exit;
 			break;
 		case 'confirm_delete':
-			if (!empty($user->rights->questionnaire->write)) $object->delete();
+			$object->delete();
 			
 			header('Location: '.dol_buildpath('/questionnaire/list.php', 1));
 			exit;
@@ -290,19 +269,34 @@ if ($mode == 'edit') echo $formcore->end_form();
 //if ($mode == 'view' && $object->id) $somethingshown = $form->showLinkedObjectBlock($object->generic);
 
 // Print list of questions
-if(empty($action) || $action === 'view') {
+if(empty($action) || $action === 'view' || $action === 'validate' || $action === 'delete' || $action === 'modif') {
+	
 	if(empty($object->questions)) $object->loadQuestions();
+	
 	print '<div id="allQuestions">';
+	
 	if(!empty($object->questions)) {
 		foreach($object->questions as &$q) print draw_question($q);
 	}
+	
 	print '</div>';
 	
 	if($action !== 'create') {
+		
 		$q = new Question($db);
 		print '<br /><div class="center">'.$form->selectarray('select_choice', $q->TTypes);
 		print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button></div>';
+		print '<div class="tabsAction">';
+		if(empty($object->fk_statut)) {
+			print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=validate" class="butAction">'.$langs->trans('Validate').'</a>';
+		} else {
+			print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=modif" class="butAction">'.$langs->trans('Modify').'</a>';
+		}
+		print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=delete" class="butActionDelete">'.$langs->trans('Delete').'</a>';
+		print '</div>';
+		
 	}
+	
 } elseif($action === 'apercu') {
 	if(empty($object->questions)) $object->loadQuestions();
 	print '<div id="allQuestions">';
