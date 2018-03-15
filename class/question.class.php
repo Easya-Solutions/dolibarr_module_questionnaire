@@ -132,6 +132,11 @@ class Question extends SeedObject {
 			foreach($this->choices as &$choice) $choice->delete();
 		}
 		
+		if(empty($this->answers)) $this->loadAnswers();
+		if(!empty($this->answers)) {
+			foreach($this->answers as &$answer) $answer->delete();
+		}
+		
 		return parent::deleteCommon($user);
 	}
 	

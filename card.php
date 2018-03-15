@@ -21,7 +21,7 @@ $fk_invitation = GETPOST('fk_invitation');
 $invitation = new Invitation($db);
 $res = $invitation->load($fk_invitation);
 
-if(empty($res) || $invitation->date_limite_reponse < strtotime(date('Y-m-d'))) accessforbidden();
+if($action === 'answer' && empty($res) || $invitation->date_limite_reponse < strtotime(date('Y-m-d'))) accessforbidden();
 
 $form = new Form($db);
 
@@ -127,11 +127,14 @@ if (empty($reshook))
 				
 			}
 			
-			if(isset($_REQUEST['subSave'])) header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=answer&fk_invitation='.$fk_invitation);
-			else { // Validation finale
+			if(isset($_REQUEST['subSave'])) {
+				setEventMessage($langs->trans('questionnaireSaved'));
+				header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=answer&fk_invitation='.$fk_invitation);
+			} else { // Validation finale
 				$invitation_user = new InvitationUser($db);
 				$invitation_user->loadBy(array('fk_invitation'=>$fk_invitation, 'fk_user'=>$user->id));
 				$invitation_user->setValid();
+				setEventMessage($langs->trans('questionnaireValidated'));
 				header('Location: '.dol_buildpath('/questionnaire/list.php', 1).'?action=to_answer');
 			}
 			exit;

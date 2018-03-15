@@ -33,6 +33,8 @@ Noquestionnaire=(vide)
 Newquestionnaire=Création questionnaire
 questionnaireCard=Fiche questionnaire
 questionnaireInvitationCard=Invitations
+questionnaireSaved=Réponses enregistrées avec succès
+questionnaireValidated=Questionnaire validé définitivement
 
 # CARD TPL
 Save=Enregistrer

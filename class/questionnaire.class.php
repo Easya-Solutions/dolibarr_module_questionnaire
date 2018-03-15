@@ -102,6 +102,11 @@ class Questionnaire extends SeedObject
 			foreach($this->questions as &$question) $question->delete();
 		}
 		
+		if(empty($this->invitations)) $this->loadInvitations();
+		if(!empty($this->invitations)) {
+			foreach($this->invitations as &$inv) $inv->delete();
+		}
+		
 		parent::deleteCommon($user);
 	}
 	
@@ -226,6 +231,33 @@ class Questionnaire extends SeedObject
 				$q = new Question($db);
 				$q->load($res->rowid);
 				$this->questions[] = $q;
+			}
+			
+		} else return 0;
+		
+		return 1;
+		
+	}
+	
+	function loadInvitations() {
+		
+		global $db;
+		
+		dol_include_once('/questionnaire/class/invitation.class.php');
+		
+		$invitation = new Invitation($db);
+		
+		$sql = 'SELECT rowid
+				FROM '.MAIN_DB_PREFIX.$invitation->table_element.'
+				WHERE fk_questionnaire = '.$this->id;
+		$resql = $db->query($sql);
+		if(!empty($resql) && $db->num_rows($resql) > 0) {
+			$this->invitations = array();
+			
+			while($res = $db->fetch_object($resql)) {
+				$invitation= new Invitation($db);
+				$invitation->load($res->rowid);
+				$this->invitations[] = $invitation;
 			}
 			
 		} else return 0;

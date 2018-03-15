@@ -48,20 +48,22 @@
 </div>
 [onshow;block=end]
 
-[onshow;block=begin;when [view.mode]!='edit']
-<div class="tabsAction">
-	
-	[onshow;block=begin;when [object.fk_statut]=[Questionnaire.STATUS_DRAFT]]
+[onshow;block=begin;when [view.mode]!='answer']
+	[onshow;block=begin;when [view.mode]!='edit']
+	<div class="tabsAction">
 		
-		<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=validate" class="butAction">[langs.transnoentities(Validate)]</a></div>
+		[onshow;block=begin;when [object.fk_statut]=[Questionnaire.STATUS_DRAFT]]
+			
+			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=validate" class="butAction">[langs.transnoentities(Validate)]</a></div>
+			
+		[onshow;block=end]
 		
+		[onshow;block=begin;when [object.fk_statut]=[Questionnaire.STATUS_VALIDATED]]	
+			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=modif" class="butAction">[langs.transnoentities(Modify)]</a></div>
+		[onshow;block=end]
+		
+		<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=delete" class="butActionDelete">[langs.transnoentities(Delete)]</a></div>
+			
+	</div>
 	[onshow;block=end]
-	
-	[onshow;block=begin;when [object.fk_statut]=[Questionnaire.STATUS_VALIDATED]]	
-		<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=modif" class="butAction">[langs.transnoentities(Modify)]</a></div>
-	[onshow;block=end]
-	
-	<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=delete" class="butActionDelete">[langs.transnoentities(Delete)]</a></div>
-		
-</div>
 [onshow;block=end]
