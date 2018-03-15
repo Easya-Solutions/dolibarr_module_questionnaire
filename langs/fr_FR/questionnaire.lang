@@ -41,6 +41,8 @@ Modify=Modifier
 Reopen=Rouvrir
 ToClone=Cloner
 Delete=Supprimer
+noElement=Aucun élément à afficher
+questionnaire_date_limite_reponse=Date limite de réponse
 
 # Libellés types choix
 questionnaireTypeString=Chaîne

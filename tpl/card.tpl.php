@@ -45,33 +45,3 @@
 	
 </div>
 [onshow;block=end]
-
-[onshow;block=begin;when [view.mode]!='edit']
-<div class="tabsAction">
-	[onshow;block=begin;when [user.rights.questionnaire.write;noerr]=1]
-	
-		[onshow;block=begin;when [object.fk_statut]=[Tquestionnaire.STATUS_DRAFT]]
-			
-			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=validate" class="butAction">[langs.transnoentities(Validate)]</a></div>
-			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=edit" class="butAction">[langs.transnoentities(Modify)]</a></div>
-			
-		[onshow;block=end]
-		
-		[onshow;block=begin;when [object.fk_statut]=[Tquestionnaire.STATUS_VALIDATED]]
-			
-			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=modif" class="butAction">[langs.transnoentities(Reopen)]</a></div>
-			
-		[onshow;block=end]
-		
-		<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=clone" class="butAction">[langs.transnoentities(ToClone)]</a></div>
-		
-		<!-- '-+' est l'équivalent d'un signe '<' (TBS oblige) -->
-		[onshow;block=begin;when [object.fk_statut]-+[Tquestionnaire.STATUS_CLOSED]]
-			
-			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=delete" class="butActionDelete">[langs.transnoentities(Delete)]</a></div>
-			
-		[onshow;block=end]
-		
-	[onshow;block=end]
-</div>
-[onshow;block=end]
