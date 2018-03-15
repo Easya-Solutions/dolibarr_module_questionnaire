@@ -193,7 +193,7 @@ class InvitationUser extends SeedObject {
 		global $db;
 		
 		$sql = 'SELECT rowid
-				FROM '.MAIN_DB_PREFIX.$this->$table_element.'
+				FROM '.MAIN_DB_PREFIX.$this->table_element.'
 				WHERE 1';
 		foreach($TFieldValue as $field=>$val) $sql.= ' AND '.$field.' = '.$val;
 		

@@ -7,6 +7,7 @@ dol_include_once('/questionnaire/class/question.class.php');
 dol_include_once('/questionnaire/class/answer.class.php');
 dol_include_once('/questionnaire/class/questionnaire.class.php');
 dol_include_once('/questionnaire/class/choice.class.php');
+dol_include_once('/questionnaire/class/invitation.class.php');
 dol_include_once('/questionnaire/lib/questionnaire.lib.php');
 
 //if(empty($user->rights->questionnaire->read)) accessforbidden();
@@ -15,7 +16,7 @@ $langs->load('questionnaire@questionnaire');
 
 $action = GETPOST('action');
 $id = GETPOST('id', 'int');
-$ref = GETPOST('ref');
+$fk_invitation = GETPOST('fk_invitation');
 
 $form = new Form($db);
 
@@ -121,10 +122,12 @@ if (empty($reshook))
 				
 			}
 			
-			if(isset($_REQUEST['subSave'])) header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=answer');
+			if(isset($_REQUEST['subSave'])) header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=answer&fk_invitation='.$fk_invitation);
 			else { // Validation finale
 				$invitation_user = new InvitationUser($db);
-				header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=answer');
+				$invitation_user->loadBy(array('fk_invitation'=>$fk_invitation, 'fk_user'=>$user->id));
+				$invitation_user->setValid();
+				header('Location: '.dol_buildpath('/questionnaire/list.php', 1).'?action=to_answer');
 			}
 			exit;
 			break;
@@ -314,6 +317,7 @@ if(empty($action) || $action === 'view' || $action === 'validate' || $action ===
 	
 } elseif($action === 'answer') {
 	print '<form name="answerQuestionnaire" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.$id.'">';
+	print '<input type="HIDDEN" name="fk_invitation" value="'.$fk_invitation.'"/>';
 	print '<input type="HIDDEN" name="action" value="save_answer"/>';
 	if(empty($object->questions)) $object->loadQuestions();
 	print '<div id="allQuestions">';

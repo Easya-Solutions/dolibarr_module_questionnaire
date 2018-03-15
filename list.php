@@ -49,11 +49,12 @@ $sql.= ' WHERE 1=1';
 $sql.= ' AND t.entity IN ('.getEntity('questionnaire', 1).')';
 
 if($action === 'to_answer') {
-	$sql = 'SELECT DISTINCT q.rowid, q.title, i.date_limite_reponse
+	$sql = 'SELECT DISTINCT i.rowid as id_invitation, q.rowid, q.title, i.date_limite_reponse
 			FROM '.MAIN_DB_PREFIX.'quest_questionnaire q
 			INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation i ON (i.fk_questionnaire = q.rowid)
 			INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation_user i_usr ON (i_usr.fk_invitation = i.rowid)
 			WHERE i_usr.fk_user = '.$user->id.'
+			AND i_usr.fk_statut = 0
 			AND i.date_limite_reponse >= "'.date('Y-m-d').'"';
 }
 
@@ -81,7 +82,9 @@ print $r->renderArray($db, $TData, array(
 		)
 		,'link'=>array(
 		)
-		//,'hide'=>$THide
+		,'hide'=>array(
+				'id_invitation'
+		)
 		,'type'=>array()
 		,'liste'=>array(
 				'titre'=>$langs->trans('TitleConformiteNormeList')
@@ -102,7 +105,7 @@ print $r->renderArray($db, $TData, array(
 		)
 		,'orderBy'=> array('cn.rowid' => 'DESC')
 		,'eval'=>array(
-				'rowid'=>'_getQuestionnaireLink(@rowid@, "'.$action.'")'
+				'rowid'=>'_getQuestionnaireLink(@rowid@, "'.$action.'"'.($action === 'to_answer' ? ', @id_invitation@' : '').')'
 				,'fk_statut'=>'_getLibStatus(@rowid@, @fk_statut@)'
 				,'date_limite_reponse' => '_getDateFr("@date_limite_reponse@")'
 		)
@@ -117,12 +120,15 @@ $formcore->end_form();
 
 llxFooter('');
 
-function _getQuestionnaireLink($fk_questionnaire, $action)
+function _getQuestionnaireLink($fk_questionnaire, $action, $fk_invitation='')
 {
 	global $db;
 	
 	$q = new Questionnaire($db);
-	if ($q->fetch($fk_questionnaire) > 0) return $q->getNomUrl(0, $action === 'to_answer' ? '&action=answer' : '');
+	$more_param = '';
+	if($action === 'to_answer') $more_param.= '&action=answer';
+	if(!empty($fk_invitation)) $more_param.= '&fk_invitation='.$fk_invitation;
+	if ($q->fetch($fk_questionnaire) > 0) return $q->getNomUrl(0, $more_param);
 	
 	return '';
 }
