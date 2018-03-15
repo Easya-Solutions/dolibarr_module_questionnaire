@@ -58,8 +58,10 @@
 			
 		[onshow;block=end]
 		
-		[onshow;block=begin;when [object.fk_statut]=[Questionnaire.STATUS_VALIDATED]]	
-			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=modif" class="butAction">[langs.transnoentities(Modify)]</a></div>
+		[onshow;block=begin;when [object.fk_statut]=[Questionnaire.STATUS_VALIDATED]]
+			[onshow;block=begin;when [view.at_least_one_invitation]=0]
+				<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=modif" class="butAction">[langs.transnoentities(Modify)]</a></div>
+			[onshow;block=end]
 		[onshow;block=end]
 		
 		<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=delete" class="butActionDelete">[langs.transnoentities(Delete)]</a></div>

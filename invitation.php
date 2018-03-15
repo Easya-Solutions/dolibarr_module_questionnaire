@@ -39,7 +39,9 @@ if (empty($reshook)) {
 	
 	$error = 0;
 	switch ($action) {
+		
 		case 'edit':
+			
 			$invitation = new Invitation($db);
 			$invitation->load($fk_invitation);
 			$invitation->loadInvitationsUser();
@@ -51,6 +53,7 @@ if (empty($reshook)) {
 				}
 			}
 			break;
+			
 		case 'save':
 			
 			// Enregistrement des données dans les tables invitation et invitation_user
@@ -64,7 +67,17 @@ if (empty($reshook)) {
 			
 			$mode = 'view';
 			break;
+			
+		case 'delete_invitation':
+			
+			$invitation = new Invitation($db);
+			$invitation->load($fk_invitation);
+			$invitation->delete();
+			
+			break;
+			
 	}
+	
 }
 
 llxHeader();
@@ -142,7 +155,7 @@ function _getListInvitations(&$object) {
 					
 			)
 			,'link'=>array(
-					'action' => '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&fk_invitation=@rowid@&action=edit">'.img_edit().'</a>'
+					'action' => '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&fk_invitation=@rowid@&action=edit">'.img_edit().'</a><a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&fk_invitation=@rowid@&action=delete_invitation">'.img_delete().'</a>'
 			)
 			//,'hide'=>$THide
 			,'type'=>array()

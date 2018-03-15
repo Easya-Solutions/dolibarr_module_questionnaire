@@ -34,6 +34,8 @@ $object = new Questionnaire($db);
 if (!empty($id)) $object->load($id);
 elseif (!empty($ref)) $object->load('', $ref);
 
+$object->loadInvitations();
+
 $hookmanager->initHooks(array('questionnairecard', 'globalcard'));
 
 /*
@@ -269,6 +271,7 @@ print $TBS->render('tpl/card.tpl.php'
 			,'showTitle' => $formcore->texte('', 'title', $object->title, 80, 255)
 			,'showStatus' => $object->getLibStatut(1)
 			,'apercuLabel' => $action === 'apercu' ? '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'">Retour au mode édition</a>' : '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=apercu">Visualiser un aperçu</a>'
+			,'at_least_one_invitation' => empty($object->invitations) ? 0 : 1 // On ne peut modifier le questionnaire que s'il n'existe aucune invitation
 		)
 		,'langs' => $langs
 		,'user' => $user
