@@ -8,6 +8,7 @@ questionnaireAbout = A propos du module questionnaire
 
 questionnaire=Questionnaire
 QuestionnaireArea=Liste des questionnaires
+QuestionnaireToAnswerArea=Liste des questionnaires à compléter
 
 # MENU
 TopMenuquestionnaire=questionnaire
@@ -24,7 +25,8 @@ Refused=Refusé
 Accepted=Accepté
 
 # LIST
-questionnaireList=Liste questionnaire
+questionnaireList=Liste questionnaires
+questionnaireListToAnswer=Questionnaires à compléter
 Noquestionnaire=(vide)
 
 # CARD

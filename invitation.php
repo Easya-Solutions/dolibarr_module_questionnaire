@@ -56,6 +56,7 @@ if (empty($reshook)) {
 			// Enregistrement des données dans les tables invitation et invitation_user
 			$invitation = new Invitation($db);
 			$invitation->load($fk_invitation);
+			$invitation->fk_questionnaire = $object->id;
 			$invitation->date_limite_reponse = strtotime($date_limite_year.'-'.$date_limite_month.'-'.$date_limite_day);
 			$invitation->save();
 			$invitation->delAllInvitationsUser();
@@ -101,7 +102,7 @@ print $TBS->render('tpl/invitation.tpl.php'
 				,'form' => array(
 						'select_usergroups' => $form->multiselectarray('usergroups', _getUserGroups(), $invitations_usergroups, '', 0, '', 0, '100%')
 						,'select_users' => $form->multiselectarray('users', _getUsers(), $invitations_users, '', 0, '', 0, '100%')
-						,'date_limite' => $form->select_date('', 'date_limite', 0, 0, 0, '', 1, 0, 1)
+						,'date_limite' => $form->select_date($invitation->date_limite_reponse, 'date_limite', 0, 0, 0, '', 1, 0, 1)
 						,'fk_invitation' => $fk_invitation
 				)
 				,'Questionnaire' => array(
@@ -122,7 +123,7 @@ function _getListInvitations(&$object) {
 	
 	$sql = 'SELECT t.rowid, t.date_limite_reponse, \'\' AS action';
 	$sql.= ' FROM '.MAIN_DB_PREFIX.'quest_invitation t ';
-	$sql.= ' WHERE 1=1';
+	$sql.= ' WHERE fk_questionnaire = '.$object->id;
 	
 	$resql = $db->query($sql);
 	$TData=array();
@@ -208,11 +209,5 @@ function _getUserGroups() {
 	}
 	
 	return $TRes;
-	
-}
-
-function _getDateFr($date) {
-	
-	return date('d/m/Y', strtotime($date));
 	
 }

@@ -2,6 +2,7 @@
 
 require 'config.php';
 dol_include_once('/questionnaire/class/questionnaire.class.php');
+dol_include_once('/questionnaire/lib/questionnaire.lib.php');
 
 //if(empty($user->rights->questionnaire->read)) accessforbidden();
 
@@ -10,6 +11,7 @@ $langs->load('questionnaire@questionnaire');
 
 $PDOdb = new TPDOdb;
 $object = new Questionnaire($db);
+$action = GETPOST('action');
 
 $hookmanager->initHooks(array('questionnairelist'));
 
@@ -31,9 +33,9 @@ if (empty($reshook))
  * View
  */
 
-llxHeader('',$langs->trans('questionnaireList'),'','');
+llxHeader('',$langs->trans($action === 'to_answer' ? 'QuestionnaireToAnswerArea' : 'questionnaireList'),'','');
 
-print load_fiche_titre($langs->trans("QuestionnaireArea"),'',dol_buildpath('/questionnaire/img/questionnaire.png', 1), 1);
+print load_fiche_titre($langs->trans($action === 'to_answer' ? 'QuestionnaireToAnswerArea' : 'questionnaireList'),'',dol_buildpath('/questionnaire/img/questionnaire.png', 1), 1);
 //print_barre_liste($langs->trans("QuestionnaireArea"), $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, dol_buildpath('/questionnaire/img/questionnaire.png'), 1, '', '', $limit);
 
 //$type = GETPOST('type');
@@ -45,6 +47,15 @@ $sql = 'SELECT t.rowid, t.title, t.fk_statut, \'\' AS action';
 $sql.= ' FROM '.MAIN_DB_PREFIX.'quest_questionnaire t ';
 $sql.= ' WHERE 1=1';
 $sql.= ' AND t.entity IN ('.getEntity('questionnaire', 1).')';
+
+if($action === 'to_answer') {
+	$sql = 'SELECT DISTINCT q.rowid, q.title, i.date_limite_reponse
+			FROM '.MAIN_DB_PREFIX.'quest_questionnaire q
+			INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation i ON (i.fk_questionnaire = q.rowid)
+			INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation_user i_usr ON (i_usr.fk_invitation = i.rowid)
+			WHERE i_usr.fk_user = '.$user->id.'
+			AND i.date_limite_reponse >= "'.date('Y-m-d').'"';
+}
 
 $resql = $db->query($sql);
 $TData=array();
@@ -87,11 +98,13 @@ print $r->renderArray($db, $TData, array(
 				'rowid'=>$langs->trans('Ref')
 				,'title'=>$langs->trans('Title')
 				,'fk_statut'=>$langs->trans('Status')
+				,'date_limite_reponse'=>$langs->trans('questionnaire_date_limite_reponse')
 		)
 		,'orderBy'=> array('cn.rowid' => 'DESC')
 		,'eval'=>array(
-				'rowid'=>'_getQuestionnaireNomUrl(@rowid@)'
+				'rowid'=>'_getQuestionnaireLink(@rowid@, "'.$action.'")'
 				,'fk_statut'=>'_getLibStatus(@rowid@, @fk_statut@)'
+				,'date_limite_reponse' => '_getDateFr("@date_limite_reponse@")'
 		)
 ));
 
@@ -104,12 +117,12 @@ $formcore->end_form();
 
 llxFooter('');
 
-function _getQuestionnaireNomUrl($fk_questionnaire)
+function _getQuestionnaireLink($fk_questionnaire, $action)
 {
 	global $db;
 	
 	$q = new Questionnaire($db);
-	if ($q->fetch($fk_questionnaire) > 0) return $q->getNomUrl();
+	if ($q->fetch($fk_questionnaire) > 0) return $q->getNomUrl(0, $action === 'to_answer' ? '&action=answer' : '');
 	
 	return '';
 }

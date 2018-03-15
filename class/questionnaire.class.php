@@ -82,14 +82,6 @@ class Questionnaire extends SeedObject
 		return $res;
 	}
 	
-	
-	public function loadBy($value, $field, $annexe = false)
-	{
-		$res = parent::loadBy($value, $field, $annexe);
-		
-		return $res;
-	}
-	
 	public function load($id, $ref=null, $loadChild = true)
 	{
 		global $db;

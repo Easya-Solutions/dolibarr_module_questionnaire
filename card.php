@@ -26,7 +26,7 @@ else if ($action == 'create' || $action == 'edit') $mode = 'edit';
 $object = new Questionnaire($db);
 
 if (!empty($id)) $object->load($id);
-elseif (!empty($ref)) $object->loadBy($ref, 'ref');
+elseif (!empty($ref)) $object->load('', $ref);
 
 $hookmanager->initHooks(array('questionnairecard', 'globalcard'));
 
@@ -121,7 +121,11 @@ if (empty($reshook))
 				
 			}
 			
-			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=answer');
+			if(isset($_REQUEST['subSave'])) header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=answer');
+			else { // Validation finale
+				$invitation_user = new InvitationUser($db);
+				header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=answer');
+			}
 			exit;
 			break;
 		case 'confirm_clone':
@@ -222,7 +226,7 @@ if ($action == 'create' && $mode == 'edit')
 }
 else
 {
-	$head = questionnaire_prepare_head($object);
+	if($action !== 'answer') $head = questionnaire_prepare_head($object);
 	$picto = dol_buildpath('/questionnaire/img/object_questionnaire.png', 1);
 	dol_fiche_head($head, 'card', $langs->trans("questionnaire"), 0, $picto, 1);
 }
@@ -238,6 +242,7 @@ $TBS->TBS->protect=false;
 $TBS->TBS->noerr=true;
 
 if ($mode == 'edit') echo $formcore->begin_form($_SERVER['PHP_SELF'], 'form_questionnaire');
+if($action === 'answer') $mode = 'answer';
 
 $linkback = '<a href="'.dol_buildpath('/questionnaire/list.php', 1).'">' . $langs->trans("BackToList") . '</a>';
 print $TBS->render('tpl/card.tpl.php'
@@ -249,7 +254,7 @@ print $TBS->render('tpl/card.tpl.php'
 			,'action' => 'save'
 			,'urlcard' => dol_buildpath('/questionnaire/card.php', 1)
 			,'urllist' => dol_buildpath('/questionnaire/list.php', 1)
-			,'showRef' => ($action == 'create') ? $langs->trans('Draft') : $form->showrefnav($object, 'ref', $linkback, 1, 'ref', 'ref', '')
+			,'showRef' => ($action == 'create') ? $langs->trans('Draft') : ($mode === 'answer' ? '<div class="refid">'.$object->ref.'</div>' : $form->showrefnav($object, 'ref', $linkback, 1, 'ref', 'ref', ''))
 			,'showTitle' => $formcore->texte('', 'title', $object->title, 80, 255)
 			,'showStatus' => $object->getLibStatut(1)
 			,'apercuLabel' => $action === 'apercu' ? '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'">Retour au mode édition</a>' : '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=apercu">Visualiser un aperçu</a>'
@@ -320,7 +325,7 @@ if(empty($action) || $action === 'view' || $action === 'validate' || $action ===
 		}
 	}
 	print '</div>';
-	print '<div class="center"><input class="butAction" name="subSave" type="SUBMIT" value="Enregistrer"/><input class="butAction" name="subSave" type="SUBMIT" value="Valider"/></div>';
+	print '<div class="center"><input class="butAction" name="subSave" type="SUBMIT" value="Enregistrer"/><input class="butAction" name="subValid" type="SUBMIT" value="Valider"/></div>';
 	print '</form>';
 }
 

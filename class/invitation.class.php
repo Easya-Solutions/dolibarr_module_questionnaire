@@ -23,7 +23,8 @@ class Invitation extends SeedObject {
 		$this->db = $db;
 		
 		$this->fields=array(
-				'token'=>array('type'=>'string')
+				'fk_questionnaire'=>array('type'=>'integer','index'=>true)
+				,'token'=>array('type'=>'string')
 				,'date_limite_reponse'=>array('type'=>'date')
 		);
 		
@@ -184,6 +185,32 @@ class InvitationUser extends SeedObject {
 		if ($loadChild) $this->fetchObjectLinked();
 		
 		return $res;
+	}
+	
+	
+	public function loadBy($TFieldValue, $annexe = false)
+	{
+		global $db;
+		
+		$sql = 'SELECT rowid
+				FROM '.MAIN_DB_PREFIX.$this->$table_element.'
+				WHERE 1';
+		foreach($TFieldValue as $field=>$val) $sql.= ' AND '.$field.' = '.$val;
+		
+		$resql = $db->query($sql);
+		if(!empty($resql) && $db->num_rows($resql) > 0) {
+			$res = $db->fetch_object($resql);
+			$res = $this->load($res->rowid);
+		}
+		
+		return $res;
+	}
+	
+	function setValid() {
+		
+		$this->fk_statut = 1;
+		$this->save();
+		
 	}
 	
 	public function save() {

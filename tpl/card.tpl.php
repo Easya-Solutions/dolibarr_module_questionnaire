@@ -11,17 +11,19 @@
 				<td width="25%">[langs.transnoentities(Title)]</td>
 				<td>[view.showTitle;strconv=no]</td>
 			</tr>
-
-			<tr class="status">
-				<td width="25%">[langs.transnoentities(Status)]</td>
-				<td>[object.getLibStatut(1);strconv=no]</td>
-			</tr>
 			
-			[onshow;block=begin;when [object.id]!=0]
-			<tr class="status">
-				<td width="25%">[langs.transnoentities(Mode)]</td>
-				<td>[view.apercuLabel;strconv=no]</td>
-			</tr>
+			[onshow;block=begin;when [view.mode]!='answer']
+				<tr class="status">
+					<td width="25%">[langs.transnoentities(Status)]</td>
+					<td>[object.getLibStatut(1);strconv=no]</td>
+				</tr>
+				
+				[onshow;block=begin;when [object.id]!=0]
+				<tr class="status">
+					<td width="25%">[langs.transnoentities(Mode)]</td>
+					<td>[view.apercuLabel;strconv=no]</td>
+				</tr>
+				[onshow;block=end]
 			[onshow;block=end]
 		</tbody>
 	</table>

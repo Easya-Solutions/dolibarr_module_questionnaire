@@ -264,10 +264,23 @@ class modquestionnaire extends DolibarrModules
 		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=questionnaire,fk_leftmenu=questionnairelist',
 				'type' => 'left',
-				'titre' => $langs->trans('List'),
+				'titre' => $langs->trans('questionnaireList'),
 				'url' => '/questionnaire/list.php',
 				'langs' => 'questionnaire@questionnaire',
 				'position' => 103,
+				'enabled' => '1',
+				'perms' => '1',
+				'target' => '',
+				'user' => 0
+		);
+		$r++;
+		$this->menu[$r] = array (
+				'fk_menu' => 'fk_mainmenu=questionnaire,fk_leftmenu=questionnairelist',
+				'type' => 'left',
+				'titre' => $langs->trans('questionnaireListToAnswer'),
+				'url' => '/questionnaire/list.php?action=to_answer',
+				'langs' => 'questionnaire@questionnaire',
+				'position' => 104,
 				'enabled' => '1',
 				'perms' => '1',
 				'target' => '',

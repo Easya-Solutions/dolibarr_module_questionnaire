@@ -477,3 +477,9 @@ function setField($type_object, $fk_object, $field, $value) {
 	return $obj->save();
 	
 }
+
+function _getDateFr($date) {
+	
+	return date('d/m/Y', strtotime($date));
+	
+}
