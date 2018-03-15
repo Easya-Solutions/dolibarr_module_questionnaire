@@ -18,6 +18,11 @@ $action = GETPOST('action');
 $id = GETPOST('id', 'int');
 $fk_invitation = GETPOST('fk_invitation');
 
+$invitation = new Invitation($db);
+$res = $invitation->load($fk_invitation);
+
+if(empty($res) || $invitation->date_limite_reponse < strtotime(date('Y-m-d'))) accessforbidden();
+
 $form = new Form($db);
 
 $mode = 'view';
@@ -290,20 +295,11 @@ if(empty($action) || $action === 'view' || $action === 'validate' || $action ===
 	
 	print '</div>';
 	
-	if($action !== 'create') {
+	if(empty($object->fk_statut)) {
 		
-		if(empty($object->fk_statut)) {
-			$q = new Question($db);
-			print '<br /><div class="center">'.$form->selectarray('select_choice', $q->TTypes);
-			print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button></div>';
-			print '<div class="tabsAction">';
-			print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=validate" class="butAction">'.$langs->trans('Validate').'</a>';
-		} else {
-			print '<div class="tabsAction">';
-			print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=modif" class="butAction">'.$langs->trans('Modify').'</a>';
-		}
-		print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=delete" class="butActionDelete">'.$langs->trans('Delete').'</a>';
-		print '</div>';
+		$q = new Question($db);
+		print '<br /><div class="center">'.$form->selectarray('select_choice', $q->TTypes);
+		print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button></div>';
 		
 	}
 	

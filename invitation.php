@@ -102,7 +102,7 @@ print $TBS->render('tpl/invitation.tpl.php'
 				,'form' => array(
 						'select_usergroups' => $form->multiselectarray('usergroups', _getUserGroups(), $invitations_usergroups, '', 0, '', 0, '100%')
 						,'select_users' => $form->multiselectarray('users', _getUsers(), $invitations_users, '', 0, '', 0, '100%')
-						,'date_limite' => $form->select_date($invitation->date_limite_reponse, 'date_limite', 0, 0, 0, '', 1, 0, 1)
+						,'date_limite' => $form->select_date($action === 'create' ? dol_now() : $invitation->date_limite_reponse, 'date_limite', 0, 0, 0, '', 1, 0, 1)
 						,'fk_invitation' => $fk_invitation
 				)
 				,'Questionnaire' => array(
