@@ -78,6 +78,11 @@ function questionnaire_prepare_head(Questionnaire $object)
 		$head[$h][2] = 'invitation';
 		$h++;
 		
+		$head[$h][0] = dol_buildpath('/questionnaire/answer.php', 1).'?id='.$object->id;
+		$head[$h][1] = $langs->trans("questionnaireAnswerCard");
+		$head[$h][2] = 'answer';
+		$h++;
+		
 	}
 	
 	// Show more tabs from modules

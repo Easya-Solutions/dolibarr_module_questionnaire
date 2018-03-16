@@ -18,6 +18,7 @@ questionnaireStatusDraft=Brouillon (à valider)
 questionnaireStatusValidated=Validé
 questionnaireStatusRefused=Refusée (fermée)
 questionnaireStatusAccepted=Acceptée (fermée)
+questionnaireAnswerStatus=Statut questionnaire pour l'utilisateur
 
 Draft=Brouillon
 Validate=Validé
@@ -33,6 +34,7 @@ Noquestionnaire=(vide)
 Newquestionnaire=Création questionnaire
 questionnaireCard=Fiche questionnaire
 questionnaireInvitationCard=Invitations
+questionnaireAnswerCard=Réponses
 questionnaireSaved=Réponses enregistrées avec succès
 questionnaireValidated=Questionnaire validé définitivement
 
@@ -67,3 +69,6 @@ ConfirmDeleteQuestionnaire=Êtes-vous sûr de vouloir supprimer ce questionnaire
 DeleteQuestionnaire=Supprimer questionnaire
 ConfirmModifyQuestionnaire=Êtes-vous sûr de vouloir repasser ce questionnaire au statut brouillon ?
 ModifyQuestionnaire=Repasser questionnaire en brouillon
+
+# ANSWERS
+questionnaireUserAnswersOf=<h3>Réponses de : %s</h3>

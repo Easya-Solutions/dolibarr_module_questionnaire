@@ -72,7 +72,7 @@ class Question extends SeedObject {
 		
 		global $db;
 		
-		dol_include_once('/questionnaire/class/question.class.php');
+		dol_include_once('/questionnaire/class/choice.class.php');
 		
 		$choice = new Choice($db);
 		
@@ -81,7 +81,7 @@ class Question extends SeedObject {
 				WHERE fk_question = '.$this->id;
 		$resql = $db->query($sql);
 		if(!empty($resql) && $db->num_rows($resql) > 0) {
-			$this->questions = array();
+			$this->choices = array();
 			
 			while($res = $db->fetch_object($resql)) {
 				$choice = new Choice($db);
