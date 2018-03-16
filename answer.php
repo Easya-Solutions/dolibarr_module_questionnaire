@@ -128,6 +128,7 @@ function _getListAnswers(&$object) {
 			,'orderBy'=> array('cn.rowid' => 'DESC')
 			,'eval'=>array(
 					'fk_user' => '_getLinkAnswersUser("@fk_user@")'
+					,'fk_statut' => '_libStatut("@fk_statut@", 1)'
 			)
 	));
 	
@@ -179,5 +180,22 @@ function _seeAnswersUser(&$object, $fk_user) {
 	$res.= '</div>';
 	
 	return $res;
+	
+}
+
+function _libStatut($status, $mode) {
+	
+	global $langs;
+	$langs->load('questionnaire@questionnaire');
+	
+	if ($status==0) { $statustrans='statut0'; $keytrans='questionnaireStatusOpened'; $shortkeytrans='Draft'; }
+	if ($status==1) { $statustrans='statut1'; $keytrans='questionnaireStatusValidated'; $shortkeytrans='Validate'; }
+	
+	
+	if ($mode == 0) return img_picto($langs->trans($keytrans), $statustrans);
+	elseif ($mode == 1) return img_picto($langs->trans($keytrans), $statustrans).' '.$langs->trans($keytrans);
+	elseif ($mode == 2) return $langs->trans($keytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
+	elseif ($mode == 3) return img_picto($langs->trans($keytrans), $statustrans).' '.$langs->trans($shortkeytrans);
+	elseif ($mode == 4) return $langs->trans($shortkeytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
 	
 }

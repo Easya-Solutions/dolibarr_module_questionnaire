@@ -18,6 +18,7 @@ questionnaireStatusDraft=Brouillon (à valider)
 questionnaireStatusValidated=Validé
 questionnaireStatusRefused=Refusée (fermée)
 questionnaireStatusAccepted=Acceptée (fermée)
+questionnaireStatusOpened=Ouvert
 questionnaireAnswerStatus=Statut questionnaire pour l'utilisateur
 
 Draft=Brouillon
