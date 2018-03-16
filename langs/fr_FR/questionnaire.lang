@@ -73,3 +73,6 @@ ModifyQuestionnaire=Repasser questionnaire en brouillon
 
 # ANSWERS
 questionnaireUserAnswersOf=<h3>Réponses de : %s</h3>
+
+# ADMIN
+questionnaireSimpleNumRefModelDesc=Renvoie le numéro sous la forme LTR-yymm-nnnn où yy est l'année, mm le mois et nnnn un compteur séquentiel sans rupture et sans remise à 0

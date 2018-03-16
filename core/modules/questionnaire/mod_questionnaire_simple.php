@@ -44,7 +44,7 @@ class mod_questionnaire_simple extends ModeleNumRefQuestionnaire
 	function info()
 	{
 		global $langs;
-		return $langs->trans("RefLtrSimpleNumRefModelDesc", $this->prefix);
+		return $langs->trans("questionnaireSimpleNumRefModelDesc", $this->prefix);
 	}
 
 	/**
