@@ -135,6 +135,11 @@ function getFormConfirmquestionnaire(&$form, &$object, $action)
     	$text = $langs->trans('ConfirmModifyQuestionnaire');
     	$formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('ModifyQuestionnaire'), $text, 'confirm_modif', '', 0, 1);
     }
+    elseif ($action == 'validate_answers'/* && !empty($user->rights->questionnaire->write)*/)
+    {
+    	$text = $langs->trans('ConfirmValidateAnswersQuestionnaire');
+    	$formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('ValidateAnswersQuestionnaire'), $text, 'confirm_validate_answers', array(array('type'=>'hidden', 'name'=>'fk_invitation', 'value'=>GETPOST('fk_invitation'))), 0, 1);
+    }
 
     return $formconfirm;
 }
@@ -256,7 +261,7 @@ function draw_question_for_user(&$q) {
 	if(empty($q->choices)) $q->loadChoices();
 	if(!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale'/*Pas de choix pour ces types là*/) {
 		$res = '<div class="element" type="question" id="question'.$q->id.'">';
-		$res.= '<div class="refid">'.$q->label.'</div>';
+		$res.= '<div class="refid">'.$q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
 		
 		switch($q->type) {
 			

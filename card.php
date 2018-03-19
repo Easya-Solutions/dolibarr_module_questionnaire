@@ -134,11 +134,7 @@ if (empty($reshook))
 				setEventMessage($langs->trans('questionnaireSaved'));
 				header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=answer&fk_invitation='.$fk_invitation);
 			} else { // Validation finale
-				$invitation_user = new InvitationUser($db);
-				$invitation_user->loadBy(array('fk_invitation'=>$fk_invitation, 'fk_user'=>$user->id));
-				$invitation_user->setValid();
-				setEventMessage($langs->trans('questionnaireValidated'));
-				header('Location: '.dol_buildpath('/questionnaire/list.php', 1).'?action=to_answer');
+				header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=validate_answers&fk_invitation='.$fk_invitation);
 			}
 			exit;
 			break;
@@ -151,7 +147,9 @@ if (empty($reshook))
 		case 'modif':
 		case 'delete':
 		case 'validate':
+		case 'validate_answers':
 			$formconfirm = getFormConfirmquestionnaire($form, $object, $action);
+			if($action === 'validate_answers') $action = 'answer';
 			break;
 		case 'confirm_modif':
 			$object->setDraft();
@@ -163,6 +161,15 @@ if (empty($reshook))
 			$object->setValid();
 			
 			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
+			exit;
+			break;
+		case 'confirm_validate_answers':
+			$invitation_user = new InvitationUser($db);
+			$invitation_user->loadBy(array('fk_invitation'=>$fk_invitation, 'fk_user'=>$user->id));
+			
+			$invitation_user->setValid();
+			setEventMessage($langs->trans('questionnaireValidated'));
+			header('Location: '.dol_buildpath('/questionnaire/list.php', 1).'?action=to_answer');
 			exit;
 			break;
 		case 'confirm_delete':
@@ -337,7 +344,7 @@ if(empty($action) || $action === 'view' || $action === 'validate' || $action ===
 		}
 	}
 	print '</div>';
-	print '<div class="center"><input class="butAction" name="subSave" type="SUBMIT" value="Enregistrer"/><input class="butAction" name="subValid" type="SUBMIT" value="Valider"/></div>';
+	print '<div class="center"><input class="butAction" name="subSave" type="SUBMIT" value="Enregistrer"/><input name="subValid" type="SUBMIT" class="butAction"/>';
 	print '</form>';
 }
 
