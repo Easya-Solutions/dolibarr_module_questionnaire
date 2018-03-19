@@ -140,4 +140,27 @@ class Question extends SeedObject {
 		return parent::deleteCommon($user);
 	}
 	
+	function deleteAllAnswersUser($fk_user) {
+		
+		global $db, $user;
+		
+		dol_include_once('/questionnaire/class/answer.class.php');
+		
+		$obj = new Answer($db);
+		
+		$sql = 'SELECT rowid
+				FROM '.MAIN_DB_PREFIX.$obj->table_element.'
+				WHERE fk_question = '.$this->id.'
+				AND fk_user = '.$fk_user;
+		$resql = $db->query($sql);
+		if(!empty($resql) && $db->num_rows($resql) > 0) {
+			while($res = $db->fetch_object($resql)) {
+				$obj = new Answer($db);
+				$obj->load($res->rowid);
+				$obj->delete($user);
+			}
+		}
+		
+	}
+	
 }

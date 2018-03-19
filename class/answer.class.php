@@ -60,25 +60,4 @@ class Answer extends SeedObject {
 		return parent::deleteCommon($user);
 	}
 	
-	static public function deleteAllAnswersUser($fk_user, $fk_question) {
-		
-		global $db, $user;
-		
-		$obj = new self($db);
-		
-		$sql = 'SELECT rowid
-				FROM '.MAIN_DB_PREFIX.$obj->table_element.'
-				WHERE fk_question = '.$fk_question.'
-				AND fk_user = '.$fk_user;
-		$resql = $db->query($sql);
-		if(!empty($resql) && $db->num_rows($resql) > 0) {
-			while($res = $db->fetch_object($resql)) {
-				$obj = new self($db);
-				$obj->load($res->rowid);
-				$obj->delete($user);
-			}
-		}
-		
-	}
-	
 }

@@ -39,6 +39,7 @@ questionnaireInvitationCard=Invitations
 questionnaireAnswerCard=Réponses
 questionnaireSaved=Réponses enregistrées avec succès
 questionnaireValidated=Questionnaire validé définitivement
+questionnaireNotValidated=Attention, certaines réponses sont obligatoires !
 
 # CARD TPL
 Save=Enregistrer

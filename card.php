@@ -72,17 +72,18 @@ if (empty($reshook))
 			
 			break;
 		case 'save_answer':
-			//var_dump($_REQUEST);exit;
+			
+			// Suppression anciennes réponses
+			$object->deleteAllAnswersUser($user->id);
+			
 			$TAnswer = GETPOST('TAnswer');
+			
 			foreach($_REQUEST as $k=>&$v) {
 				
 				if($k === 'TAnswer') {
 					
 					foreach($v as $fk_question=>&$content) {
 					
-						// Suppression anciennes réponses
-						Answer::deleteAllAnswersUser($user->id, $fk_question);
-						
 						// Ajout nouvelles réponses
 						if(is_array($content) && !empty($content)) {
 							foreach($content as &$answer_user) {
@@ -98,7 +99,7 @@ if (empty($reshook))
 								$answer->save();
 								
 							}
-						} elseif(!is_array($content)) {
+						} elseif(!is_array($content) && !empty($content)) {
 							$answer = new Answer($db);
 							$answer->fk_user = $user->id;
 							$answer->fk_question = $fk_question;
@@ -116,15 +117,23 @@ if (empty($reshook))
 					
 					// Suppression anciennes réponses
 					$fk_question = strtr($k, array('linearscal_q'=>'', 'date_q'=>'', 'time_q'=>'', 'hour'=>'', 'min'=>''));
-					Answer::deleteAllAnswersUser($user->id, $fk_question);
 					
 					$answer = new Answer($db);
+					$answer->fk_question = $fk_question;
 					$answer->fk_user = $user->id;
 					$answer->value = $v;
-					if(strpos($k, 'date_q') !== false) $answer->value = strtotime(GETPOST('date_q'.$fk_question.'year').'-'.GETPOST('date_q'.$fk_question.'month').'-'.GETPOST('date_q'.$fk_question.'day'));
-					if(strpos($k, 'time_q') !== false) $answer->value = ((int)GETPOST('time_q'.$fk_question.'hour') * 60 * 60) + ((int)GETPOST('time_q'.$fk_question.'min') * 60);
-					$answer->fk_question = $fk_question;
-					$answer->save();
+					
+					$year = GETPOST('date_q'.$fk_question.'year');
+					$month = GETPOST('date_q'.$fk_question.'month');
+					$day = GETPOST('date_q'.$fk_question.'day');
+					
+					$hour = GETPOST('time_q'.$fk_question.'hour');
+					$min = GETPOST('time_q'.$fk_question.'min');
+					
+					if(strpos($k, 'date_q') !== false && !empty($year)) $answer->value = strtotime($year.'-'.$month.'-'.$day);
+					if(strpos($k, 'time_q') !== false && (!empty($hour) || !empty($min))) $answer->value = ((int)$hour * 60 * 60) + ((int)$min * 60);
+					
+					if(!empty($answer->value)) $answer->save();
 					
 				}
 				
@@ -167,9 +176,18 @@ if (empty($reshook))
 			$invitation_user = new InvitationUser($db);
 			$invitation_user->loadBy(array('fk_invitation'=>$fk_invitation, 'fk_user'=>$user->id));
 			
-			$invitation_user->setValid();
-			setEventMessage($langs->trans('questionnaireValidated'));
-			header('Location: '.dol_buildpath('/questionnaire/list.php', 1).'?action=to_answer');
+			$isOkForValidation = $object->isOkForValidation($user->id);
+			
+			if($isOkForValidation) {
+			
+				$invitation_user->setValid();
+				setEventMessage($langs->trans('questionnaireValidated'));
+				header('Location: '.dol_buildpath('/questionnaire/list.php', 1).'?action=to_answer');
+				
+			} else {
+				setEventMessage($langs->trans('questionnaireNotValidated'), 'errors');
+				header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$id.'&action=answer&fk_invitation='.$fk_invitation);
+			}
 			exit;
 			break;
 		case 'confirm_delete':

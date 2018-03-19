@@ -252,6 +252,33 @@ class Questionnaire extends SeedObject
 		
 	}
 	
+	/**
+	 * Vérifie si les réponses obligatoires sont bien renseignées
+	 */
+	function isOkForValidation($fk_user) {
+		
+		$okFoValidation = true;
+		if(empty($this->questions)) $this->loadQuestions();
+		if(!empty($this->questions)) {
+			foreach($this->questions as &$q) {
+				
+				if(empty($q->compulsory_answer)) continue;
+				else {
+					$q->loadAnswers($fk_user);
+					if(empty($q->answers)) {
+						$okFoValidation = false;
+						break;
+					}
+				}
+
+				
+			}
+		}
+		
+		return $okFoValidation;
+		
+	}
+	
 	function loadInvitations() {
 		
 		global $db;
@@ -354,6 +381,17 @@ class Questionnaire extends SeedObject
 			print $langs->trans("Error") . " " . $langs->trans("ErrorModuleSetupNotComplete");
 			return "";
 		}
+	}
+	
+	function deleteAllAnswersUser($fk_user) {
+		
+		if(empty($this->questions)) $this->loadQuestions();
+		if(!empty($this->questions)) {
+			foreach($this->questions as &$q) {
+				$q->deleteAllAnswersUser($fk_user);
+			}
+		}
+		
 	}
 	
 }
