@@ -77,7 +77,7 @@ if (empty($reshook)) {
 			
 			$invitation = new Invitation($db);
 			$invitation->load($fk_invitation);
-			$invitation->delete();
+			$invitation->delete($user);
 			
 			break;
 			

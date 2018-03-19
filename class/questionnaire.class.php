@@ -102,18 +102,17 @@ class Questionnaire extends SeedObject
 		return $res;
 	}
 	
-	public function delete()
+	public function delete(User &$user)
 	{
-		global $user;
 		
 		if(empty($this->questions)) $this->loadQuestions();
 		if(!empty($this->questions)) {
-			foreach($this->questions as &$question) $question->delete();
+			foreach($this->questions as &$question) $question->delete($user);
 		}
 		
 		if(empty($this->invitations)) $this->loadInvitations();
 		if(!empty($this->invitations)) {
-			foreach($this->invitations as &$inv) $inv->delete();
+			foreach($this->invitations as &$inv) $inv->delete($user);
 		}
 		
 		parent::deleteCommon($user);

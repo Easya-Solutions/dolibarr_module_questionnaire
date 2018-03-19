@@ -53,10 +53,7 @@ class Answer extends SeedObject {
 		
 	}
 	
-	public function delete() {
-		
-		global $user;
-		
+	public function delete(User &$user) {
 		return parent::deleteCommon($user);
 	}
 	

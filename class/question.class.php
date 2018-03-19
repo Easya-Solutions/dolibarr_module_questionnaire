@@ -123,18 +123,17 @@ class Question extends SeedObject {
 		
 	}
 	
-	public function delete()
+	public function delete(User &$user)
 	{
-		global $user;
 		
 		if(empty($this->choices)) $this->loadChoices();
 		if(!empty($this->choices)) {
-			foreach($this->choices as &$choice) $choice->delete();
+			foreach($this->choices as &$choice) $choice->delete($user);
 		}
 		
 		if(empty($this->answers)) $this->loadAnswers();
 		if(!empty($this->answers)) {
-			foreach($this->answers as &$answer) $answer->delete();
+			foreach($this->answers as &$answer) $answer->delete($user);
 		}
 		
 		return parent::deleteCommon($user);

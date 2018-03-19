@@ -191,7 +191,7 @@ if (empty($reshook))
 			exit;
 			break;
 		case 'confirm_delete':
-			$object->delete();
+			$object->delete($user);
 			
 			header('Location: '.dol_buildpath('/questionnaire/list.php', 1));
 			exit;

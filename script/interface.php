@@ -101,10 +101,10 @@ function add_choice($fk_question, $type_choice, $label='') {
 
 function del_object($type_object, $fk_object) {
 	
-	global $db;
+	global $db, $user;
 	
 	$obj = new $type_object($db);
 	$obj->load($fk_object);
-	return  $obj->delete();
+	return  $obj->delete($user);
 	
 }

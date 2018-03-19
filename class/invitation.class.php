@@ -52,13 +52,12 @@ class Invitation extends SeedObject {
 		
 	}
 	
-	public function delete()
+	public function delete(User &$user)
 	{
-		global $user;
 		
 		if(empty($this->invitations_user)) $this->loadInvitationsUser();
 		if(!empty($this->invitations_user)) {
-			foreach($this->invitations_user as &$invitation_user) $invitation_user->delete();
+			foreach($this->invitations_user as &$invitation_user) $invitation_user->delete($user);
 		}
 		
 		parent::deleteCommon($user);
@@ -133,7 +132,7 @@ class Invitation extends SeedObject {
 	
 	function delAllInvitationsUser() {
 		
-		global $db;
+		global $db, $user;
 		
 		$invitation_user = new InvitationUser($db);
 		
@@ -145,7 +144,7 @@ class Invitation extends SeedObject {
 			while($res = $db->fetch_object($resql)) {
 				$invitation_user = new InvitationUser($db);
 				$invitation_user->load($res->rowid);
-				$invitation_user->delete();
+				$invitation_user->delete($user);
 			}
 		}
 	}
@@ -221,9 +220,8 @@ class InvitationUser extends SeedObject {
 		
 	}
 	
-	public function delete()
+	public function delete(User &$user)
 	{
-		global $user;
 		
 		parent::deleteCommon($user);
 	}
