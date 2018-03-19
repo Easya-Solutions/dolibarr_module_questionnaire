@@ -26,14 +26,16 @@ class Questionnaire extends SeedObject
 	const STATUS_CLOSED = 2;
 	
 	public static $TStatus = array(
-		self::STATUS_DRAFT => 'Draft'
-		,self::STATUS_VALIDATED => 'Validate'
-		,self::STATUS_CLOSED=> 'Closed'
+			self::STATUS_DRAFT => 'Draft'
+			,self::STATUS_VALIDATED => 'Validate'
+			,self::STATUS_CLOSED=> 'Closed'
 	);
 	
 	public $table_element = 'quest_questionnaire';
-
+	
 	public $element = 'questionnaire';
+	
+	public $picto = 'questionnaire@questionnaire';
 	
 	public function __construct($db)
 	{
@@ -51,6 +53,13 @@ class Questionnaire extends SeedObject
 				,'type_object_linked'=>array('type'=>'string')
 				,'fk_object_linked'=>array('type'=>'integer','index'=>true)
 				,'fk_user_author'=>array('type'=>'integer','index'=>true)
+		);
+		
+		$this->TTypeObjectLinked = array(
+				'Propal' => $langs->trans('Propal')
+				,'Facture' => $langs->trans('Invoice')
+				,'Commande' => $langs->trans('Order')
+				,'SupplierOrder' => $langs->trans('SuppierOrder')
 		);
 		
 		$this->init();
@@ -198,11 +207,12 @@ class Questionnaire extends SeedObject
 	
 	public static function LibStatut($status, $mode)
 	{
-		global $langs;
+		global $langs, $questionnaire_status_forced_key;
+		
 		$langs->load('questionnaire@questionnaire');
-
+		
 		if ($status==self::STATUS_DRAFT) { $statustrans='statut0'; $keytrans='questionnaireStatusDraft'; $shortkeytrans='Draft'; }
-		if ($status==self::STATUS_VALIDATED) { $statustrans='statut1'; $keytrans='questionnaireStatusValidated'; $shortkeytrans='Validate'; }
+		if ($status==self::STATUS_VALIDATED) { $statustrans='statut1'; $keytrans='questionnaireStatusValidated'; $shortkeytrans='questionnaireStatusValidatedShort'; }
 		if ($status==self::STATUS_CLOSED) { $statustrans='statut6'; $keytrans='questionnaireStatusClosed'; $shortkeytrans='Closed'; }
 
 		
@@ -211,6 +221,9 @@ class Questionnaire extends SeedObject
 		elseif ($mode == 2) return $langs->trans($keytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
 		elseif ($mode == 3) return img_picto($langs->trans($keytrans), $statustrans).' '.$langs->trans($shortkeytrans);
 		elseif ($mode == 4) return $langs->trans($shortkeytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
+		elseif ($mode == 5)	return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($this->labelstatut[$statut],$statuttrans);
+		// mode 6 used by dol_banner() function
+		elseif ($mode == 6)	return '<span class="hideonsmartphone">'.$langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key).' </span>'.img_picto($langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key),$statustrans);
 	}
 	
 	function loadQuestions() {

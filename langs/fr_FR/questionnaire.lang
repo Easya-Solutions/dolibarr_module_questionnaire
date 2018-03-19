@@ -15,7 +15,8 @@ TopMenuquestionnaire=questionnaire
 
 # STATUS
 questionnaireStatusDraft=Brouillon (à valider)
-questionnaireStatusValidated=Validé
+questionnaireStatusValidatedShort=En attente de réponses
+questionnaireStatusValidated=Validé - En attente de réponses
 questionnaireStatusRefused=Refusée (fermée)
 questionnaireStatusAccepted=Acceptée (fermée)
 questionnaireStatusOpened=Ouvert

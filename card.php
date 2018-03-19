@@ -16,6 +16,7 @@ $langs->load('questionnaire@questionnaire');
 
 $action = GETPOST('action');
 $id = GETPOST('id', 'int');
+$ref = GETPOST('ref');
 $fk_invitation = GETPOST('fk_invitation');
 
 $invitation = new Invitation($db);
@@ -244,6 +245,12 @@ else
 	dol_fiche_head($head, 'card', $langs->trans("questionnaire"), 0, $picto, 1);
 }
 
+if($action !== 'create') {
+	$shownav = $show_linkback = ($action === 'answer' ? false : true);
+	if($action === 'answer') $questionnaire_status_forced_key = 'questionnaireStatusValidatedShort';
+	_getBanner($object, $action, true, $shownav, $show_linkback);
+}
+
 $formcore = new TFormCore;
 $formcore->Set_typeaff($mode);
 
@@ -270,7 +277,6 @@ print $TBS->render('tpl/card.tpl.php'
 			,'showRef' => ($action == 'create') ? $langs->trans('Draft') : ($mode === 'answer' ? '<div class="refid">'.$object->ref.'</div>' : $form->showrefnav($object, 'ref', $linkback, 1, 'ref', 'ref', ''))
 			,'showTitle' => $formcore->texte('', 'title', $object->title, 80, 255)
 			,'showStatus' => $object->getLibStatut(1)
-			,'apercuLabel' => $action === 'apercu' ? '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'">Retour au mode édition</a>' : '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=apercu">Visualiser un aperçu</a>'
 			,'at_least_one_invitation' => empty($object->invitations) ? 0 : 1 // On ne peut modifier le questionnaire que s'il n'existe aucune invitation
 		)
 		,'langs' => $langs

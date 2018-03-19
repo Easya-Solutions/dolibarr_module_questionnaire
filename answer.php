@@ -21,7 +21,12 @@ $object = new Questionnaire($db);
 $form = new Form($db);
 
 if (!empty($id)) $object->load($id);
-elseif (!empty($ref)) $object->loadBy($ref, 'ref');
+elseif (!empty($ref)) $object->load('', $ref);
+
+if(empty($object->fk_statut)) {
+	header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
+	exit;
+}
 
 $hookmanager->initHooks(array('questionnaireinvitationcard', 'globalcard'));
 
@@ -33,6 +38,8 @@ llxHeader();
 $head = questionnaire_prepare_head($object);
 $picto = dol_buildpath('/questionnaire/img/object_questionnaire.png', 1);
 dol_fiche_head($head, 'answer', $langs->trans("questionnaire"), 0, $picto, 1);
+
+_getBanner($object, $action, false);
 
 $TBS=new TTemplateTBS();
 $TBS->TBS->protect=false;
