@@ -74,6 +74,8 @@ ConfirmModifyQuestionnaire=Êtes-vous sûr de vouloir repasser ce questionnaire 
 ModifyQuestionnaire=Repasser questionnaire en brouillon
 ConfirmValidateAnswersQuestionnaire=Êtes-vous sûr de vouloir valider définitivement vos réponses ?
 ValidateAnswersQuestionnaire=Valider les réponses au questionnaire
+ConfirmCloneQuestionnaire=Êtes-vous sûr de vouloir cloner ce questionnaire ?
+CloneQuestionnaire=Cloner questionnaire
 
 # ANSWERS
 questionnaireUserAnswersOf=<h3>Réponses de : %s</h3>

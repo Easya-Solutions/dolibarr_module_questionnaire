@@ -127,8 +127,8 @@ function getFormConfirmquestionnaire(&$form, &$object, $action)
     }
     elseif ($action == 'clone'/* && !empty($user->rights->questionnaire->write)*/)
     {
-    	$text = $langs->trans('ConfirmClonequestionnaire', $object->ref);
-    	$formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('Clonequestionnaire'), $text, 'confirm_clone', '', 0, 1);
+    	$text = $langs->trans('ConfirmCloneQuestionnaire', $object->ref);
+    	$formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('CloneQuestionnaire'), $text, 'confirm_clone', '', 0, 1);
     }
     elseif ($action == 'modif'/* && !empty($user->rights->questionnaire->write)*/)
     {

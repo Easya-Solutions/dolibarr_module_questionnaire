@@ -167,13 +167,8 @@ if (empty($reshook))
 			}
 			exit;
 			break;
-		case 'confirm_clone':
-			$object->cloneObject();
-			
-			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
-			exit;
-			break;
 		case 'modif':
+		case 'clone':
 		case 'delete':
 		case 'validate':
 		case 'validate_answers':
@@ -218,6 +213,12 @@ if (empty($reshook))
 				header('Location: '.$_SERVER['PHP_SELF'].'?id='.$id);
 			}
 			
+			exit;
+			break;
+		case 'confirm_clone':
+			$res = $object->cloneObj();
+			
+			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$res);
 			exit;
 			break;
 		// link from llx_element_element
@@ -348,7 +349,7 @@ if ($mode == 'edit') echo $formcore->end_form();
 //if ($mode == 'view' && $object->id) $somethingshown = $form->showLinkedObjectBlock($object->generic);
 
 // Print list of questions
-if(empty($action) || $action === 'view' || $action === 'validate' || $action === 'delete' || $action === 'modif') {
+if(empty($action) || $action === 'view' || $action === 'validate' || $action === 'delete' || $action === 'modif' || $action === 'clone') {
 	
 	if(empty($object->questions)) $object->loadQuestions();
 	

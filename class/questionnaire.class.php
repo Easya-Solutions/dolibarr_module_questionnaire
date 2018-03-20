@@ -393,6 +393,40 @@ class Questionnaire extends SeedObject
 		
 	}
 	
+	function cloneObj() {
+		
+		global $db;
+		
+		$q = new self($db);
+		foreach($this as $k=>$v) {
+			if(!is_array($v) && !is_object($v)) $q->{$k} = $v;
+		}
+		$q->id = $q->fk_statut = 0;
+		
+		$id_questionnaire = $q->save(1);
+		
+		if(empty($this->questions)) $this->loadQuestions();
+		if(!empty($this->questions)) {
+			foreach($this->questions as &$question) {
+				if(empty($question->choices)) $question->loadChoices();
+				$question->id = 0;
+				$question->fk_questionnaire = $q->id;
+				//var_dump($choices);exit;
+				$id_question = $question->save();
+				if(!empty($question->choices)) {
+					foreach($question->choices as &$choix) {
+						$choix->id = 0;
+						$choix->fk_question = $id_question;
+						$choix->save();
+					}
+				}
+			}
+		}
+		
+		return $id_questionnaire;
+		
+	}
+	
 }
 
 
