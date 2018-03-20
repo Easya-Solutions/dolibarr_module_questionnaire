@@ -200,21 +200,30 @@ class modquestionnaire extends DolibarrModules
 		// $this->rights[$r][4] = 'level1';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		// $this->rights[$r][5] = 'level2';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		// $r++;
-/*
+		
 		$this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
-		$this->rights[$r][1] = 'questionnaire_read';	// Permission label
+		$this->rights[$r][1] = 'questionnaire_right_read';	// Permission label
 		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'read';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-		$this->rights[$r][5] = '';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		$r++;
 		
 		$this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
-		$this->rights[$r][1] = 'questionnaire_write';	// Permission label
-		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
-		$this->rights[$r][4] = 'write';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-		$this->rights[$r][5] = '';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+		$this->rights[$r][1] = 'questionnaire_right_readall';	// Permission label
+		$this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
+		$this->rights[$r][4] = 'readall';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		$r++;
-*/
+		
+		$this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
+		$this->rights[$r][1] = 'questionnaire_right_delete';	// Permission label
+		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
+		$this->rights[$r][4] = 'delete';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+		$r++;
+		
+		$this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
+		$this->rights[$r][1] = 'questionnaire_right_readstats';	// Permission label
+		$this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
+		$this->rights[$r][4] = 'readstats';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+		$r++;
 
 		// Main menu entries
 		$this->menu = array();			// List of menus to add
@@ -229,7 +238,7 @@ class modquestionnaire extends DolibarrModules
 				'langs' => 'questionnaire@questionnaire',
 				'position' => 100,
 				'enabled' => '1',
-				'perms' => '1',
+				'perms' => '$user->rights->questionnaire->read',
 				'target' => '',
 				'user' => 0
 		);
@@ -243,7 +252,7 @@ class modquestionnaire extends DolibarrModules
 				'langs' => 'questionnaire@questionnaire',
 				'position' => 101,
 				'enabled' => '1',
-				'perms' => '1',
+				'perms' => '$user->rights->questionnaire->read',
 				'target' => '',
 				'user' => 0
 		);
@@ -269,7 +278,7 @@ class modquestionnaire extends DolibarrModules
 				'langs' => 'questionnaire@questionnaire',
 				'position' => 103,
 				'enabled' => '1',
-				'perms' => '1',
+				'perms' => '$user->rights->questionnaire->read',
 				'target' => '',
 				'user' => 0
 		);

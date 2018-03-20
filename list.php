@@ -36,18 +36,14 @@ if (empty($reshook))
 llxHeader('',$langs->trans($action === 'to_answer' ? 'QuestionnaireToAnswerArea' : 'questionnaireList'),'','');
 
 print load_fiche_titre($langs->trans($action === 'to_answer' ? 'QuestionnaireToAnswerArea' : 'questionnaireList'),'',dol_buildpath('/questionnaire/img/questionnaire.png', 1), 1);
-//print_barre_liste($langs->trans("QuestionnaireArea"), $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, dol_buildpath('/questionnaire/img/questionnaire.png'), 1, '', '', $limit);
 
-//$type = GETPOST('type');
-//if (empty($user->rights->questionnaire->all->read)) $type = 'mine';
-
-// TODO ajouter les champs de son objet que l'on souhaite afficher
-//$sql = 'SELECT t.rowid, t.ref, t.title, t.date_creation, t.tms, \'\' AS action';
 $sql = 'SELECT t.rowid, t.title, t.origin, t.originid, t.fk_statut, \'\' AS action';
 $sql.= ' FROM '.MAIN_DB_PREFIX.'quest_questionnaire t ';
 $sql.= ' WHERE 1=1';
 $sql.= ' AND t.entity IN ('.getEntity('questionnaire', 1).')';
+if(empty($user->rights->questionnaire->readall)) $sql.= ' AND fk_user_author = '.$user->id;
 
+// Peu importe les droits, on ne peut répondre qu'aux questionnaires auxquels on est invité à répondre
 if($action === 'to_answer') {
 	$sql = 'SELECT DISTINCT i.rowid as id_invitation, q.rowid, q.title, i.date_limite_reponse
 			FROM '.MAIN_DB_PREFIX.'quest_questionnaire q

@@ -30,8 +30,7 @@ if($action === 'answer' && empty($res) || $invitation->date_limite_reponse < str
 $form = new Form($db);
 
 $mode = 'view';
-if (empty($user->rights->questionnaire->write)) $mode = 'view'; // Force 'view' mode if can't edit object
-else if ($action == 'create' || $action == 'edit') $mode = 'edit';
+if ($action == 'create' || $action == 'edit') $mode = 'edit';
 
 $object = new Questionnaire($db);
 
@@ -63,6 +62,7 @@ if (empty($reshook))
 			$object->title = $title; // Set standard attributes
 			$object->origin = $origin;
 			$object->originid = $originid;
+			$object->fk_user_author = $user->id;
 			
 			if ($error > 0)
 			{
@@ -211,9 +211,13 @@ if (empty($reshook))
 			exit;
 			break;
 		case 'confirm_delete':
-			$object->delete($user);
+			if(!empty($user->rights->questionnaire->delete)) {
+				$object->delete($user);
+				header('Location: '.dol_buildpath('/questionnaire/list.php', 1));
+			} else {
+				header('Location: '.$_SERVER['PHP_SELF'].'?id='.$id);
+			}
 			
-			header('Location: '.dol_buildpath('/questionnaire/list.php', 1));
 			exit;
 			break;
 		// link from llx_element_element
@@ -327,6 +331,9 @@ print $TBS->render('tpl/card.tpl.php'
 		)
 		,'langs' => $langs
 		,'user' => $user
+		,'rights' => array(
+			'can_delete' => $user->rights->questionnaire->delete
+		)
 		,'conf' => $conf
 		,'Questionnaire' => array(
 			'STATUS_DRAFT' => Questionnaire::STATUS_DRAFT

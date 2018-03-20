@@ -65,7 +65,9 @@
 			[onshow;block=end]
 		[onshow;block=end]
 		
-		<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=delete" class="butActionDelete">[langs.transnoentities(Delete)]</a></div>
+		[onshow;block=begin;when [rights.can_delete]=1]
+			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=delete" class="butActionDelete">[langs.transnoentities(Delete)]</a></div>
+		[onshow;block=end]
 			
 	</div>
 	[onshow;block=end]
