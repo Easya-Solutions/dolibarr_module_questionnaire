@@ -50,8 +50,8 @@ class Questionnaire extends SeedObject
 				,'entity'=>array('type'=>'integer','index'=>true)
 				,'fk_statut'=>array('type'=>'integer','index'=>true) // date, integer, string, float, array, text
 				,'import_key'=>array('type'=>'integer','index'=>true)
-				,'type_object_linked'=>array('type'=>'string')
-				,'fk_object_linked'=>array('type'=>'integer','index'=>true)
+				,'origin'=>array('type'=>'string')
+				,'originid'=>array('type'=>'integer','index'=>true)
 				,'fk_user_author'=>array('type'=>'integer','index'=>true)
 		);
 		

@@ -17,20 +17,26 @@ $type_choice = GETPOST('type_choice');
 $fk_object = GETPOST('fk_object');
 $field = GETPOST('field');
 $value = GETPOST('value');
+$origin = GETPOST('origin');
 
 _get($get);
 _put($put);
 
 function _get($case, $obj=null) {
 	
-	global $type_choice;
+	global $type_choice, $origin;
 	
 	switch($case) {
 		case 'new_question':
 			print json_encode(draw_question($obj));
 			break;
 		
-		case 'new_choice':print json_encode(draw_choice($obj));
+		case 'new_choice':
+			print json_encode(draw_choice($obj));
+			break;
+			
+		case 'select-originid':
+			print json_encode(_getIdsObject($origin, true));
 			break;
 	}
 	

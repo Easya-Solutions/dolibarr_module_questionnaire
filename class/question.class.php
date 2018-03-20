@@ -27,8 +27,8 @@ class Question extends SeedObject {
 				,'is_section'=>array('type'=>'integer') // groupement de questions (titre), pas de choix donc pas de réponse
 				,'fk_questionnaire'=>array('type'=>'integer','index'=>true)
 				,'compulsory_answer'=>array('type'=>'integer') // Rép. obligatoire ou non
-				,'fk_object_linked'=>array('type'=>'integer')
-				,'type_object_linked'=>array('type'=>'integer')
+				,'originid'=>array('type'=>'integer')
+				,'origin'=>array('type'=>'string')
 		);
 		
 		$this->TTypes = array(

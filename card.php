@@ -18,6 +18,9 @@ $action = GETPOST('action');
 $id = GETPOST('id', 'int');
 $ref = GETPOST('ref');
 $fk_invitation = GETPOST('fk_invitation');
+$title = GETPOST('title');
+$origin = GETPOST('origin');
+$originid = GETPOST('originid');
 
 $invitation = new Invitation($db);
 $res = $invitation->load($fk_invitation);
@@ -57,7 +60,9 @@ if (empty($reshook))
 			$mode = 'edit';
 			break;
 		case 'save':
-			$object->title = GETPOST('title'); // Set standard attributes
+			$object->title = $title; // Set standard attributes
+			$object->origin = $origin;
+			$object->originid = $originid;
 			
 			if ($error > 0)
 			{
@@ -70,6 +75,21 @@ if (empty($reshook))
 			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
 			exit;
 			
+			break;
+		case 'settitle':
+			$object->title = $title;
+			$object->save(true);
+			
+			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
+			exit;
+			break;
+		case 'setorigin':
+			$object->origin = $origin;
+			$object->originid = $originid;
+			$object->save(true);
+			
+			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
+			exit;
 			break;
 		case 'save_answer':
 			
@@ -302,6 +322,7 @@ print $TBS->render('tpl/card.tpl.php'
 			,'showRef' => ($action == 'create') ? $langs->trans('Draft') : ($mode === 'answer' ? '<div class="refid">'.$object->ref.'</div>' : $form->showrefnav($object, 'ref', $linkback, 1, 'ref', 'ref', ''))
 			,'showTitle' => $formcore->texte('', 'title', $object->title, 80, 255)
 			,'showStatus' => $object->getLibStatut(1)
+			,'showLinkedObject' => (!empty($origin) && !empty($originid)) ? _showLinkedObject($origin, $originid) : _formSetObjectLinked($origin, $originid, false)
 			,'at_least_one_invitation' => empty($object->invitations) ? 0 : 1 // On ne peut modifier le questionnaire que s'il n'existe aucune invitation
 		)
 		,'langs' => $langs
@@ -525,6 +546,29 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 		$(document).on('input', 'input[type=range]', function() {
 			var qid = $(this).attr('name').replace('linearscal_q', '');
 			$('span[id="val_linearscal_q'+qid+'"]').html($(this).val());
+		});
+
+		$(document).on('change', 'select[name=origin]', function() {
+			
+			$input_origin = $(this);
+			$input_originid = $('select[name=originid]');
+			$div_origin = $('#divoriginid');
+			
+			origin = $(this).val();
+			$.ajax({
+				dataType:'json'
+				,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+						,data:{
+								origin:origin
+								,get:"select-originid"
+							}
+
+			}).done(function(res) {
+
+				$input_originid.remove();
+				$input_origin.after(res);
+
+			});
 		});
 		
 	});

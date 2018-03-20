@@ -499,8 +499,119 @@ function _getBanner(&$object, $action, $print_link_apercu=true, $shownav=true, $
 	global $langs;
 	
 	if($show_linkback) $linkback = '<a href="'.dol_buildpath('/questionnaire/list.php', 1).'">' . $langs->trans("BackToList") . '</a>';
-	$morehtmlref = '<div class="refidno">'.$langs->trans('Title').' : '.$object->title.'</div>';
+	$morehtmlref = '<div class="refidno">'.getFieldVal($object, 'Title', 'title').'</div>';
+	$morehtmlref.= '<div class="refidno">'.getFieldVal($object, 'LinkedObject', 'origin').'</div>';
 	if($action !== 'create' && $action !== 'answer' && $print_link_apercu) $morehtmlref.= '<div class="refidno">'.($action === 'apercu' ? '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'">Retour au mode édition</a>' : '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&action=apercu">Visualiser un aperçu</a>').'</div>';
 	dol_banner_tab($object, 'ref', $linkback, $shownav, 'ref', 'ref', $morehtmlref, '', 0, '', '');
+	
+}
+
+function getFieldVal(&$object, $trans, $field) {
+	
+	global $form, $langs;
+	
+	if($field === 'origin') {
+		
+		if(GETPOST('action') !== 'editorigin') {
+			$object->origin = _showLinkedObject($object->origin, $object->originid);
+			$res.=$form->editfieldkey($trans, $field, $object->{$field}, $object, 1, 'string', '', 0, 1);
+			$res.=$form->editfieldval($trans, $field, $object->{$field}, $object, 1, 'string', '', null, null, '', 1);
+		} else {
+			$res.= _formSetObjectLinked($object->origin, $object->originid);
+		}
+		
+	} else {
+		$res.=$form->editfieldkey($trans, $field, $object->{$field}, $object, 1, 'string', '', 0, 1);
+		$res.=$form->editfieldval($trans, $field, $object->{$field}, $object, 1, 'string', '', null, null, '', 1);
+	}
+	
+	return $res;
+}
+
+function _formSetObjectLinked($origin, $originid, $print_form=true) {
+	
+	global $db, $form, $langs;
+	
+	$langs->load('propal');
+	$langs->load('bills');
+	$langs->load('orders');
+	$langs->load('supplierorder');
+	
+	if($print_form) {
+		$res = $langs->trans('LinkedObject').' : <form name="updateLinkedObject" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'">';
+		$res.= '<input type="hidden" name="action" value="setorigin" />';
+	}
+	
+	// Tableau type origine
+	$res.= $form->selectarray('origin', array(
+												''=>''
+												,'Propal'=>$langs->trans('Proposal')
+												,'Commande'=>$langs->trans('Order')
+												,'Facture'=>$langs->trans('Invoice')
+												,'CommandeFournisseur'=>$langs->trans('SupplierOrder')
+												,'FactureFournisseur'=>$langs->trans('SupplierInvoice')
+											), $origin);
+	
+	// Tableau de pièces
+	$array_ids = _getIdsObject($origin);
+	$res.= $form->selectarray('originid', $array_ids, $originid);
+	
+	if($print_form) {
+		$res.= '<input type="SUBMIT" class="button" name="subFormUpdateObjectLinked" value="'.$langs->trans('Modify').'" />';
+		$res.= '<a href="'.dol_buildpath('/questionnaire/card.php', 1).'?id='.GETPOST('id').'" class="button" name="subFormUpdateObjectLinked">'.$langs->trans('Cancel').'</a>';
+		$res.= '</form>';
+	}
+	
+	return $res;
+}
+
+function _getIdsObject($origin, $get_input=false) {
+	
+	global $db, $form;
+	
+	if(empty($form)) $form = new Form($db);
+	
+	$TRes=array();
+	$table = strtolower($origin);
+	$fieldref = 'ref';
+	if($table === 'commandefournisseur') $table = 'commande_fournisseur';
+	if($table === 'facturefournisseur') $table = 'facture_fournisseur';
+	elseif($table === 'facture') {
+		$fieldref = 'facnumber';
+	}
+	
+	$sql = 'SELECT rowid, '.$fieldref.'
+			FROM '.MAIN_DB_PREFIX.$table.'
+			ORDER BY rowid';
+	
+	$resql = $db->query($sql);
+	if(!empty($resql) && $db->num_rows($resql) > 0) {
+		while($res = $db->fetch_object($resql)) $TRes[$res->rowid] = $res->{$fieldref};
+	}
+	
+	if($get_input) return $form->selectarray('originid', $TRes);
+	return $TRes;
+	
+}
+
+function _showLinkedObject($origin, $originid, $print_form_inputs=true, $get_form_add=true) {
+	
+	global $db;
+	
+	if(!empty($origin) && !empty($originid)) {
+		dol_include_once('/comm/propal/class/propal.class.php');
+		dol_include_once('/compta/facture/class/facture.class.php');
+		dol_include_once('/commande/class/commande.class.php');
+		dol_include_once('/fourn/class/fournisseur.commande.class.php');
+		dol_include_once('/fourn/class/fournisseur.facture.class.php');
+		
+		if(class_exists($origin)) {
+			$obj = new $origin($db);
+			if($obj->fetch($originid) > 0) {
+				$inputs = $print_form_inputs ? '<input type="hidden" name="origin" value="'.$origin.'"/><input type="hidden" name="originid" value="'.$originid.'"/>' : '';
+				return $obj->getNomUrl(1).$inputs;
+			}
+		}
+	}
 	
 }
