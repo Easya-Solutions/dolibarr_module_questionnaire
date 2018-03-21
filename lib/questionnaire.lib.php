@@ -615,3 +615,26 @@ function _showLinkedObject($origin, $originid, $print_form_inputs=true, $get_for
 	}
 	
 }
+
+function _getQuestionnaireLink($fk_questionnaire, $action, $fk_invitation='')
+{
+	global $db;
+	
+	$q = new Questionnaire($db);
+	$more_param = '';
+	if($action === 'to_answer') $more_param.= '&action=answer';
+	if(!empty($fk_invitation)) $more_param.= '&fk_invitation='.$fk_invitation;
+	if ($q->fetch($fk_questionnaire) > 0) return $q->getNomUrl(0, $more_param);
+	
+	return '';
+}
+
+function _getLibStatus($fk_questionnaire, $fk_statut)
+{
+	global $db;
+	
+	$q = new Questionnaire($db);
+	if ($q->fetch($fk_questionnaire) > 0) return $q->LibStatut($fk_statut, 1);
+	
+	return '';
+}

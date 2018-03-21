@@ -7,6 +7,7 @@ questionnaireSetup = Configuration du module questionnaire
 questionnaireAbout = A propos du module questionnaire
 
 questionnaire=Questionnaire
+QuestionnaireAreaIndex=Espace de gestion des questionnaires
 QuestionnaireArea=Liste des questionnaires
 QuestionnaireToAnswerArea=Liste des questionnaires à compléter
 
@@ -31,6 +32,11 @@ Accepted=Accepté
 questionnaireList=Liste questionnaires
 questionnaireListToAnswer=Questionnaires à compléter
 Noquestionnaire=(vide)
+
+# INDEX
+QuestionnaireLastCreated=Les 5 derniers questionnaires créés %s
+QuestionnaireLastCreatedMore=(vos droits vous offrent une liste exhaustive)
+QuestionnaireLastToAnswer=Mes 5 derniers questionnaires à compléter
 
 # CARD
 Newquestionnaire=Création questionnaire
