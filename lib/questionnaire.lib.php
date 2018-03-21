@@ -164,11 +164,12 @@ function draw_question(&$q, $fk_statut_questionnaire=0) {
 	$res.= '<div class="refid">Question : '.$q->TTypes[$q->type].'<br /></div>';
 	if(empty($fk_statut_questionnaire)) $res.= '<input size="100" placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
 	else $res.= '<STRONG>'.$q->label.'</STRONG>&nbsp;';
-	$res.= '<input type="checkbox" title="Réponse obligatoire ?" class="field"';
-	if(!empty($fk_statut_questionnaire)) $res.= 'disabled';
-	$res.= ' name="compulsory_answer"';
-	$res.= (int)$q->compulsory_answer > 0 ? 'checked="checked"' : '';
-	$res.= '/>';
+	if(empty($fk_statut_questionnaire)) {
+		$res.= '<input type="checkbox" title="Réponse obligatoire ?" class="field"';
+		$res.= ' name="compulsory_answer"';
+		$res.= (int)$q->compulsory_answer > 0 ? 'checked="checked"' : '';
+		$res.= '/>';
+	} elseif(!empty($q->compulsory_answer)) $res.= ' <STRONG>(réponse obligatoire)</STRONG>';
 	if(empty($fk_statut_questionnaire)) $res.= '&nbsp;<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_picto('Supprimer question', 'delete_all@questionnaire').'</a>';
 	$res.= '<br /><br />';
 	
