@@ -3,6 +3,7 @@
 require 'config.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
+require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
 dol_include_once('/questionnaire/class/invitation.class.php');
 dol_include_once('/questionnaire/class/questionnaire.class.php');
 dol_include_once('/questionnaire/lib/questionnaire.lib.php');
@@ -89,7 +90,7 @@ function _getListAnswers(&$object) {
 	
 	// On regarde s'il existe une réponse à au moins une question du questionnaire sur lequel on se trouve
 	// Subquery pour chercher s'il existe une réponse validée
-	$sql = 'SELECT DISTINCT iu.fk_user, (SELECT iu2.fk_statut FROM '.MAIN_DB_PREFIX.'quest_invitation i2 INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation_user iu2 ON (i2.rowid = iu2.fk_invitation) WHERE i2.fk_questionnaire = i.fk_questionnaire AND iu2.fk_user = iu.fk_user ORDER BY iu2.rowid DESC LIMIT 1) as fk_statut
+	$sql = 'SELECT DISTINCT iu.fk_user as id_user, "" as link_answer, iu.fk_user, (SELECT iu2.fk_statut FROM '.MAIN_DB_PREFIX.'quest_invitation i2 INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation_user iu2 ON (i2.rowid = iu2.fk_invitation) WHERE i2.fk_questionnaire = i.fk_questionnaire AND iu2.fk_user = iu.fk_user ORDER BY iu2.rowid DESC LIMIT 1) as fk_statut
 			FROM '.MAIN_DB_PREFIX.'quest_invitation i
 			INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation_user iu  ON (iu.fk_invitation = i.rowid)
 			WHERE i.fk_questionnaire = '.$object->id.'
@@ -115,7 +116,9 @@ function _getListAnswers(&$object) {
 			,'link'=>array(
 					
 			)
-			//,'hide'=>$THide
+			,'hide'=>array(
+					'id_user'
+			)
 			,'type'=>array()
 			,'liste'=>array(
 					'titre'=>$langs->trans('TitleConformiteNormeList')
@@ -131,11 +134,13 @@ function _getListAnswers(&$object) {
 			,'title'=>array(
 					'fk_user'=>$langs->trans('User')
 					,'fk_statut'=>$langs->trans('questionnaireAnswerStatus')
+					,'link_answer'=>$langs->trans('QuestionnaireSeeAnswerLink')
 			)
 			,'orderBy'=> array('cn.rowid' => 'DESC')
 			,'eval'=>array(
-					'fk_user' => '_getLinkAnswersUser("@fk_user@")'
-					,'fk_statut' => '_libStatut("@fk_statut@", 1)'
+					'link_answer' => '_getLinkAnswersUser(@id_user@)'
+					,'fk_user' => '_getNomUrl(@fk_user@)'
+					,'fk_statut' => '_libStatut(@fk_statut@, 1)'
 			)
 	));
 	
@@ -150,18 +155,22 @@ function _getListAnswers(&$object) {
 
 function _getLinkAnswersUser($fk_user) {
 	
-	global $db, $id;
+	global $id, $i_rep;
 	
-	$sql = 'SELECT lastname, firstname
-			FROM '.MAIN_DB_PREFIX.'user
-			WHERE rowid = '.$fk_user;
-	$resql = $db->query($sql);
-	if(!empty($resql) && $db->num_rows($resql)) {
-		$res = $db->fetch_object($resql);
-		return '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=view_answer&fk_user='.$fk_user.'">'.$res->lastname.' '.$res->firstname.'</a>';
-	}
-		
-	return 'NOUSER';
+	$i_rep++;
+	
+	return '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=view_answer&fk_user='.$fk_user.'">REP'.(str_pad($i_rep, 4, 0, STR_PAD_LEFT)).'</a>';
+	
+}
+
+function _getNomUrl($fk_user) {
+	
+	global $db;
+	
+	$u = new User($db);
+	$u->fetch($fk_user);
+	
+	return $u->getNomUrl(1);
 	
 }
 
