@@ -342,6 +342,8 @@ print $TBS->render('tpl/card.tpl.php'
 
 if ($mode == 'edit') echo $formcore->end_form();
 
+print '<hr /><br /><br />';
+
 //if ($mode == 'view' && $object->id) $somethingshown = $form->showLinkedObjectBlock($object->generic);
 
 // Print list of questions
@@ -408,6 +410,12 @@ if($action !== 'answer') {
 	
 }
 
+/*if ($mode == 'view' && $object->id) {
+	print '<div class="fichehalfleft">';
+	$linktoelem = $form->showLinkToObjectBlock($object, null, array('questionnaire','questionnaire'));
+	$form->showLinkedObjectBlock($object, $linktoelem);
+	print '</div>';
+}*/
 
 if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 

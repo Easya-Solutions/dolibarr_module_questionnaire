@@ -201,17 +201,14 @@ function _seeAnswersUser(&$object, $fk_user) {
 
 function _libStatut($status, $mode) {
 	
-	global $langs;
-	$langs->load('questionnaire@questionnaire');
+	global $db, $langs, $id, $questionnaire_status_forced_key;
 	
-	if ($status==0) { $statustrans='statut0'; $keytrans='questionnaireStatusOpened'; $shortkeytrans='Draft'; }
-	if ($status==1) { $statustrans='statut1'; $keytrans='questionnaireStatusValidated'; $shortkeytrans='Validate'; }
+	if($status == 1) $questionnaire_status_forced_key = 'Validate';
+	else $questionnaire_status_forced_key='';
 	
-	
-	if ($mode == 0) return img_picto($langs->trans($keytrans), $statustrans);
-	elseif ($mode == 1) return img_picto($langs->trans($keytrans), $statustrans).' '.$langs->trans($keytrans);
-	elseif ($mode == 2) return $langs->trans($keytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
-	elseif ($mode == 3) return img_picto($langs->trans($keytrans), $statustrans).' '.$langs->trans($shortkeytrans);
-	elseif ($mode == 4) return $langs->trans($shortkeytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
+	// Juste pour utilisaer la fonction LibStatus
+	$q = new Questionnaire($db);
+	$q->fetch($id);
+	return $q->LibStatut($status, 6);
 	
 }
