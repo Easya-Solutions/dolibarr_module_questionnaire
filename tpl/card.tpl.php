@@ -13,11 +13,6 @@
 				<td width="25%">[langs.transnoentities(Title)]</td>
 				<td>[view.showTitle;strconv=no]</td>
 			</tr>
-
-			<tr class="title">
-				<td width="25%">[langs.transnoentities(LinkedObject)]</td>
-				<td>[view.showLinkedObject;strconv=no]</td>
-			</tr>
 			
 			[onshow;block=begin;when [view.mode]!='answer']
 				<tr class="status">

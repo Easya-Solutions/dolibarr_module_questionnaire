@@ -12,7 +12,7 @@ print_fiche_titre($langs->trans('QuestionnaireAreaIndex'), '', 'questionnaire@qu
 
 
 // Les 5 derniers questionanires créés
-$sql = 'SELECT t.rowid, t.title, t.origin, t.originid, t.fk_statut';
+$sql = 'SELECT t.rowid, t.title, t.fk_statut';
 $sql.= ' FROM '.MAIN_DB_PREFIX.'quest_questionnaire t ';
 $sql.= ' WHERE 1=1';
 $sql.= ' AND t.entity IN ('.getEntity('questionnaire', 1).')';
@@ -53,9 +53,9 @@ function _printArrayQuestionnaires($sql, $list_name='questionnaire_list') {
 	$TData=array();
 	if(!empty($resql) && $db->num_rows($resql) > 0) {
 		while($res = $db->fetch_object($resql)) {
-			$obj_linked = _showLinkedObject($res->origin, $res->originid, false, false);
+			/*$obj_linked = _showLinkedObject($res->origin, $res->originid, false, false);
 			unset($res->originid); // Pour n'afficher qu'une seule colonne
-			$res->origin = $obj_linked;
+			$res->origin = $obj_linked;*/
 			$TData[] = $res;
 		}
 	}

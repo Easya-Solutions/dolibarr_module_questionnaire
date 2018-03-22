@@ -179,7 +179,7 @@ class Questionnaire extends SeedObject
        
         $linkend='</a>';
 
-        $picto='generic';
+        $picto='questionnaire@questionnaire';
 		
         if ($withpicto) $result.=($link.img_object($label, $picto, 'class="classfortooltip"').$linkend);
         if ($withpicto && $withpicto != 2) $result.=' ';

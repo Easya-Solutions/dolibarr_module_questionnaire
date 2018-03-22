@@ -48,7 +48,7 @@ $hookmanager->initHooks(array('questionnairecard', 'globalcard'));
 $parameters = array('id' => $id, 'ref' => $ref, 'mode' => $mode);
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
-
+//var_dump($_REQUEST);
 // Si vide alors le comportement n'est pas remplacé
 if (empty($reshook))
 {
@@ -58,6 +58,7 @@ if (empty($reshook))
 			//print_form_add_question();
 			$mode = 'edit';
 			break;
+			
 		case 'save':
 			$object->title = $title; // Set standard attributes
 			$object->origin = $origin;
@@ -223,10 +224,9 @@ if (empty($reshook))
 			break;
 		// link from llx_element_element
 		case 'dellink':
-			$object->generic->deleteObjectLinked(null, '', null, '', GETPOST('dellinkid'));
+			$object->deleteObjectLinked(null, '', null, '', GETPOST('dellinkid'));
 			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
 			exit;
-			break;
 	}
 }
 
@@ -327,7 +327,7 @@ print $TBS->render('tpl/card.tpl.php'
 			,'showRef' => ($action == 'create') ? $langs->trans('Draft') : ($mode === 'answer' ? '<div class="refid">'.$object->ref.'</div>' : $form->showrefnav($object, 'ref', $linkback, 1, 'ref', 'ref', ''))
 			,'showTitle' => $formcore->texte('', 'title', $object->title, 80, 255)
 			,'showStatus' => $object->getLibStatut(1)
-			,'showLinkedObject' => (!empty($origin) && !empty($originid)) ? _showLinkedObject($origin, $originid) : _formSetObjectLinked($origin, $originid, false)
+			//,'showLinkedObject' => (!empty($origin) && !empty($originid)) ? _showLinkedObject($origin, $originid) : _formSetObjectLinked($origin, $originid, false)
 		)
 		,'langs' => $langs
 		,'user' => $user
@@ -343,8 +343,6 @@ print $TBS->render('tpl/card.tpl.php'
 if ($mode == 'edit') echo $formcore->end_form();
 
 print '<hr /><br /><br />';
-
-//if ($mode == 'view' && $object->id) $somethingshown = $form->showLinkedObjectBlock($object->generic);
 
 // Print list of questions
 if(empty($action) || $action === 'view' || $action === 'validate' || $action === 'delete' || $action === 'modif' || $action === 'clone') {
@@ -410,12 +408,17 @@ if($action !== 'answer') {
 	
 }
 
-/*if ($mode == 'view' && $object->id) {
+if (!empty($conf->related->enabled) && $object->id && $action !== 'answer') {
 	print '<div class="fichehalfleft">';
-	$linktoelem = $form->showLinkToObjectBlock($object, null, array('questionnaire','questionnaire'));
-	$form->showLinkedObjectBlock($object, $linktoelem);
+	$form->showLinkedObjectBlock($object);
 	print '</div>';
-}*/
+	// Header car obligé de conserver l'action pour le hook related dans la fonction showLinkedObjectBlock
+	if($action === 'add_related_link' || $action === 'delete_related_link') {
+		?>
+			<script>document.location.href="<?php echo $_SERVER['PHP_SELF'].'?id='.$object->id; ?>"</script>
+		<?php
+	}
+}
 
 if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 
