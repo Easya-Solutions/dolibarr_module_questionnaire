@@ -495,6 +495,186 @@ function _getDateFr($date) {
 	
 }
 
+function draw_answer(&$q) {
+	
+	if(empty($q->choices)) $q->loadChoices();
+	if(!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale'/*Pas de choix pour ces types là*/) {
+		$res = '<div class="element" type="question" id="question'.$q->id.'">';
+		$res.= '<div class="refid">'.$q->label.'</div>';
+		
+		switch($q->type) {
+			
+			case 'string':
+				$res.= draw_string_answer($q);
+				break;
+				
+			case 'textarea':
+				$res.= draw_textarea_answer($q);
+				break;
+				
+			case 'select':
+				$res.= draw_select_answer($q);
+				break;
+				
+			case 'listradio':
+				$res.= draw_listradio_answer($q);
+				break;
+				
+			case 'grilleradio':
+				$res.= draw_grilleradio_answer($q);
+				break;
+				
+			case 'listcheckbox':
+				$res.= draw_listcheckbox_answer($q);
+				break;
+				
+			case 'grillecheckbox':
+				$res.= draw_grillecheckbox_answer($q);
+				break;
+				
+			case 'date':
+				$res.= draw_date_answer($q);
+				break;
+				
+			case 'hour':
+				$res.= draw_hour_answer($q);
+				break;
+				
+			case 'linearscale':
+				$res.= draw_linearscale_answer($q);
+				break;
+				
+		}
+		
+		$res.= '</div>';
+	}
+	return $res;
+	
+}
+
+function draw_string_answer(&$q) {
+	
+	return $q->answers[0]->value;
+	
+}
+
+function draw_textarea_answer(&$q) {
+	
+	return nl2br($q->answers[0]->value);
+	
+}
+
+function draw_select_answer(&$q) {
+	
+	foreach($q->choices as &$choix) {
+		if($choix->id == $q->answers[0]->fk_choix) return $choix->label;
+	}
+	
+}
+
+function draw_listradio_answer(&$q) {
+	
+	foreach($q->choices as &$choix) {
+		if($choix->id == $q->answers[0]->fk_choix) return $choix->label;
+	}
+	
+}
+
+function draw_listcheckbox_answer(&$q) {
+	
+	global $db;
+	
+	$TRes=array();
+	
+	if(!empty($q->answers)) {
+		foreach($q->answers as &$answer) {
+			$choix= new Choice($db);
+			$choix->fetch($answer->fk_choix);
+			$TRes[] = $choix->label;
+		}
+	}
+	
+	return implode('<br />', $TRes);
+	
+}
+
+function draw_grilleradio_answer(&$q) {
+	
+	global $db;
+	
+	$TRes=array();
+	
+	if(!empty($q->answers)) {
+		foreach($q->answers as &$answer) {
+			$choix= new Choice($db);
+			$choix->fetch($answer->fk_choix);
+			$res = $choix->label;
+			$choix->fetch($answer->fk_choix_col);
+			$res.= ' : '.$choix->label;
+			$TRes[] = $res;
+		}
+	}
+	
+	return implode('<br />', $TRes);
+	
+}
+
+function draw_grillecheckbox_answer(&$q) {
+	
+	global $db;
+	
+	$res='';
+	$TLines=array();
+	
+	if(!empty($q->answers)) {
+		foreach($q->answers as &$answer) {
+			
+			$choix = new Choice($db);
+			$choix_col = new Choice($db);
+			$choix->fetch($answer->fk_choix);
+			$choix_col->fetch($answer->fk_choix_col);
+			$TLines[$choix->label][] = $choix_col->label;
+			
+		}
+	}
+	
+	if(!empty($TLines)) {
+		//var_dump($TLines);
+		foreach($TLines as $k=>$v) {
+			$res.= $k.' :<ul>';
+			foreach($v as $col) {
+				$res.= '<li>'.$col.'</li>';
+			}
+			$res.= '</ul>';
+		}
+	}
+	
+	return $res;
+	
+}
+
+function draw_date_answer(&$q) {
+	
+	$date = $q->answers[0]->value;
+	return !empty($date) ? date('d/m/Y', $date) : '';
+	
+}
+
+function draw_hour_answer(&$q) {
+	
+	require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
+	
+	$time = $q->answers[0]->value;
+	return !empty($time) ? convertSecondToTime($time, 'allhourmin') : '';
+	
+}
+
+function draw_linearscale_answer(&$q) {
+	
+	return $q->answers[0]->value;
+	
+}
+
 function _getBanner(&$object, $action, $print_link_apercu=true, $shownav=true, $show_linkback=true) {
 	
 	global $langs;

@@ -183,14 +183,14 @@ function _seeAnswersUser(&$object, $fk_user) {
 	$u = new User($db);
 	$u->fetch($fk_user);
 	
-	$res = $langs->trans('questionnaireUserAnswersOf', $u->getNomUrl(1)).'<br /><br />';
+	$res = $langs->trans('questionnaireUserAnswersOf', $u->getNomUrl(1));
 	
 	if(empty($object->questions)) $object->loadQuestions();
 	$res.= '<div id="allQuestions">';
 	if(!empty($object->questions)) {
 		foreach($object->questions as &$q) {
 			if(empty($q->answers)) $q->loadAnswers($fk_user);
-			$res.= draw_question_for_user($q).'<br />';
+			$res.= draw_answer($q).'<br />';
 		}
 	}
 	$res.= '</div>';
