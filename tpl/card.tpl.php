@@ -29,8 +29,6 @@
 	</table>
 	[onshow;block=end]
 
-</div> <!-- Fin div de la fonction dol_fiche_head() -->
-
 [onshow;block=begin;when [view.mode]='edit']
 <div class="center">
 	
@@ -47,30 +45,4 @@
 	<input type="button" onclick="javascript:history.go(-1)" value="[langs.transnoentities(Cancel)]" class="button">
 	
 </div>
-[onshow;block=end]
-
-[onshow;block=begin;when [view.mode]!='answer']
-	[onshow;block=begin;when [view.mode]!='edit']
-	<div class="tabsAction">
-		
-		[onshow;block=begin;when [object.fk_statut]=[Questionnaire.STATUS_DRAFT]]
-			
-			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=validate" class="butAction">[langs.transnoentities(Validate)]</a></div>
-			
-		[onshow;block=end]
-		
-		[onshow;block=begin;when [object.fk_statut]=[Questionnaire.STATUS_VALIDATED]]
-			[onshow;block=begin;when [view.at_least_one_invitation]=0]
-				<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=modif" class="butAction">[langs.transnoentities(Modify)]</a></div>
-			[onshow;block=end]
-		[onshow;block=end]
-		
-		<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=clone" class="butAction">[langs.transnoentities(ToClone)]</a></div>
-		
-		[onshow;block=begin;when [rights.can_delete]=1]
-			<div class="inline-block divButAction"><a href="[view.urlcard]?id=[object.id]&action=delete" class="butActionDelete">[langs.transnoentities(Delete)]</a></div>
-		[onshow;block=end]
-			
-	</div>
-	[onshow;block=end]
 [onshow;block=end]

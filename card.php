@@ -328,13 +328,9 @@ print $TBS->render('tpl/card.tpl.php'
 			,'showTitle' => $formcore->texte('', 'title', $object->title, 80, 255)
 			,'showStatus' => $object->getLibStatut(1)
 			,'showLinkedObject' => (!empty($origin) && !empty($originid)) ? _showLinkedObject($origin, $originid) : _formSetObjectLinked($origin, $originid, false)
-			,'at_least_one_invitation' => empty($object->invitations) ? 0 : 1 // On ne peut modifier le questionnaire que s'il n'existe aucune invitation
 		)
 		,'langs' => $langs
 		,'user' => $user
-		,'rights' => array(
-			'can_delete' => $user->rights->questionnaire->delete
-		)
 		,'conf' => $conf
 		,'Questionnaire' => array(
 			'STATUS_DRAFT' => Questionnaire::STATUS_DRAFT
@@ -364,8 +360,8 @@ if(empty($action) || $action === 'view' || $action === 'validate' || $action ===
 	if(empty($object->fk_statut)) {
 		
 		$q = new Question($db);
-		print '<br /><div class="center">'.$form->selectarray('select_choice', $q->TTypes);
-		print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button></div>';
+		print '<div id="addQuestion" class="center"><br /><br />'.$form->selectarray('select_choice', $q->TTypes);
+		print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button><br /><br /></div>';
 		
 	}
 	
@@ -394,6 +390,24 @@ if(empty($action) || $action === 'view' || $action === 'validate' || $action ===
 	print '<div class="center"><input class="butAction" name="subSave" type="SUBMIT" value="Enregistrer"/><input name="subValid" type="SUBMIT" class="butAction"/>';
 	print '</form>';
 }
+
+print '</div>';
+
+// Boutons d'actions
+if($action !== 'answer') {
+	
+	print '<div class="tabsAction">';
+	
+	if(empty($object->fk_statut)) print '<div class="inline-block divButAction"><a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=validate" class="butAction">'.$langs->transnoentities('Validate').'</a></div>';
+	// On ne peut modifier le questionnaire que s'il n'existe aucune invitation)
+	if($object->fk_statut == 1 && empty($object->invitations)) print '<div class="inline-block divButAction"><a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=modif" class="butAction">'.$langs->transnoentities('Modify').'</a></div>';
+	print '<div class="inline-block divButAction"><a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=clone" class="butAction">'.$langs->transnoentities('ToClone').'</a></div>';
+	if(!empty($user->rights->questionnaire->delete)) print '<div class="inline-block divButAction"><a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=delete" class="butActionDelete">'.$langs->transnoentities('Delete').'</a></div>';
+	
+	print '</div>';
+	
+}
+
 
 if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 
@@ -578,7 +592,7 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 
 			});
 		});
-		
+
 	});
 
 </script>
