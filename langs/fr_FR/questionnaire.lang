@@ -46,6 +46,8 @@ questionnaireAnswerCard=Réponses
 questionnaireSaved=Réponses enregistrées avec succès
 questionnaireValidated=Questionnaire validé définitivement
 questionnaireNotValidated=Attention, certaines réponses sont obligatoires !
+questionnaireDeleteChoice=Supprimer choix
+questionnaireDeleteQuestion=Supprimer question
 
 # CARD TPL
 Save=Enregistrer

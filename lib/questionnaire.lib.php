@@ -146,7 +146,7 @@ function getFormConfirmquestionnaire(&$form, &$object, $action)
 
 function draw_question(&$q, $fk_statut_questionnaire=0) {
 	
-	global $db, $bg_color;
+	global $db, $langs, $bg_color;
 	
 	if(!isset($bg_color)) $bg_color = 0;
 	
@@ -170,7 +170,7 @@ function draw_question(&$q, $fk_statut_questionnaire=0) {
 		$res.= (int)$q->compulsory_answer > 0 ? 'checked="checked"' : '';
 		$res.= '/>';
 	} elseif(!empty($q->compulsory_answer)) $res.= ' <STRONG>(réponse obligatoire)</STRONG>';
-	if(empty($fk_statut_questionnaire)) $res.= '&nbsp;<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_picto('Supprimer question', 'delete_all@questionnaire').'</a>';
+	if(empty($fk_statut_questionnaire)) $res.= '&nbsp;<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteQuestion')).'</a>';
 	$res.= '<br /><br />';
 	
 	// Pas de choix pour les types string et textarea
@@ -232,11 +232,13 @@ function draw_choice(&$choice, $fk_statut_questionnaire=0, $type='', $title='') 
 
 function draw_standard_choice(&$choice, $fk_statut_questionnaire=0) {
 	
+	global $langs;
+	
 	$res.= '<div class="element" type="choice" id="choice'.$choice->id.'">';
 	
 	if(empty($fk_statut_questionnaire)) {
 		$res.= '<input placeholder="Libellé choix" type="text" name="label" class="field" value="'.$choice->label.'" />&nbsp;';
-		$res.= '<a id="del_element_'.$choice->id.'" name="del_element_'.$choice->id.'" href="#" onclick="return false;">'.img_delete().'</a>';
+		$res.= '<a id="del_element_'.$choice->id.'" name="del_element_'.$choice->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteChoice')).'</a>';
 	}
 	else $res.= $choice->label;
 	$res.= '<br /><br /></div>';
