@@ -271,6 +271,10 @@ function draw_question_for_user(&$q) {
 			case 'string':
 				$res.= draw_string_for_user($q);
 				break;
+			
+			case 'grillestring':
+				$res.= draw_grillestring_for_user($q);
+				break;
 				
 			case 'textarea':
 				$res.= draw_textarea_for_user($q);
@@ -457,6 +461,48 @@ function draw_grillecheckbox_for_user(&$q) {
 	
 }
 
+function draw_grillestring_for_user(&$q) {
+	
+	$res = '<br /><table class="noborder"><tr><td></td>';
+	foreach($q->choices as &$choix_col) {
+		if($choix_col->type === 'column') $res.= '<td>'.$choix_col->label.'</td>';
+	}
+	$res.= '</tr>';
+	
+	$first_line=true;
+	foreach($q->choices as &$choix_line) {
+		
+		if($choix_line->type === 'line') $res.= '<tr><td>'.$choix_line->label.'</td>';
+		else continue;
+		
+		foreach($q->choices as &$choix_col) {
+			if($choix_col->type === 'column') {
+				$res.= '<td><input type="text" ';
+				if(!empty($q->answers)) {
+					foreach($q->answers as &$answer) {
+						
+						if($answer->fk_choix == $choix_line->id && $answer->fk_choix_col == $choix_col->id) {
+							
+							$res.= 'value="'.$answer->value.'"';
+							break;
+						}
+					}
+				}
+				$res.= ' name="TAnswer['.$q->id.']['.$choix_line->id.'_'.$choix_col->id.']"/></td>';
+			}
+			else continue;
+		}
+		
+		$first_line=false;
+		$res.= '</tr>';
+		
+	}
+	$res.= '</table>';
+	
+	return $res;
+	
+}
+
 function draw_date_for_user(&$q) {
 	
 	global $form;
@@ -508,6 +554,10 @@ function draw_answer(&$q) {
 			
 			case 'string':
 				$res.= draw_string_answer($q);
+				break;
+			
+			case 'grillestring':
+				$res.= draw_grillestring_answer($q);
 				break;
 				
 			case 'textarea':
@@ -646,6 +696,39 @@ function draw_grillecheckbox_answer(&$q) {
 			$res.= $k.' :<ul>';
 			foreach($v as $col) {
 				$res.= '<li>'.$col.'</li>';
+			}
+			$res.= '</ul>';
+		}
+	}
+	
+	return $res;
+	
+}
+
+function draw_grillestring_answer(&$q) {
+	
+	global $db;
+	
+	$res='';
+	$TLines=array();
+
+	if(!empty($q->answers)) {
+		foreach($q->answers as &$answer) {
+			$choix = new Choice($db);
+			$choix_col = new Choice($db);
+			$choix->fetch($answer->fk_choix);
+			$choix_col->fetch($answer->fk_choix_col);
+			$TLines[$choix->label][$choix_col->label] = $answer->value;
+			
+		}
+	}
+	if(!empty($TLines)) {
+		//var_dump($TLines);
+		foreach($TLines as $k=>$v) {
+			$res.= $k.' :<ul>';
+			foreach($v as $col=>$value) {
+				
+				if(!empty($value))$res.= '<li>'.$col.' => '.$value.'</li>';
 			}
 			$res.= '</ul>';
 		}

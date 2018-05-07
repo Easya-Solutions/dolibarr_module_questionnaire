@@ -69,6 +69,7 @@ questionnaireTypeRadio=Boutons radio
 questionnaireTypeCheckbox=Cases à cocher
 questionnaireTypeGrilleRadio=Grille boutons radio
 questionnaireTypeGrilleCheckbox=Grille cases à cocher
+questionnaireTypeGrilleString=Grille de chaînes
 questionnaireTypeDate=Date
 questionnaireTypeHour=Heure
 questionnaireTypeLinearScale=Echelle linéaire

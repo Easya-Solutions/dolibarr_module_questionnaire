@@ -98,7 +98,6 @@ if (empty($reshook))
 			$object->deleteAllAnswersUser($user->id);
 			
 			$TAnswer = GETPOST('TAnswer');
-			
 			foreach($_REQUEST as $k=>&$v) {
 				
 				if($k === 'TAnswer') {
@@ -107,16 +106,27 @@ if (empty($reshook))
 					
 						// Ajout nouvelles réponses
 						if(is_array($content) && !empty($content)) {
-							foreach($content as &$answer_user) {
+							foreach($content as $pos => &$answer_user) {
+								
+								if(empty($answer_user))continue;
 								
 								$answer = new Answer($db);
 								$answer->fk_user = $user->id;
 								$answer->fk_question = $fk_question;
-								if(strpos($answer_user, '_') !== false) {
+								
+								if(strpos($pos, '_') !== false ){
+									$TDetailRep = explode('_', $pos);
+									$answer->fk_choix = $TDetailRep[0];
+									$answer->fk_choix_col = $TDetailRep[1];
+									$answer->value = $answer_user;
+								}
+								else if(strpos($answer_user, '_') !== false ) {
+									
 									$TDetailRep = explode('_', $answer_user);
 									$answer->fk_choix = $TDetailRep[0];
 									$answer->fk_choix_col = $TDetailRep[1];
 								} else $answer->fk_choix = $answer_user;
+								
 								$answer->save();
 								
 							}

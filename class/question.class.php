@@ -39,6 +39,7 @@ class Question extends SeedObject {
 				,'listcheckbox' => $langs->trans('questionnaireTypeCheckbox')
 				,'grilleradio' => $langs->trans('questionnaireTypeGrilleRadio')
 				,'grillecheckbox' => $langs->trans('questionnaireTypeGrilleCheckbox')
+				,'grillestring' => $langs->trans('questionnaireTypeGrilleString')
 				,'date' => $langs->trans('questionnaireTypeDate')
 				,'hour' => $langs->trans('questionnaireTypeHour')
 				,'linearscale' => $langs->trans('questionnaireTypeLinearScale')
