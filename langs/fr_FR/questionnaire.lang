@@ -98,3 +98,17 @@ questionnaire_right_read=Créer / visualiser ses questionnaires
 questionnaire_right_readall=Créer / visualiser tous les questionnaires
 questionnaire_right_delete=Supprimer les questionnaires
 questionnaire_right_readstats=Visualiser les statistiques des questionnaires
+
+#EXPORT
+IdQuestionnaire=Identifiant du questionnaire
+DateCreationQuestionnaire=Date de création du questionnaire
+IdQuestion=Identifiant de la question
+DateCreationQuestion=Date de création de la question
+QuestionContent=Contenu de la question
+IdAnswer=Identifiant de la réponse
+AnswerStatus=Etat de la réponse
+DateCreationAnswer=Date de création de la réponse
+AnsweringUser=Utilisateur répondant au questionnaire
+LineName=Intitulé de la ligne
+ColumnName=Intitulé de la colonne (Pour les questions de types 'grille')
+GroupName=Nom du groupe
