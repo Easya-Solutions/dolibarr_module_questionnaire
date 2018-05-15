@@ -15,6 +15,7 @@ $ref = GETPOST('ref');
 $fk_invitation = GETPOST('fk_invitation');
 $groups = GETPOST('usergroups');
 $users = GETPOST('users');
+$emails = GETPOST('emails');
 $date_limite_year = GETPOST('date_limiteyear');
 $date_limite_month = GETPOST('date_limitemonth');
 $date_limite_day = GETPOST('date_limiteday');
@@ -50,12 +51,14 @@ if (empty($reshook)) {
 			$invitation = new Invitation($db);
 			$invitation->load($fk_invitation);
 			$invitation->loadInvitationsUser();
-			$invitations_usergroups=$invitations_users=array();
+			$invitations_usergroups=$invitations_users=$emails=array();
 			if(!empty($invitation->invitations_user)) {
 				foreach($invitation->invitations_user as &$inv_usr) {
 					if(!empty($inv_usr->fk_user)) $invitations_users[] = $inv_usr->fk_user;
 					if(!empty($inv_usr->fk_usergroup)) $invitations_usergroups[] = $inv_usr->fk_usergroup;
+					if(!empty($inv_usr->email) && empty($inv_usr->fk_user) ) $emails[] =  $inv_usr->email;
 				}
+				if(!empty($emails)) $emails=implode(',',$emails);
 			}
 			break;
 			
@@ -68,7 +71,8 @@ if (empty($reshook)) {
 			$invitation->date_limite_reponse = strtotime($date_limite_year.'-'.$date_limite_month.'-'.$date_limite_day);
 			$invitation->save();
 			$invitation->delAllInvitationsUser();
-			$invitation->addInvitationsUser($groups, $users);
+			
+			$invitation->addInvitationsUser($groups, $users,$emails);
 			
 			$mode = 'view';
 			break;
@@ -124,6 +128,7 @@ print $TBS->render('tpl/invitation.tpl.php'
 						,'select_users' => $form->multiselectarray('users', _getUsers(), $invitations_users, '', 0, '', 0, '100%')
 						,'date_limite' => $form->select_date($action === 'create' ? dol_now() : $invitation->date_limite_reponse, 'date_limite', 0, 0, 0, '', 1, 0, 1)
 						,'fk_invitation' => $fk_invitation
+						,'emails'=>$emails
 				)
 				,'Questionnaire' => array(
 						'STATUS_DRAFT' => Questionnaire::STATUS_DRAFT

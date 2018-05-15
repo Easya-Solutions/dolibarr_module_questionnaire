@@ -382,12 +382,12 @@ class Questionnaire extends SeedObject
 		}
 	}
 	
-	function deleteAllAnswersUser($fk_user) {
+	function deleteAllAnswersUser($fk_invitation_user) {
 		
 		if(empty($this->questions)) $this->loadQuestions();
 		if(!empty($this->questions)) {
 			foreach($this->questions as &$q) {
-				$q->deleteAllAnswersUser($fk_user);
+				$q->deleteAllAnswersUser($fk_invitation_user);
 			}
 		}
 		
@@ -425,6 +425,23 @@ class Questionnaire extends SeedObject
 		
 		return $id_questionnaire;
 		
+	}
+	
+	function getAlreadyInvitedUsers(){
+		$alreadyInvitedFkUsers = array();
+		$alreadyInvitedEmails=array();
+		$this->loadInvitations();
+	
+		foreach($this->invitations as $invitation){
+			
+			$invitation->loadInvitationsUser();
+			
+			foreach($invitation->invitations_user as $usrinvit){
+				$alreadyInvitedFkUsers[] = $usrinvit->fk_user;
+				$alreadyInvitedEmails[] = $usrinvit->email;
+			}
+		}
+		return array($alreadyInvitedFkUsers,$alreadyInvitedEmails);
 	}
 	
 }

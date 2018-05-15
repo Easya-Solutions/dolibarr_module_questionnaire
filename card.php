@@ -95,7 +95,7 @@ if (empty($reshook))
 		case 'save_answer':
 			
 			// Suppression anciennes réponses
-			$object->deleteAllAnswersUser($user->id);
+			$object->deleteAllAnswersUser(GETPOST('fk_userinvit'));
 			
 			$TAnswer = GETPOST('TAnswer');
 			foreach($_REQUEST as $k=>&$v) {
@@ -111,7 +111,7 @@ if (empty($reshook))
 								if(empty($answer_user))continue;
 								
 								$answer = new Answer($db);
-								$answer->fk_user = $user->id;
+								$answer->fk_invitation_user = GETPOST('fk_userinvit');
 								$answer->fk_question = $fk_question;
 								
 								if(strpos($pos, '_') !== false ){
@@ -132,7 +132,7 @@ if (empty($reshook))
 							}
 						} elseif(!is_array($content) && !empty($content)) {
 							$answer = new Answer($db);
-							$answer->fk_user = $user->id;
+							$answer->fk_invitation_user = GETPOST('fk_userinvit');
 							$answer->fk_question = $fk_question;
 							$answer->value = $content;
 							$answer->save();
@@ -151,7 +151,7 @@ if (empty($reshook))
 					
 					$answer = new Answer($db);
 					$answer->fk_question = $fk_question;
-					$answer->fk_user = $user->id;
+					$answer->fk_invitation_user = GETPOST('fk_userinvit');
 					$answer->value = $v;
 					
 					$year = GETPOST('date_q'.$fk_question.'year');
@@ -172,9 +172,9 @@ if (empty($reshook))
 			
 			if(isset($_REQUEST['subSave'])) {
 				setEventMessage($langs->trans('questionnaireSaved'));
-				header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=answer&fk_invitation='.$fk_invitation);
+				header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=answer&fk_invitation='.$fk_invitation.'&fk_userinvit='.GETPOST('fk_userinvit'));
 			} else { // Validation finale
-				header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=validate_answers&fk_invitation='.$fk_invitation);
+				header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=validate_answers&fk_invitation='.$fk_invitation.'&fk_userinvit='.GETPOST('fk_userinvit'));
 			}
 			exit;
 			break;
@@ -200,9 +200,10 @@ if (empty($reshook))
 			break;
 		case 'confirm_validate_answers':
 			$invitation_user = new InvitationUser($db);
-			$invitation_user->loadBy(array('fk_invitation'=>$fk_invitation, 'fk_user'=>$user->id));
 			
-			$isOkForValidation = $object->isOkForValidation($user->id);
+
+			$invitation_user->loadBy(array('fk_invitation'=>$fk_invitation, 'rowid'=>GETPOST('fk_userinvit')));
+			$isOkForValidation = $object->isOkForValidation(GETPOST('fk_userinvit'));
 			
 			if($isOkForValidation) {
 			
@@ -212,7 +213,7 @@ if (empty($reshook))
 				
 			} else {
 				setEventMessage($langs->trans('questionnaireNotValidated'), 'errors');
-				header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$id.'&action=answer&fk_invitation='.$fk_invitation);
+				header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$id.'&action=answer&fk_invitation='.$fk_invitation.'&fk_userinvit='.GETPOST('fk_userinvit'));
 			}
 			exit;
 			break;
@@ -386,12 +387,13 @@ if(empty($action) || $action === 'view' || $action === 'validate' || $action ===
 } elseif($action === 'answer') {
 	print '<form name="answerQuestionnaire" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.$id.'">';
 	print '<input type="HIDDEN" name="fk_invitation" value="'.$fk_invitation.'"/>';
+	print '<input type="HIDDEN" name="fk_userinvit" value="'.GETPOST('fk_userinvit').'"/>';
 	print '<input type="HIDDEN" name="action" value="save_answer"/>';
 	if(empty($object->questions)) $object->loadQuestions();
 	print '<div id="allQuestions">';
 	if(!empty($object->questions)) {
 		foreach($object->questions as &$q) {
-			if(empty($q->answers)) $q->loadAnswers($user->id);
+			if(empty($q->answers)) $q->loadAnswers(GETPOST('fk_userinvit'));
 			print draw_question_for_user($q).'<br />';
 			print '<br /><b><hr style="height:1px;border:none;color:#333;background-color:#333;" /></b><br />';
 		}

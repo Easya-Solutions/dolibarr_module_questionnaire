@@ -24,7 +24,7 @@ class Invitation extends SeedObject {
 		
 		$this->fields=array(
 				'fk_questionnaire'=>array('type'=>'integer','index'=>true)
-				,'token'=>array('type'=>'string')
+				
 				,'date_limite_reponse'=>array('type'=>'date')
 		);
 		
@@ -88,12 +88,18 @@ class Invitation extends SeedObject {
 		
 	}
 	
-	function addInvitationsUser(&$groups, &$users) {
+	function addInvitationsUser(&$groups, &$users, $emails) {
 		
+		require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
+		dol_include_once('/questionnaire/class/questionnaire.class.php');
 		global $db;
 		
-		$all_users = array();
+		$questionnaire = new Questionnaire($db);
+		$questionnaire->load($this->fk_questionnaire);
+		list($alreadyInvitedFKUsers,$alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedUsers();
 		
+		$all_users = array();
+		$user = new User($db);
 		if(!empty($groups)) {
 			require_once DOL_DOCUMENT_ROOT.'/user/class/usergroup.class.php';
 			foreach($groups as $id_grp) {
@@ -108,24 +114,43 @@ class Invitation extends SeedObject {
 				$grp->fetch($id_grp);
 				$group_users = $grp->listUsersForGroup();
 				if(!empty($group_users)) {
-					foreach($group_users as &$usr) $all_users[] = $usr->id;
+					foreach($group_users as &$usr) if(!in_array($usr->id,$alreadyInvitedFKUsers)) $all_users[] = $usr->id;
 				}
 			}
 		}
-		
+	
 		if(!empty($users)) {
-			foreach($users as $id_user) $all_users[] = $id_user;
+				
+			foreach($users as $id_user) if(!in_array($id_user,$alreadyInvitedFKUsers))$all_users[] = $id_user;
 		}
 		
 		$all_users = array_unique($all_users);
+		
+		if (!empty($emails) ){
+			if (strpos($emails, ',') !== false)  $emails = explode(',', $emails);
+			else $emails = array($emails);
+		}
 		
 		foreach($all_users as $id_usr) {
 			
 			$invitation_user = new InvitationUser($db);
 			$invitation_user->fk_invitation = $this->id;
+			$user->fetch($id_usr);
+			$invitation_user->email = $user->email;
 			$invitation_user->fk_user = $id_usr;
+			$invitation_user->token= bin2hex(random_bytes(16));
 			$invitation_user->save();
 			
+		}
+		
+		foreach($emails as $email){
+			if(in_array($email,$alreadyInvitedEmails))continue;
+			$invitation_user = new InvitationUser($db);
+			$invitation_user->fk_invitation = $this->id;
+			$invitation_user->fk_user = 0;
+			$invitation_user->email = $email;
+			$invitation_user->token=bin2hex(random_bytes(16));
+			$invitation_user->save();
 		}
 		
 	}
@@ -139,6 +164,7 @@ class Invitation extends SeedObject {
 		$sql = 'SELECT rowid
 				FROM '.MAIN_DB_PREFIX.$invitation_user->table_element.'
 				WHERE fk_invitation = '.$this->id;
+		
 		$resql = $db->query($sql);
 		if(!empty($resql) && $db->num_rows($resql) > 0) {
 			while($res = $db->fetch_object($resql)) {
@@ -167,8 +193,12 @@ class InvitationUser extends SeedObject {
 				'fk_invitation'=>array('type'=>'integer','index'=>true)
 				,'fk_user'=>array('type'=>'integer','index'=>true)
 				,'fk_usergroup'=>array('type'=>'integer','index'=>true)
+				,'token'=>array('type'=>'string')
+				,'email'=>array('type'=>'string')
 				,'fk_statut'=>array('type'=>'integer','index'=>true) // Indique si l'utilisateur a enregistré ses données pour terminer plus tard, ou s'il a terminé et validé son questionnaire
-		);
+				,'sent'=>array('type'=>'integer','index'=>true) // Indique si l'utilisateur a enregistré ses données pour terminer plus tard, ou s'il a terminé et validé son questionnaire
+
+			);
 		
 		$this->init();
 		

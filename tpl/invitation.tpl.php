@@ -12,9 +12,15 @@
 		<td>[form.select_users;strconv=no]</td>
 	</tr>
 	<tr>
+		<td>Adresses Mails (séparées par une virgule)</td>
+		<td><input type='text' name='emails' value='[form.emails]' /></td>
+	</tr>
+	<tr>
 		<td>Date limite de réponse</td>
 		<td>[form.date_limite;strconv=no]</td>
 	</tr>
+	
+	
 </table>
 
 <br />
@@ -26,6 +32,7 @@
 	<input type="hidden" name="action" value="[view.action]" />
 	<input type='hidden' name='id' value='[object.id]' />
 	<input type='hidden' name='fk_invitation' value='[form.fk_invitation]' />
+	
 	<input type="submit" value="[langs.transnoentities(Save)]" class="button" />
 	[onshow;block=end]
 	

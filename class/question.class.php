@@ -96,7 +96,7 @@ class Question extends SeedObject {
 		
 	}
 	
-	function loadAnswers($fk_user=null) {
+	function loadAnswers($fk_invitation_user=null) {
 		
 		global $db;
 		
@@ -107,7 +107,7 @@ class Question extends SeedObject {
 		$sql = 'SELECT rowid
 				FROM '.MAIN_DB_PREFIX.$answer->table_element.'
 				WHERE fk_question = '.$this->id;
-		if(!empty($fk_user)) $sql.= ' AND fk_user = '.$fk_user;
+		if(!empty($fk_invitation_user)) $sql.= ' AND fk_invitation_user = '.$fk_invitation_user;
 		
 		$resql = $db->query($sql);
 		if(!empty($resql) && $db->num_rows($resql) > 0) {
@@ -140,7 +140,7 @@ class Question extends SeedObject {
 		return parent::deleteCommon($user);
 	}
 	
-	function deleteAllAnswersUser($fk_user) {
+	function deleteAllAnswersUser($fk_invitation_user) {
 		
 		global $db, $user;
 		
@@ -151,7 +151,7 @@ class Question extends SeedObject {
 		$sql = 'SELECT rowid
 				FROM '.MAIN_DB_PREFIX.$obj->table_element.'
 				WHERE fk_question = '.$this->id.'
-				AND fk_user = '.$fk_user;
+				AND fk_invitation_user = '.$fk_invitation_user;
 		$resql = $db->query($sql);
 		if(!empty($resql) && $db->num_rows($resql) > 0) {
 			while($res = $db->fetch_object($resql)) {
