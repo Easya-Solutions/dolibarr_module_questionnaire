@@ -53,8 +53,8 @@ $invitation = new Invitation($db);
 $res = $invitation->load($fk_invitation);
 
 if($action === 'answer' && empty($res) ||  empty($invitation_user->id) ||  !empty($invitation_user->fk_statut) ){
-	print 'Date limite de réponse atteinte, token invalide, ou questionnaire déjà complété.';
-	accessforbidden();
+	
+	accessforbidden('Date limite de réponse atteinte, token invalide, ou questionnaire déjà complété.');
 }
 
 
