@@ -23,6 +23,8 @@ questionnaireStatusAccepted=Acceptée (fermée)
 questionnaireStatusOpened=Ouvert
 questionnaireAnswerStatus=Statut questionnaire pour l'utilisateur
 
+answerValidate=Validé
+
 Draft=Brouillon
 Validate=Validé
 Refused=Refusé

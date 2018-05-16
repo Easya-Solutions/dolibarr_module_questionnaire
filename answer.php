@@ -13,7 +13,7 @@ $langs->load('questionnaire@questionnaire');
 $action = GETPOST('action');
 $id = GETPOST('id', 'int');
 $ref = GETPOST('ref');
-$fk_user = GETPOST('fk_user');
+$fk_invitation_user = GETPOST('fk_invitation_user');
 
 $mode = 'view';
 if ($action == 'create' || $action == 'edit') $mode = 'edit';
@@ -29,9 +29,19 @@ if(empty($object->fk_statut)) {
 	exit;
 }
 
+
+
 $hookmanager->initHooks(array('questionnaireinvitationcard', 'globalcard'));
 
 $parameters = array('id' => $id, 'ref' => $ref, 'mode' => $mode);
+
+if($action == 'reopen'){
+	$invitation_user = new InvitationUser($db);
+	$invitation_user->load($fk_invitation_user);
+	$invitation_user->fk_statut = 0;
+	$invitation_user->save();
+}
+
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
@@ -65,7 +75,7 @@ print $TBS->render('tpl/answer.tpl.php'
 						,'showTitle' => $object->title
 						,'showStatus' => $object->getLibStatut(1)
 						,'list_answers' => _getListAnswers($object)
-						,'user_answers' => _seeAnswersUser($object, $fk_user)
+						,'user_answers' => _seeAnswersUser($object, $fk_invitation_user)
 				)
 				,'langs' => $langs
 				,'user' => $user
@@ -90,12 +100,12 @@ function _getListAnswers(&$object) {
 	
 	// On regarde s'il existe une réponse à au moins une question du questionnaire sur lequel on se trouve
 	// Subquery pour chercher s'il existe une réponse validée
-	$sql = 'SELECT DISTINCT iu.fk_user as id_user, "" as link_answer, iu.fk_user, (SELECT iu2.fk_statut FROM '.MAIN_DB_PREFIX.'quest_invitation i2 INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation_user iu2 ON (i2.rowid = iu2.fk_invitation) WHERE i2.fk_questionnaire = i.fk_questionnaire AND iu2.fk_user = iu.fk_user ORDER BY iu2.rowid DESC LIMIT 1) as fk_statut
+	$sql = 'SELECT DISTINCT iu.fk_user as id_user, iu.rowid as fk_invitation_user, "" as link_answer, iu.fk_user, iu.email, iu.fk_statut as fk_statut
 			FROM '.MAIN_DB_PREFIX.'quest_invitation i
 			INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation_user iu  ON (iu.fk_invitation = i.rowid)
 			WHERE i.fk_questionnaire = '.$object->id.'
-			AND iu.fk_user > 0
-			GROUP BY iu.fk_user';
+			AND (fk_user > 0 OR email != "")';
+	
 	//echo $sql;exit;
 	$resql = $db->query($sql);
 	$TData=array();
@@ -117,7 +127,8 @@ function _getListAnswers(&$object) {
 					
 			)
 			,'hide'=>array(
-					'id_user'
+					'id_user',
+					'fk_invitation_user'
 			)
 			,'type'=>array()
 			,'liste'=>array(
@@ -135,10 +146,11 @@ function _getListAnswers(&$object) {
 					'fk_user'=>$langs->trans('User')
 					,'fk_statut'=>$langs->trans('questionnaireAnswerStatus')
 					,'link_answer'=>$langs->trans('QuestionnaireSeeAnswerLink')
+					,'email'=>$langs->trans('Email')
 			)
 			,'orderBy'=> array('cn.rowid' => 'DESC')
 			,'eval'=>array(
-					'link_answer' => '_getLinkAnswersUser(@id_user@)'
+					'link_answer' => '_getLinkAnswersUser(@fk_invitation_user@)'
 					,'fk_user' => '_getNomUrl(@fk_user@)'
 					,'fk_statut' => '_libStatut(@fk_statut@, 1)'
 			)
@@ -159,7 +171,7 @@ function _getLinkAnswersUser($fk_user) {
 	
 	$i_rep++;
 	
-	return '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=view_answer&fk_user='.$fk_user.'">REP'.(str_pad($i_rep, 4, 0, STR_PAD_LEFT)).'</a>';
+	return '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=view_answer&fk_invitation_user='.$fk_user.'">REP'.(str_pad($i_rep, 4, 0, STR_PAD_LEFT)).'</a>';
 	
 }
 
@@ -174,41 +186,56 @@ function _getNomUrl($fk_user) {
 	
 }
 
-function _seeAnswersUser(&$object, $fk_user) {
+function _seeAnswersUser(&$object, $fk_invituser) {
 	
 	global $db, $langs;
 	
 	require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
+	$invUser = new InvitationUser($db);
+	$invUser->load($fk_invituser);
 	
 	$u = new User($db);
-	$u->fetch($fk_user);
-	
-	$res = $langs->trans('questionnaireUserAnswersOf', $u->getNomUrl(1));
-	
+	if (!empty($invUser->fk_user))
+	{
+		$u->fetch($invUser->fk_user);
+		$res = $langs->trans('questionnaireUserAnswersOf', $u->getNomUrl(1));
+	}else {
+		$res = $langs->trans('questionnaireUserAnswersOf', $invUser->email);
+	}
 	if(empty($object->questions)) $object->loadQuestions();
 	$res.= '<div id="allQuestions">';
 	if(!empty($object->questions)) {
 		foreach($object->questions as &$q) {
-			if(empty($q->answers)) $q->loadAnswers($fk_user);
+			if(empty($q->answers)) $q->loadAnswers($fk_invituser);
 			$res.= draw_answer($q).'<br />';
 		}
 	}
 	$res.= '</div>';
 	
-	return $res;
 	
+	if (!empty($invUser->fk_statut))
+	{
+		$res .= '<form name="answerQuestionnaire" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'">';
+		$res .= '<input type="HIDDEN" name="fk_invitation_user" value="'.$fk_invituser.'"/>';
+		$res .= '<input type="HIDDEN" name="action" value="reopen"/>';
+
+		$res .= '<div class="center"><input class="butAction" name="reopenbt" type="SUBMIT" value="Réouvrir"/>';
+		$res .= '</form>';
+	}
+	return $res;
 }
 
 function _libStatut($status, $mode) {
 	
 	global $db, $langs, $id, $questionnaire_status_forced_key;
 	
-	if($status == 1) $questionnaire_status_forced_key = 'Validate';
+	if($status == 1) $questionnaire_status_forced_key = 'answerValidate';
 	else $questionnaire_status_forced_key='';
 	
 	// Juste pour utilisaer la fonction LibStatus
 	$q = new Questionnaire($db);
 	$q->fetch($id);
+	
 	return $q->LibStatut($status, 6);
 	
 }

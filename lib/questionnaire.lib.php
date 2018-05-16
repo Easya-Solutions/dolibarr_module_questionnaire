@@ -138,7 +138,7 @@ function getFormConfirmquestionnaire(&$form, &$object, $action)
     elseif ($action == 'validate_answers'/* && !empty($user->rights->questionnaire->write)*/)
     {
     	$text = $langs->trans('ConfirmValidateAnswersQuestionnaire');
-    	$formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('ValidateAnswersQuestionnaire'), $text, 'confirm_validate_answers', array(array('type'=>'hidden', 'name'=>'fk_invitation', 'value'=>GETPOST('fk_invitation')),array('type'=>'hidden', 'name'=>'fk_userinvit', 'value'=>GETPOST('fk_userinvit'))), 0, 1);
+    	$formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?id=' . $object->id, $langs->trans('ValidateAnswersQuestionnaire'), $text, 'confirm_validate_answers', array(array('type'=>'hidden', 'name'=>'fk_invitation', 'value'=>GETPOST('fk_invitation')),array('type'=>'hidden', 'name'=>'fk_userinvit', 'value'=>GETPOST('fk_userinvit')),array('type'=>'hidden', 'name'=>'token', 'value'=>GETPOST('token'))), 0, 1);
     }
 
     return $formconfirm;

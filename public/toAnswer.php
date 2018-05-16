@@ -44,9 +44,21 @@ $fk_invitation = GETPOST('fk_invitation');
 $title = GETPOST('title');
 $origin = GETPOST('origin');
 $originid = GETPOST('originid');
+$fk_user_invitation = GETPOST('fk_userinvit');
+$token = GETPOST('token');
 
+$invitation_user = new InvitationUser($db);
+$invitation_user->loadBy(array('fk_invitation' => $fk_invitation, 'rowid' => $fk_user_invitation, 'token' => "'$token'"));
 $invitation = new Invitation($db);
 $res = $invitation->load($fk_invitation);
+
+if($action === 'answer' && empty($res) ||  empty($invitation_user->id) ||  !empty($invitation_user->fk_statut) ){
+	print 'Date limite de réponse atteinte, token invalide, ou questionnaire déjà complété.';
+	accessforbidden();
+}
+
+
+
 
 $object = new Questionnaire($db);
 
@@ -62,7 +74,7 @@ $hookmanager->initHooks(array('questionnairecard', 'globalcard'));
 if ($action == 'save_answer')
 {
 	// Suppression anciennes réponses
-	$object->deleteAllAnswersUser($user->id);
+	$object->deleteAllAnswersUser($fk_user_invitation);
 
 	$TAnswer = GETPOST('TAnswer');
 
@@ -85,7 +97,7 @@ if ($action == 'save_answer')
 							continue;
 
 						$answer = new Answer($db);
-						$answer->fk_user = $fk_invitation;
+						$answer->fk_invitation_user = $fk_user_invitation;
 						$answer->fk_question = $fk_question;
 
 						if (strpos($pos, '_') !== false)
@@ -104,15 +116,16 @@ if ($action == 'save_answer')
 						}
 						else
 							$answer->fk_choix = $answer_user;
-
+						
 						$answer->save();
 					}
 				} elseif (!is_array($content) && !empty($content))
 				{
 					$answer = new Answer($db);
-					$answer->fk_user = $fk_invitation;
+					$answer->fk_invitation_user = $fk_user_invitation;
 					$answer->fk_question = $fk_question;
 					$answer->value = $content;
+					
 					$answer->save();
 				}
 			}
@@ -128,7 +141,7 @@ if ($action == 'save_answer')
 
 			$answer = new Answer($db);
 			$answer->fk_question = $fk_question;
-			$answer->fk_user = $fk_invitation;
+			$answer->fk_invitation_user= $fk_user_invitation;
 			$answer->value = $v;
 
 			$year = GETPOST('date_q'.$fk_question.'year');
@@ -151,11 +164,11 @@ if ($action == 'save_answer')
 	if (isset($_REQUEST['subSave']))
 	{
 		setEventMessage($langs->trans('questionnaireSaved'));
-		header('Location: '.dol_buildpath('/questionnaire/public/toAnswer.php', 1).'?id='.$object->id.'&action=answer&fk_invitation='.$fk_invitation);
+		header('Location: '.dol_buildpath('/questionnaire/public/toAnswer.php', 1).'?id='.$object->id.'&action=answer&fk_invitation='.$fk_invitation.'&fk_userinvit='.$fk_user_invitation."&token=".$token);
 	}
 	else
 	{ // Validation finale
-		header('Location: '.dol_buildpath('/questionnaire/public/toAnswer.php', 1).'?id='.$object->id.'&action=validate_answers&fk_invitation='.$fk_invitation);
+		header('Location: '.dol_buildpath('/questionnaire/public/toAnswer.php', 1).'?id='.$object->id.'&action=validate_answers&fk_invitation='.$fk_invitation.'&fk_userinvit='.$fk_user_invitation."&token=".$token);
 	}
 	exit;
 }
@@ -167,22 +180,21 @@ else if ($action == 'validate_answers')
 }else if ($action == 'confirm_validate_answers')
 {
 
-	$invitation_user = new InvitationUser($db);
-	$invitation_user->loadBy(array('fk_invitation' => $fk_invitation, 'fk_user' => $fk_invitation));
+	
 
-	$isOkForValidation = $object->isOkForValidation($user->id);
+	$isOkForValidation = $object->isOkForValidation($fk_user_invitation);
 
 	if ($isOkForValidation)
 	{
 
 		$invitation_user->setValid();
 		setEventMessage($langs->trans('questionnaireValidated'));
-		header('Location: '.dol_buildpath('/questionnaire/toAnswer.php', 1).'?id='.$id.'&action=answer&fk_invitation='.$fk_invitation);
+		header('Location: '.dol_buildpath('/questionnaire/public/toAnswer.php', 1).'?id='.$id.'&action=answer&fk_invitation='.$fk_invitation.'&fk_userinvit='.$fk_user_invitation."&token=".$token);
 	}
 	else
 	{
 		setEventMessage($langs->trans('questionnaireNotValidated'), 'errors');
-		header('Location: '.dol_buildpath('/questionnaire/public/toAnswer.php', 1).'?id='.$id.'&action=answer&fk_invitation='.$fk_invitation);
+		header('Location: '.dol_buildpath('/questionnaire/public/toAnswer.php', 1).'?id='.$id.'&action=answer&fk_invitation='.$fk_invitation.'&fk_userinvit='.$fk_user_invitation."&token=".$token);
 	}
 	exit;
 }
@@ -344,6 +356,8 @@ elseif ($action === 'answer')
 {
 	print '<form name="answerQuestionnaire" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.$id.'">';
 	print '<input type="HIDDEN" name="fk_invitation" value="'.$fk_invitation.'"/>';
+	print '<input type="HIDDEN" name="fk_userinvit" value="'.$fk_user_invitation.'"/>';
+	print '<input type="HIDDEN" name="token" value="'.$token.'"/>';
 	print '<input type="HIDDEN" name="action" value="save_answer"/>';
 	if (empty($object->questions))
 		$object->loadQuestions();
@@ -353,7 +367,7 @@ elseif ($action === 'answer')
 		foreach ($object->questions as &$q)
 		{
 			if (empty($q->answers))
-				$q->loadAnswers($user->id);
+				$q->loadAnswers($fk_user_invitation);
 			print draw_question_for_user($q).'<br />';
 			print '<br /><b><hr style="height:1px;border:none;color:#333;background-color:#333;" /></b><br />';
 		}
