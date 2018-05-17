@@ -52,14 +52,18 @@ if (empty($reshook)) {
 			$invitation->load($fk_invitation);
 			$invitation->loadInvitationsUser();
 			$invitations_usergroups=$invitations_users=$emails=array();
+			
 			if(!empty($invitation->invitations_user)) {
 				foreach($invitation->invitations_user as &$inv_usr) {
 					if(!empty($inv_usr->fk_user)) $invitations_users[] = $inv_usr->fk_user;
 					if(!empty($inv_usr->fk_usergroup)) $invitations_usergroups[] = $inv_usr->fk_usergroup;
 					if(!empty($inv_usr->email) && empty($inv_usr->fk_user) ) $emails[] =  $inv_usr->email;
 				}
-				if(!empty($emails)) $emails=implode(',',$emails);
+				
+				
 			}
+			if(!empty($emails)) $emails=implode(',',$emails);
+			else $emails = '';
 			break;
 			
 		case 'save':
@@ -70,8 +74,7 @@ if (empty($reshook)) {
 			$invitation->fk_questionnaire = $object->id;
 			$invitation->date_limite_reponse = strtotime($date_limite_year.'-'.$date_limite_month.'-'.$date_limite_day);
 			$invitation->save();
-			$invitation->delAllInvitationsUser();
-			
+			$invitation->delInvitationsUser($groups, $users,$emails);
 			$invitation->addInvitationsUser($groups, $users,$emails);
 			
 			$mode = 'view';

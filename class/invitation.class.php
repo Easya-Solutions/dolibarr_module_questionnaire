@@ -155,22 +155,24 @@ class Invitation extends SeedObject {
 		
 	}
 	
-	function delAllInvitationsUser() {
+	function delInvitationsUser(&$groups, &$users, $emails) {
 		
 		global $db, $user;
 		
 		$invitation_user = new InvitationUser($db);
 		
-		$sql = 'SELECT rowid
+		$sql = 'SELECT rowid, email, fk_user, fk_usergroup
 				FROM '.MAIN_DB_PREFIX.$invitation_user->table_element.'
 				WHERE fk_invitation = '.$this->id;
 		
 		$resql = $db->query($sql);
 		if(!empty($resql) && $db->num_rows($resql) > 0) {
 			while($res = $db->fetch_object($resql)) {
-				$invitation_user = new InvitationUser($db);
-				$invitation_user->load($res->rowid);
-				$invitation_user->delete($user);
+				if(strpos($emails,$res->email) == false && !in_array($res->fk_user,$users)&& !in_array($res->fk_usergroup,$groups)){
+					$invitation_user = new InvitationUser($db);
+					$invitation_user->load($res->rowid);
+					$invitation_user->delete($user);
+				}
 			}
 		}
 	}

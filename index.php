@@ -27,7 +27,7 @@ print '</div>';
 
 
 // Les 5 derniers questionnaires à compléter. Peu importe les droits, on ne peut répondre qu'aux questionnaires auxquels on est invité à répondre
-$sql = 'SELECT DISTINCT i.rowid as id_invitation, q.rowid, q.title, i.date_limite_reponse
+$sql = 'SELECT DISTINCT i.rowid as id_invitation, i_usr.rowid as id_usrinvit, q.rowid, q.title, i.date_limite_reponse
 FROM '.MAIN_DB_PREFIX.'quest_questionnaire q
 INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation i ON (i.fk_questionnaire = q.rowid)
 INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation_user i_usr ON (i_usr.fk_invitation = i.rowid)
@@ -73,7 +73,7 @@ function _printArrayQuestionnaires($sql, $list_name='questionnaire_list') {
 			,'link'=>array(
 			)
 			,'hide'=>array(
-					'id_invitation'
+					'id_invitation','id_usrinvit'
 			)
 			,'type'=>array()
 			,'liste'=>array(
@@ -96,7 +96,7 @@ function _printArrayQuestionnaires($sql, $list_name='questionnaire_list') {
 			)
 			,'orderBy'=> array('cn.rowid' => 'DESC')
 			,'eval'=>array(
-					'rowid'=>'_getQuestionnaireLink(@rowid@, "'.$list_name.'"'.($list_name === 'to_answer' ? ', @id_invitation@' : '').')'
+					'rowid'=>'_getQuestionnaireLink(@rowid@, "'.$list_name.'"'.($list_name === 'to_answer' ? ', @id_invitation@' : '').', "&fk_userinvit=@id_usrinvit@")'
 					,'fk_statut'=>'_getLibStatus(@rowid@, @fk_statut@)'
 					,'date_limite_reponse' => '_getDateFr("@date_limite_reponse@")'
 			)
