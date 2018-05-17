@@ -204,7 +204,7 @@ foreach ( $dirmodels as $reldir ) {
 }
 print "</table><br>\n";
 
-
+/*
 $form=new Form($db);
 $var=false;
 print '<table class="noborder" width="100%">';
@@ -240,7 +240,7 @@ print ajax_constantonoff('CONSTNAME');
 print '</form>';
 print '</td></tr>';
 
-print '</table>';
+print '</table>';*/
 
 llxFooter();
 

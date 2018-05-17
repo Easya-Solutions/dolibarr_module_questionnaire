@@ -114,7 +114,7 @@ abstract class ModeleNumRefQuestionnaire
 	 * @param reference letter $referenceletters_element
 	 * @return string
 	 */
-	function getNextValue($fk_user, $element_type, $objsoc, $referenceletters_element) {
+	function getNextValue() {
 		global $langs;
 		return $langs->trans("NotAvailable");
 	}

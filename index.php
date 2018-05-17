@@ -103,3 +103,4 @@ function _printArrayQuestionnaires($sql, $list_name='questionnaire_list') {
 	));
 	
 }
+llxFooter();

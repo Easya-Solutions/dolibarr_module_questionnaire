@@ -239,3 +239,4 @@ function _getUserGroups() {
 	return $TRes;
 	
 }
+llxFooter();

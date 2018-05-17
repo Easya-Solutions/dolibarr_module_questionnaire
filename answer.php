@@ -239,3 +239,4 @@ function _libStatut($status, $mode) {
 	return $q->LibStatut($status, 6);
 	
 }
+llxFooter();

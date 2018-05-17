@@ -14,7 +14,7 @@
 				<td>[view.showTitle;strconv=no]</td>
 			</tr>
 			
-			[onshow;block=begin;when [view.mode]!='answer']
+			[onshow;block=begin;when [view.mode]!='answer';when [view.act]!='create']
 				<tr class="status">
 					<td width="25%">[langs.transnoentities(Status)]</td>
 					<td>[object.getLibStatut(1);strconv=no]</td>
@@ -33,11 +33,7 @@
 	<input type="submit" value="[langs.transnoentities(Save)]" class="button" />
 	[onshow;block=end]
 	
-	[onshow;block=begin;when [object.id]=0]
-	<input type="submit" value="[langs.transnoentities(CreateDraft)]" class="button" />
-	[onshow;block=end]
 	
-	<input type="button" onclick="javascript:history.go(-1)" value="[langs.transnoentities(Cancel)]" class="button">
 	
 </div>
 [onshow;block=end]

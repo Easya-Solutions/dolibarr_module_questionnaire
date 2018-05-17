@@ -333,6 +333,7 @@ print $TBS->render('tpl/card.tpl.php'
 		,'view' => array(
 			'mode' => $mode
 			,'action' => 'save'
+			,'act'=>$action
 			,'urlcard' => dol_buildpath('/questionnaire/card.php', 1)
 			,'urllist' => dol_buildpath('/questionnaire/list.php', 1)
 			,'showRef' => ($action == 'create') ? $langs->trans('Draft') : ($mode === 'answer' ? '<div class="refid">'.$object->ref.'</div>' : $form->showrefnav($object, 'ref', $linkback, 1, 'ref', 'ref', ''))
@@ -351,7 +352,7 @@ print $TBS->render('tpl/card.tpl.php'
 	)
 );
 
-if ($mode == 'edit') echo $formcore->end_form();
+if ($mode == 'edit' && $action !='create') echo $formcore->end_form();
 
 print '<hr /><br /><br />';
 
@@ -406,7 +407,7 @@ if(empty($action) || $action === 'view' || $action === 'validate' || $action ===
 print '</div>';
 
 // Boutons d'actions
-if($action !== 'answer') {
+if($action !== 'answer' && $action != 'create') {
 	
 	print '<div class="tabsAction">';
 	
@@ -418,6 +419,14 @@ if($action !== 'answer') {
 	
 	print '</div>';
 	
+}else if($action == 'create'){
+	print '<div class="tabsAction">';
+	print '<input type="submit" value="'.$langs->transnoentities('CreateDraft').'" class="butAction" />
+	
+	
+	<input type="button" onclick="javascript:history.go(-1)" value="'.$langs->transnoentities('Cancel').'" class="butActionDelete"/>';
+	print '</div>';
+	echo $formcore->end_form();
 }
 
 if (!empty($conf->related->enabled) && $object->id && $action !== 'answer') {
