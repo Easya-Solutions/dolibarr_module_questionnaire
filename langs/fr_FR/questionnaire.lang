@@ -113,6 +113,7 @@ IdAnswer=Identifiant de la réponse
 AnswerStatus=Etat de la réponse
 DateCreationAnswer=Date de création de la réponse
 AnsweringUser=Utilisateur répondant au questionnaire
+AnsweringEmail=Adresse email répondant au questionnaire
 LineName=Intitulé de la ligne
 ColumnName=Intitulé de la colonne (Pour les questions de types 'grille')
 GroupName=Nom du groupe
