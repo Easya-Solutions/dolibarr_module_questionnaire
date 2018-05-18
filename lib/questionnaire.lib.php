@@ -892,7 +892,7 @@ function _getQuestionnaireLink($fk_questionnaire, $action, $fk_invitation='',$mo
 	if(!empty($fk_invitation)) $more_param.= '&fk_invitation='.$fk_invitation;
 	
 	$more_param.=$more;
-	if ($q->fetch($fk_questionnaire) > 0) return $q->getNomUrl(0, $more_param);
+	if ($q->fetch($fk_questionnaire) > 0) return $q->getNomUrl(1, $more_param);
 	
 	return '';
 }

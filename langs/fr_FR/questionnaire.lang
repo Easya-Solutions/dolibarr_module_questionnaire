@@ -13,6 +13,8 @@ QuestionnaireToAnswerArea=Liste des questionnaires à compléter
 
 # MENU
 TopMenuquestionnaire=questionnaire
+questionnaireListDraft=Brouillon
+questionnaireListValidate=Validé
 
 # STATUS
 questionnaireStatusDraft=Brouillon (à valider)

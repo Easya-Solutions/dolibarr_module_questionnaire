@@ -247,7 +247,7 @@ class modquestionnaire extends DolibarrModules
 				'fk_menu' => 'fk_mainmenu=questionnaire',
 				'type' => 'left',
 				'titre' => 'Module104961Name',
-				'leftmenu' => 'questionnairelist',
+				'leftmenu' => 'questionnairemenu',
 				'url' => '/questionnaire/index.php',
 				'langs' => 'questionnaire@questionnaire',
 				'position' => 101,
@@ -258,7 +258,7 @@ class modquestionnaire extends DolibarrModules
 		);
 		$r++;
 		$this->menu[$r] = array (
-				'fk_menu' => 'fk_mainmenu=questionnaire,fk_leftmenu=questionnairelist',
+				'fk_menu' => 'fk_mainmenu=questionnaire,fk_leftmenu=questionnairemenu',
 				'type' => 'left',
 				'titre' => $langs->trans('Nouveau questionnaire'),
 				'url' => '/questionnaire/card.php?action=create',
@@ -271,9 +271,10 @@ class modquestionnaire extends DolibarrModules
 		);
 		$r++;
 		$this->menu[$r] = array (
-				'fk_menu' => 'fk_mainmenu=questionnaire,fk_leftmenu=questionnairelist',
+				'fk_menu' => 'fk_mainmenu=questionnaire,fk_leftmenu=questionnairemenu',
 				'type' => 'left',
 				'titre' => $langs->trans('questionnaireList'),
+				'leftmenu' => 'questionnairelist',
 				'url' => '/questionnaire/list.php',
 				'langs' => 'questionnaire@questionnaire',
 				'position' => 103,
@@ -285,6 +286,32 @@ class modquestionnaire extends DolibarrModules
 		$r++;
 		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=questionnaire,fk_leftmenu=questionnairelist',
+				'type' => 'left',
+				'titre' => $langs->trans('questionnaireListDraft'),
+				'url' => '/questionnaire/list.php?status=0',
+				'langs' => 'questionnaire@questionnaire',
+				'position' => 103,
+				'enabled' => '1',
+				'perms' => '$user->rights->questionnaire->read',
+				'target' => '',
+				'user' => 0
+		);
+		$r++;
+			$this->menu[$r] = array (
+				'fk_menu' => 'fk_mainmenu=questionnaire,fk_leftmenu=questionnairelist',
+				'type' => 'left',
+				'titre' => $langs->trans('questionnaireListValidate'),
+				'url' => '/questionnaire/list.php?status=1',
+				'langs' => 'questionnaire@questionnaire',
+				'position' => 103,
+				'enabled' => '1',
+				'perms' => '$user->rights->questionnaire->read',
+				'target' => '',
+				'user' => 0
+		);
+		$r++;
+		$this->menu[$r] = array (
+				'fk_menu' => 'fk_mainmenu=questionnaire,fk_leftmenu=questionnairemenu',
 				'type' => 'left',
 				'titre' => $langs->trans('questionnaireListToAnswer'),
 				'url' => '/questionnaire/list.php?action=to_answer',

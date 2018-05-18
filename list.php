@@ -12,6 +12,7 @@ $langs->load('questionnaire@questionnaire');
 $PDOdb = new TPDOdb;
 $object = new Questionnaire($db);
 $action = GETPOST('action');
+$status = GETPOST('status');
 
 $hookmanager->initHooks(array('questionnairelist'));
 
@@ -41,6 +42,8 @@ $sql = 'SELECT t.rowid, t.title, t.fk_statut, \'\' AS action';
 $sql.= ' FROM '.MAIN_DB_PREFIX.'quest_questionnaire t ';
 $sql.= ' WHERE 1=1';
 $sql.= ' AND t.entity IN ('.getEntity('questionnaire', 1).')';
+
+if(is_numeric($status)) $sql.=' AND t.fk_statut='.$status;
 if(empty($user->rights->questionnaire->readall)) $sql.= ' AND fk_user_author = '.$user->id;
 
 // Peu importe les droits, on ne peut répondre qu'aux questionnaires auxquels on est invité à répondre
