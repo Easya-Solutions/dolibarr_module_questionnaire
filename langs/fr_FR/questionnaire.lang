@@ -24,6 +24,8 @@ questionnaireStatusRefused=Refusée (fermée)
 questionnaireStatusAccepted=Acceptée (fermée)
 questionnaireStatusOpened=Ouvert
 questionnaireAnswerStatus=Statut questionnaire pour l'utilisateur
+questionnaireStatusNotSent=Non envoyé
+questionnaireStatusSent=Envoyé
 
 answerValidate=Validé
 
@@ -117,3 +119,7 @@ AnsweringEmail=Adresse email répondant au questionnaire
 LineName=Intitulé de la ligne
 ColumnName=Intitulé de la colonne (Pour les questions de types 'grille')
 GroupName=Nom du groupe
+
+#MAIL
+
+MailSubjQuest=Invitation à répondre au questionnaire %s

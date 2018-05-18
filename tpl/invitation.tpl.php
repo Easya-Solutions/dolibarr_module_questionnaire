@@ -45,5 +45,6 @@
 <div class="tabsAction">
 	<a href="[view.urlinvitation]?id=[object.id]&action=create" class="butAction">Créer invitation</a>
 </div>
+[view.massaction;strconv=no]
 [view.list_invitations;strconv=no]
 [onshow;block=end]

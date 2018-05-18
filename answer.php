@@ -151,7 +151,7 @@ function _getListAnswers(&$object) {
 			,'orderBy'=> array('cn.rowid' => 'DESC')
 			,'eval'=>array(
 					'link_answer' => '_getLinkAnswersUser(@fk_invitation_user@)'
-					,'fk_user' => '_getNomUrl(@fk_user@)'
+					,'fk_user' => '_getNomUrl(@fk_user@, Externe)'
 					,'fk_statut' => '_libStatut(@fk_statut@, 1)'
 			)
 	));
@@ -175,14 +175,15 @@ function _getLinkAnswersUser($fk_user) {
 	
 }
 
-function _getNomUrl($fk_user) {
+function _getNomUrl($fk_user, $email) {
 	
 	global $db;
 	
 	$u = new User($db);
 	$u->fetch($fk_user);
-	
-	return $u->getNomUrl(1);
+	if(!empty($fk_user))$res = $u->getNomUrl(1);
+	else $res=$email;
+	return $res;
 	
 }
 
