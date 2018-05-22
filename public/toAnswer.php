@@ -292,6 +292,7 @@ print $TBS->render('../tpl/card.tpl.php'
 		, 'view' => array(
 			'mode' => $mode
 			, 'action' => 'save'
+			,'act'=>$action
 			, 'urlcard' => dol_buildpath('/questionnaire/public/toAnswer.php', 1)
 			, 'urllist' => dol_buildpath('/questionnaire/list.php', 1)
 			, 'showRef' => ($action == 'create') ? $langs->trans('Draft') : ($mode === 'answer' ? '<div class="refid">'.$object->ref.'</div>' : $form->showrefnav($object, 'ref', $linkback, 1, 'ref', 'ref', ''))
