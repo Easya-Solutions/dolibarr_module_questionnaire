@@ -3,18 +3,29 @@
 [onshow;block=begin;when [view.mode]='edit']
 
 <table class="border" width="100%">
+	[onshow;block=begin;when [view.act]='create']
 	<tr>
 		<td>Groupes Utilisateurs</td>
 		<td>[form.select_usergroups;strconv=no]</td>
 	</tr>
+	
 	<tr>
 		<td>Utilisateurs</td>
 		<td>[form.select_users;strconv=no]</td>
 	</tr>
+	[onshow;block=end]
+	[onshow;block=begin;when [view.fk_user]=0]
+	<tr>
+		<td>Adresse Mail</td>
+		<td><input type='text' name='emails' value='[form.emails]' /></td>
+	</tr>
+	[onshow;block=end]
+	[onshow;block=begin;when [view.act]='create']
 	<tr>
 		<td>Adresses Mails (séparées par une virgule)</td>
 		<td><input type='text' name='emails' value='[form.emails]' /></td>
 	</tr>
+	[onshow;block=end]
 	<tr>
 		<td>Date limite de réponse</td>
 		<td>[form.date_limite;strconv=no]</td>

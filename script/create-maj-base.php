@@ -30,8 +30,5 @@ $o->init_db_by_vars();
 $o=new Choice($db);
 $o->init_db_by_vars();
 
-$o=new Invitation($db);
-$o->init_db_by_vars();
-
 $o=new InvitationUser($db);
 $o->init_db_by_vars();

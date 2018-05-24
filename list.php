@@ -48,15 +48,13 @@ if(empty($user->rights->questionnaire->readall)) $sql.= ' AND fk_user_author = '
 
 // Peu importe les droits, on ne peut répondre qu'aux questionnaires auxquels on est invité à répondre
 if($action === 'to_answer') {
-	$sql = 'SELECT DISTINCT i.rowid as id_invitation, i_usr.rowid as id_usrinvit, q.rowid, q.title, i.date_limite_reponse
+	$sql = 'SELECT DISTINCT  i_usr.rowid as id_usrinvit, q.rowid, q.title, i_usr.date_limite_reponse
 			FROM '.MAIN_DB_PREFIX.'quest_questionnaire q
-			INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation i ON (i.fk_questionnaire = q.rowid)
-			INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation_user i_usr ON (i_usr.fk_invitation = i.rowid)
+			INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation_user i_usr ON (i_usr.fk_questionnaire = q.rowid)
 			WHERE i_usr.fk_user = '.$user->id.'
 			AND i_usr.fk_statut = 0
-			AND i.date_limite_reponse >= "'.date('Y-m-d').'"';
+			AND i_usr.date_limite_reponse >= "'.date('Y-m-d').'"';
 }
-
 $resql = $db->query($sql);
 $TData=array();
 if(!empty($resql) && $db->num_rows($resql) > 0) {
@@ -108,7 +106,7 @@ print $r->renderArray($db, $TData, array(
 		)
 		,'orderBy'=> array('cn.rowid' => 'DESC')
 		,'eval'=>array(
-				'rowid'=>'_getQuestionnaireLink(@rowid@, "'.$action.'"'.($action === 'to_answer' ? ', @id_invitation@' : '').', "&fk_userinvit=@id_usrinvit@")'
+				'rowid'=>'_getQuestionnaireLink(@rowid@, "'.$action.'"'.($action === 'to_answer' ? ', @id_usrinvit@' : '').')'
 				,'fk_statut'=>'_getLibStatus(@rowid@, @fk_statut@)'
 				,'date_limite_reponse' => '_getDateFr("@date_limite_reponse@")'
 		)

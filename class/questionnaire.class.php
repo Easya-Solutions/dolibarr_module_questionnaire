@@ -214,7 +214,6 @@ class Questionnaire extends SeedObject
 		if ($status==self::STATUS_VALIDATED) { $statustrans='statut1'; $keytrans='questionnaireStatusValidated'; $shortkeytrans='questionnaireStatusValidatedShort'; }
 		if ($status==self::STATUS_CLOSED) { $statustrans='statut6'; $keytrans='questionnaireStatusClosed'; $shortkeytrans='Closed'; }
 
-		
 		if ($mode == 0) return img_picto($langs->trans($keytrans), $statustrans);
 		elseif ($mode == 1) return img_picto($langs->trans($keytrans), $statustrans).' '.$langs->trans($keytrans);
 		elseif ($mode == 2) return $langs->trans($keytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
@@ -284,7 +283,7 @@ class Questionnaire extends SeedObject
 		
 		dol_include_once('/questionnaire/class/invitation.class.php');
 		
-		$invitation = new Invitation($db);
+		$invitation = new InvitationUser($db);
 		
 		$sql = 'SELECT rowid
 				FROM '.MAIN_DB_PREFIX.$invitation->table_element.'
@@ -294,7 +293,7 @@ class Questionnaire extends SeedObject
 			$this->invitations = array();
 			
 			while($res = $db->fetch_object($resql)) {
-				$invitation= new Invitation($db);
+				$invitation= new InvitationUser($db);
 				$invitation->load($res->rowid);
 				$this->invitations[] = $invitation;
 			}
@@ -427,23 +426,23 @@ class Questionnaire extends SeedObject
 		
 	}
 	
-	function getAlreadyInvitedUsers(){
+	function getAlreadyInvitedUsers()
+	{
 		$alreadyInvitedFkUsers = array();
-		$alreadyInvitedEmails=array();
+		$alreadyInvitedEmails = array();
 		$this->loadInvitations();
-	
-		foreach($this->invitations as $invitation){
-			
-			$invitation->loadInvitationsUser();
-			
-			foreach($invitation->invitations_user as $usrinvit){
-				$alreadyInvitedFkUsers[] = $usrinvit->fk_user;
-				$alreadyInvitedEmails[] = $usrinvit->email;
+		if (!empty($this->invitations))
+		{
+			foreach ($this->invitations as $invitation)
+			{
+				$alreadyInvitedFkUsers[] = $invitation->fk_user;
+				$alreadyInvitedEmails[] = $invitation->email;
 			}
 		}
-		return array($alreadyInvitedFkUsers,$alreadyInvitedEmails);
+
+		return array($alreadyInvitedFkUsers, $alreadyInvitedEmails);
 	}
-	
+
 }
 
 

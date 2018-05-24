@@ -119,7 +119,7 @@ class modquestionnaire extends DolibarrModules
 				'chaine',
 				'mod_referenceletters_simple',
 				'Use simple mask for reference letters ref',
-				0,
+				1,
 				'current',
 				1
 		);
@@ -203,7 +203,7 @@ class modquestionnaire extends DolibarrModules
 		
 		$this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
 		$this->rights[$r][1] = 'questionnaire_right_read';	// Permission label
-		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
+		$this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'read';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		$r++;
 		
@@ -215,7 +215,7 @@ class modquestionnaire extends DolibarrModules
 		
 		$this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
 		$this->rights[$r][1] = 'questionnaire_right_delete';	// Permission label
-		$this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
+		$this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'delete';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		$r++;
 		
@@ -428,18 +428,18 @@ class modquestionnaire extends DolibarrModules
 		 $this->export_label[$r]='questionnaire';	// Translation key (used only if key ExportDataset_xxx_z not found)
          $this->export_enabled[$r]='1';                               // Condition to show export in list (ie: '$user->id==3'). Set to 1 to always show when module is enabled.
 		 //$this->export_permission[$r]=array("questionnaire");
-		 $this->export_fields_array[$r]=array('qtnr.rowid'=>"IdQuestionnaire",'qtnr.title'=>'Title','qtnr.description'=>'Description','qtnr.fk_statut'=>'Status','author.lastname'=>'Author','qtnr.date_creation'=>'DateCreationQuestionnaire','qtn.rowid'=>'IdQuestion','qtn.date_creation'=>'DateCreationQuestion','qtn.label'=>'QuestionContent','qtn.type'=>'Type','ans.rowid'=>'IdAnswer','inv_user.fk_statut'=>'AnswerStatus','ans.date_creation'=>'DateCreationAnswer','user.lastname'=>'AnsweringUser','inv_user.email'=>'AnsweringEmail','choice.label'=>"LineName",'colonne.label'=>"ColumnName",'ans.value'=>"Value",'grp.nom'=>"GroupName");
-		 $this->export_TypeFields_array[$r]=array('qtnr.title'=>'Text','qtnr.description'=>'Text','qtnr.fk_statut'=>'Numeric','author.lastname'=>'Text','qtnr.date_creation'=>'Date','qtn.date_creation'=>'Date','qtn.label'=>'Text','qtn.type'=>'Text','inv_user.fk_statut'=>'Numeric','ans.date_creation'=>'Date','user.lastname'=>'Text','inv_user.email'=>'Text','choice.label'=>"Text",'colonne.label'=>"Text",'ans.value'=>"Text",'grp.nom'=>"Text");
-		 $this->export_entities_array[$r]=array('qtnr.rowid'=>"questionnaire",'qtnr.title'=>'questionnaire','qtnr.description'=>'questionnaire','qtnr.fk_statut'=>'questionnaire','author.lastname'=>'questionnaire','qtnr.date_creation'=>'questionnaire','qtn.rowid'=>'question','qtn.date_creation'=>'question','qtn.label'=>'question','qtn.type'=>'question','ans.rowid'=>'answer','inv_user.fk_statut'=>'answer','ans.date_creation'=>'answer','user.lastname'=>'answer','inv_user.email'=>'answer','choice.label'=>"answer",'colonne.label'=>"answer",'ans.value'=>"answer",'grp.nom'=>"answer");
+		 $this->export_fields_array[$r]=array('qtnr.rowid'=>"IdQuestionnaire",'qtnr.title'=>'Title','qtnr.description'=>'Description','qtnr.fk_statut'=>'Status','author.lastname'=>'Author','qtnr.date_creation'=>'DateCreationQuestionnaire','qtn.rowid'=>'IdQuestion','qtn.date_creation'=>'DateCreationQuestion','qtn.label'=>'QuestionContent','qtn.type'=>'Type','choiceqtn.label'=>"LineName",'colonneqtn.label'=>"ColumnName",'ans.rowid'=>'IdAnswer','inv_user.fk_statut'=>'AnswerStatus','ans.date_creation'=>'DateCreationAnswer','user.lastname'=>'AnsweringUser','inv_user.email'=>'AnsweringEmail','choice.label'=>"AnsweringLineName",'colonne.label'=>"AnsweringColumnName",'ans.value'=>"Value",'grp.nom'=>"GroupName");
+		 $this->export_TypeFields_array[$r]=array('qtnr.title'=>'Text','qtnr.description'=>'Text','qtnr.fk_statut'=>'Numeric','author.lastname'=>'Text','qtnr.date_creation'=>'Date','qtn.date_creation'=>'Date','qtn.label'=>'Text','qtn.type'=>'Text','choiceqtn.label'=>"Text",'colonneqtn.label'=>"Text",'inv_user.fk_statut'=>'Numeric','ans.date_creation'=>'Date','user.lastname'=>'Text','inv_user.email'=>'Text','choice.label'=>"Text",'colonne.label'=>"Text",'ans.value'=>"Text",'grp.nom'=>"Text");
+		 $this->export_entities_array[$r]=array('qtnr.rowid'=>"questionnaire",'qtnr.title'=>'questionnaire','qtnr.description'=>'questionnaire','qtnr.fk_statut'=>'questionnaire','author.lastname'=>'questionnaire','qtnr.date_creation'=>'questionnaire','qtn.rowid'=>'question','qtn.date_creation'=>'question','qtn.label'=>'question','qtn.type'=>'question','choiceqtn.label'=>"question",'colonneqtn.label'=>"question",'ans.rowid'=>'answer','inv_user.fk_statut'=>'answer','ans.date_creation'=>'answer','user.lastname'=>'answer','inv_user.email'=>'answer','choice.label'=>"answer",'colonne.label'=>"answer",'ans.value'=>"answer",'grp.nom'=>"answer");
 		 $this->export_sql_start[$r]='SELECT DISTINCT ';
 		 $this->export_sql_end[$r]  =' FROM '.MAIN_DB_PREFIX.'quest_questionnaire as qtnr';
 		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'quest_question as qtn on (qtn.fk_questionnaire = qtnr.rowid)';
 		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'user as author on (qtnr.fk_user_author = author.rowid)';
 		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'quest_answer as ans on (qtn.rowid= ans.fk_question)';
-	
+		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'quest_choice as choiceqtn on (choiceqtn.fk_question=qtn.rowid AND choiceqtn.type="line")';
+		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'quest_choice as colonneqtn on (colonneqtn.fk_question=qtn.rowid AND colonneqtn.type="column")';
 		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'quest_choice as choice on (choice.rowid=ans.fk_choix)';
 		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'quest_choice as colonne on (colonne.rowid=ans.fk_choix_col)';
-		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'quest_invitation as invit on (invit.fk_questionnaire=qtnr.rowid)';
 		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'quest_invitation_user as inv_user on (ans.fk_invitation_user=inv_user.rowid)';
  		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'user as user on (user.rowid=inv_user.fk_user)';
 		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'usergroup_user as grpusr on (grpusr.fk_user=user.rowid)';

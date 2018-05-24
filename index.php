@@ -27,16 +27,14 @@ print '</div>';
 
 
 // Les 5 derniers questionnaires à compléter. Peu importe les droits, on ne peut répondre qu'aux questionnaires auxquels on est invité à répondre
-$sql = 'SELECT DISTINCT i.rowid as id_invitation, i_usr.rowid as id_usrinvit, q.rowid, q.title, i.date_limite_reponse
-FROM '.MAIN_DB_PREFIX.'quest_questionnaire q
-INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation i ON (i.fk_questionnaire = q.rowid)
-INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation_user i_usr ON (i_usr.fk_invitation = i.rowid)
-WHERE i_usr.fk_user = '.$user->id.'
-AND i_usr.fk_statut = 0
-AND i.date_limite_reponse >= "'.date('Y-m-d').'"
-ORDER BY i.rowid DESC
+$sql = 'SELECT DISTINCT  i_usr.rowid as id_usrinvit, q.rowid, q.title, i_usr.date_limite_reponse
+			FROM '.MAIN_DB_PREFIX.'quest_questionnaire q
+			INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation_user i_usr ON (i_usr.fk_questionnaire = q.rowid)
+			WHERE i_usr.fk_user = '.$user->id.'
+			AND i_usr.fk_statut = 0
+			AND i_usr.date_limite_reponse >= "'.date('Y-m-d').'"
+ORDER BY i_usr.rowid DESC
 LIMIT 5';
-
 print '<div class="fichetwothirdright">';
 print '<div class="ficheaddleft">';
 print_titre($langs->trans('QuestionnaireLastToAnswer'));
@@ -96,7 +94,7 @@ function _printArrayQuestionnaires($sql, $list_name='questionnaire_list') {
 			)
 			,'orderBy'=> array('cn.rowid' => 'DESC')
 			,'eval'=>array(
-					'rowid'=>'_getQuestionnaireLink(@rowid@, "'.$list_name.'"'.($list_name === 'to_answer' ? ', @id_invitation@' : '').', "&fk_userinvit=@id_usrinvit@")'
+					'rowid'=>'_getQuestionnaireLink(@rowid@, "'.$list_name.'"'.($list_name === 'to_answer' ? ', @id_usrinvit@' : '').')'
 					,'fk_statut'=>'_getLibStatus(@rowid@, @fk_statut@)'
 					,'date_limite_reponse' => '_getDateFr("@date_limite_reponse@")'
 			)

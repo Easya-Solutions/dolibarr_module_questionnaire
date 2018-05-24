@@ -906,13 +906,13 @@ function _getLibStatus($fk_questionnaire, $fk_statut)
 	
 	return '';
 }
-function prepareMailContent($invuser,$fk_questionnaire,$invit)
+function prepareMailContent($invuser,$fk_questionnaire)
 {
 	$content = "Bonjour, \nNous vous invitons à répondre au questionnaire suivant : ";
 		
-	if(!empty($invuser->fk_user))$content.=dol_buildpath('/questionnaire/card.php?id='.$fk_questionnaire.'&action=answer&fk_invitation='.$invuser->fk_invitation.'&fk_userinvit='.$invuser->id.'&token='.$invuser->token, 2);
-	else $content.=dol_buildpath('/questionnaire/public/toAnswer.php?id='.$fk_questionnaire.'&action=answer&fk_invitation='.$invuser->fk_invitation.'&fk_userinvit='.$invuser->id.'&token='.$invuser->token, 2);
-	$content.=" \nVous avez jusqu'au ".date('d/m/Y',$invit->date_limite_reponse).' pour y répondre.';
+	if(!empty($invuser->fk_user))$content.=dol_buildpath('/questionnaire/card.php?id='.$fk_questionnaire.'&action=answer&fk_invitation='.$invuser->id.'&token='.$invuser->token, 2);
+	else $content.=dol_buildpath('/questionnaire/public/toAnswer.php?id='.$fk_questionnaire.'&action=answer&fk_invitation='.$invuser->id.'&token='.$invuser->token, 2);
+	$content.=" \nVous avez jusqu'au ".date('d/m/Y',$invuser->date_limite_reponse).' pour y répondre.';
 	
 	
 	

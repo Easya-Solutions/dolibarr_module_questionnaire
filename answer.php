@@ -111,9 +111,8 @@ function _getListAnswers(&$object) {
 	// On regarde s'il existe une réponse à au moins une question du questionnaire sur lequel on se trouve
 	// Subquery pour chercher s'il existe une réponse validée
 	$sql = 'SELECT DISTINCT iu.fk_user as id_user, iu.rowid as fk_invitation_user, "" as link_answer, iu.fk_user, iu.email, iu.fk_statut as fk_statut
-			FROM '.MAIN_DB_PREFIX.'quest_invitation i
-			INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation_user iu  ON (iu.fk_invitation = i.rowid)
-			WHERE i.fk_questionnaire = '.$object->id.'
+			FROM '.MAIN_DB_PREFIX.'quest_invitation_user iu  
+			WHERE iu.fk_questionnaire = '.$object->id.'
 			AND (fk_user > 0 OR email != "")';
 	
 	//echo $sql;exit;
@@ -243,7 +242,7 @@ function _libStatut($status, $mode) {
 	if($status == 1) $questionnaire_status_forced_key = 'answerValidate';
 	else $questionnaire_status_forced_key='';
 	
-	// Juste pour utilisaer la fonction LibStatus
+	// Juste pour utiliser la fonction LibStatus
 	$q = new Questionnaire($db);
 	$q->fetch($id);
 	

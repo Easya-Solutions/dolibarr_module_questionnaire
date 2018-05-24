@@ -5,7 +5,9 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 dol_include_once('/questionnaire/class/invitation.class.php');
 dol_include_once('/questionnaire/class/questionnaire.class.php');
+dol_include_once('/questionnaire/class/question.class.php');
 dol_include_once('/questionnaire/lib/questionnaire.lib.php');
+dol_include_once('/user/class/usergroup.class.php');
 
 $langs->load('questionnaire@questionnaire');
 
@@ -23,7 +25,6 @@ $massaction = GETPOST('massaction', 'alpha');
 $toselect = GETPOST('toselect', 'array');
 
 $title=GETPOST('title');
-
 $mode = 'view';
 if ($action == 'create' || $action == 'edit')
 	$mode = 'edit';
@@ -73,13 +74,12 @@ if (!empty($massaction) && $massaction == 'send' && !empty($arrayofselected))
 	foreach ($arrayofselected as $inv_selected)
 	{
 
-		$invitation = new Invitation($db);
-		$invitation->load($fk_invitation);
+		
 		$invuser->load($inv_selected);
 		
 		$subject = $langs->transnoentitiesnoconv('MailSubjQuest',$object->ref);
 		
-		$content = prepareMailContent($invuser,$id,$invitation);
+		$content = prepareMailContent($invuser,$id);
 		include_once DOL_DOCUMENT_ROOT.'/core/class/CMailFile.class.php';
 		
 		$mailfile = new CMailFile($subject, $invuser->email, $conf->email_from, $content);
@@ -94,6 +94,16 @@ if (!empty($massaction) && $massaction == 'send' && !empty($arrayofselected))
 			setEventMessages($langs->trans("MailSuccessfulySent", $conf->email_from,  $invuser->email), null, 'mesgs');
 		}
 	}
+}elseif($action == 'delete' && GETPOST('confirm') == 'yes' && !empty($arrayofselected)){
+
+	foreach ($arrayofselected as $inv_selected)
+	{
+		$invitation = new InvitationUser($db);
+		$invitation->load($inv_selected);
+		$invitation->delete($user);
+		$object->deleteAllAnswersUser($inv_selected);
+		
+	}
 }
 // Si vide alors le comportement n'est pas remplacé
 if (empty($reshook))
@@ -104,50 +114,31 @@ if (empty($reshook))
 
 		case 'edit':
 
-			$invitation = new Invitation($db);
+			$invitation = new InvitationUser($db);
 			$invitation->load($fk_invitation);
-			$invitation->loadInvitationsUser();
-			$invitations_usergroups = $invitations_users = $emails = array();
-
-			if (!empty($invitation->invitations_user))
-			{
-				foreach ($invitation->invitations_user as &$inv_usr)
-				{
-					if (!empty($inv_usr->fk_user))
-						$invitations_users[] = $inv_usr->fk_user;
-					if (!empty($inv_usr->fk_usergroup))
-						$invitations_usergroups[] = $inv_usr->fk_usergroup;
-					if (!empty($inv_usr->email) && empty($inv_usr->fk_user))
-						$emails[] = $inv_usr->email;
-				}
-			}
-			if (!empty($emails))
-				$emails = implode(',', $emails);
-			else
-				$emails = '';
+			$emails = $invitation->email;
+			
 			break;
 
 		case 'save':
 
 			// Enregistrement des données dans les tables invitation et invitation_user
-			$invitation = new Invitation($db);
-			$invitation->load($fk_invitation);
+			$invitation = new InvitationUser($db);
 			$invitation->fk_questionnaire = $object->id;
 			$invitation->date_limite_reponse = strtotime($date_limite_year.'-'.$date_limite_month.'-'.$date_limite_day);
-			$invitation->save();
-			$invitation->delInvitationsUser($groups, $users, $emails);
-			$invitation->addInvitationsUser($groups, $users, $emails);
-
+			if(!empty($fk_invitation)){
+				$invitation->load($fk_invitation);
+				$invitation->date_limite_reponse = strtotime($date_limite_year.'-'.$date_limite_month.'-'.$date_limite_day);
+				if(!empty($emails))$invitation->email = $emails;
+				$invitation->save();
+			}else {
+				$invitation->addInvitationsUser($groups, $users, $emails,$object->id,strtotime($date_limite_year.'-'.$date_limite_month.'-'.$date_limite_day));
+			}
+			
 			$mode = 'view';
 			break;
 
-		case 'delete_invitation':
-
-			$invitation = new Invitation($db);
-			$invitation->load($fk_invitation);
-			$invitation->delete($user);
-
-			break;
+	
 		case 'settitle':
 			$object->title = $title;
 			$object->save();
@@ -176,13 +167,13 @@ if ($mode == 'edit')
 $linkback = '<a href="'.dol_buildpath('/questionnaire/list.php', 1).'">'.$langs->trans("BackToList").'</a>';
 
 
-
 print $TBS->render('tpl/invitation.tpl.php'
 		, array() // Block
 		, array(
 		'object' => $object
 		, 'view' => array(
 			'mode' => $mode
+			,'act'=>$action
 			, 'action' => 'save'
 			, 'urlinvitation' => dol_buildpath('/questionnaire/invitation.php', 1)
 			, 'urllist' => dol_buildpath('/questionnaire/list.php', 1)
@@ -191,6 +182,7 @@ print $TBS->render('tpl/invitation.tpl.php'
 			, 'showStatus' => $object->getLibStatut(1)
 			, 'list_invitations' => _getListInvitations($object)
 			, 'massaction' => printMassActionButton()
+			,'fk_user' => $invitation->fk_user
 		)
 		, 'langs' => $langs
 		, 'user' => $user
@@ -219,12 +211,8 @@ function _getListInvitations(&$object)
 
 	$r = new TListviewTBS('invitation_list', dol_buildpath('/questionnaire/tpl/questionnaire_list.tpl.php'));
 
-
-
-
-	$sql = 'SELECT t.rowid, t.date_limite_reponse, invu.fk_user, invu.email, invu.sent, invu.rowid as id_user, \'\' AS action';
+	$sql = 'SELECT invu.fk_usergroup, invu.fk_user, invu.email, invu.date_limite_reponse, invu.sent, invu.rowid as id_user, \'\' AS action';
 	$sql .= ' FROM '.MAIN_DB_PREFIX.'quest_invitation_user invu ';
-	$sql .= ' LEFT JOIN '.MAIN_DB_PREFIX.'quest_invitation t ON (t.rowid = invu.fk_invitation) ';
 	$sql .= ' WHERE fk_questionnaire = '.$object->id;
 	$sql .= ' AND (invu.fk_user > 0 OR invu.email != "") ';
 	$resql = $db->query($sql);
@@ -265,19 +253,20 @@ function _getListInvitations(&$object)
 			, 'picto_search' => img_picto('', 'search.png', '', 0)
 		)
 		, 'title' => array(
-			'rowid' => $langs->trans('Ref')
-			, 'date_limite_reponse' => $langs->trans('questionnaire_date_limite_reponse')
+			 'date_limite_reponse' => $langs->trans('questionnaire_date_limite_reponse')
 			, 'sent' => $langs->trans('Status')
 			, 'email' => $langs->trans('Email')
 			, 'fk_user' => $langs->trans('User')
 			, 'action' => $langs->trans('Action').'&nbsp;&nbsp;&nbsp;'.$form->showCheckAddButtons('checkforselect', 1)
+			, 'fk_usergroup' => $langs->trans('Group')
 		)
 		, 'orderBy' => array('cn.rowid' => 'DESC')
 		, 'eval' => array(
 			'date_limite_reponse' => '_getDateFr("@date_limite_reponse@")'
 			, 'fk_user' => '_getNomUrl(@fk_user@,Externe)'
 			, 'sent' => '_libStatut(@sent@)'
-			, 'action' => '_actionLink(@sent@,@rowid@,@id_user@)'
+			, 'action' => '_actionLink(@id_user@)'
+			, 'fk_usergroup' => '_getNomUrlGrp(@fk_usergroup@)'
 		)
 	));
 
@@ -341,6 +330,19 @@ function _getNomUrl($fk_user, $email)
 		$res = $email;
 	return $res;
 }
+function _getNomUrlGrp($fk_usergroup)
+{
+
+	global $db;
+
+	$u = new UserGroup($db);
+	$u->fetch($fk_usergroup);
+	if (!empty($fk_usergroup))
+		$res = $u->getNomUrl(1);
+	else
+		$res = 'Non';
+	return $res;
+}
 
 function _libStatut($status)
 {
@@ -348,7 +350,7 @@ function _libStatut($status)
 	return InvitationUser::LibStatut($status, 6);
 }
 
-function _actionLink($status, $fk_invit, $id_user)
+function _actionLink(  $fk_invit)
 {
 	global $object, $massactionbutton, $massaction, $arrayofselected;
 	$link = '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&fk_invitation='.$fk_invit.'&action=edit">'.img_edit().'</a>'; //<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&fk_invitation=@rowid@&action=delete_invitation">'.img_delete().'</a>'
@@ -356,9 +358,9 @@ function _actionLink($status, $fk_invit, $id_user)
 	if (1)   // If we are in select mode (massactionbutton defined) or if we have already selected and sent an action ($massaction) defined
 	{
 		$selected = 0;
-		if (in_array($id_user, $arrayofselected))
+		if (in_array($fk_invit, $arrayofselected))
 			$selected = 1;
-		$link .= '&nbsp;&nbsp;&nbsp;<input id="cb'.$id_user.'" class="flat checkforselect" type="checkbox" name="toselect[]" value="'.$id_user.'"'.($selected ? ' checked="checked"' : '').'>';
+		$link .= '&nbsp;&nbsp;&nbsp;<input id="cb'.$fk_invit.'" class="flat checkforselect" type="checkbox" name="toselect[]" value="'.$fk_invit.'"'.($selected ? ' checked="checked"' : '').'>';
 	}
 
 	return $link;
@@ -366,14 +368,19 @@ function _actionLink($status, $fk_invit, $id_user)
 
 function printMassActionButton()
 {
-	global $formcore, $langs, $form;
-
+	global $formcore, $langs, $form, $massaction, $toselect;
+	
+	
 	$ret = $formcore->begin_form($_SERVER['PHP_SELF'], 'form_massaction');
+	if ($massaction == 'predelete')
+	{
+		$ret .=  $form->formconfirm($_SERVER["PHP_SELF"], $langs->trans("ConfirmMassDeletion"), $langs->trans("ConfirmMassDeletionQuestion", count($toselect)), "delete", null, '', 0, 200, 500, 1);
+	}
 	$ret .= '<input hidden name="id" type="text" value="'.GETPOST('id').'"/>';
 
 	$arrayofmassactions = array(
 		'send' => $langs->trans("SendByMail"),
-//    'builddoc'=>$langs->trans("PDFMerge"),
+    'predelete'=>$langs->trans("Delete"),
 	);
 	$massactionbutton = $form->selectMassAction('', $arrayofmassactions);
 
