@@ -14,6 +14,8 @@ $action = GETPOST('action');
 $id = GETPOST('id', 'int');
 $ref = GETPOST('ref');
 $fk_invitation_user = GETPOST('fk_invitation_user');
+$title=GETPOST('title');
+
 
 $mode = 'view';
 if ($action == 'create' || $action == 'edit') $mode = 'edit';
@@ -41,7 +43,15 @@ if($action == 'reopen'){
 	$invitation_user->fk_statut = 0;
 	$invitation_user->save();
 }
+elseif ($action == 'settitle')
+{
+	$object->title = $title;
+	
+	$object->save();
 
+	header('Location: '.dol_buildpath('/questionnaire/answer.php', 1).'?id='.$object->id);
+	exit;
+}
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 

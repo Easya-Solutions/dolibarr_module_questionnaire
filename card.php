@@ -79,7 +79,7 @@ if (empty($reshook))
 			break;
 		case 'settitle':
 			$object->title = $title;
-			$object->save(true);
+			$object->save();
 			
 			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
 			exit;

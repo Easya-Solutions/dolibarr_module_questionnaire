@@ -22,7 +22,7 @@ $date_limite_day = GETPOST('date_limiteday');
 $massaction = GETPOST('massaction', 'alpha');
 $toselect = GETPOST('toselect', 'array');
 
-
+$title=GETPOST('title');
 
 $mode = 'view';
 if ($action == 'create' || $action == 'edit')
@@ -147,6 +147,13 @@ if (empty($reshook))
 			$invitation->load($fk_invitation);
 			$invitation->delete($user);
 
+			break;
+		case 'settitle':
+			$object->title = $title;
+			$object->save();
+			
+			header('Location: '.dol_buildpath('/questionnaire/invitation.php', 1).'?id='.$object->id);
+			exit;
 			break;
 	}
 }

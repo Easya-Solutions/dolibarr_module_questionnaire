@@ -7,6 +7,8 @@ questionnaireSetup = Configuration du module questionnaire
 questionnaireAbout = A propos du module questionnaire
 
 questionnaire=Questionnaire
+question=Question
+answer=Réponse
 QuestionnaireAreaIndex=Espace de gestion des questionnaires
 QuestionnaireArea=Liste des questionnaires
 QuestionnaireToAnswerArea=Liste des questionnaires à compléter
