@@ -919,4 +919,28 @@ function prepareMailContent($invuser,$fk_questionnaire)
 	
 
 	return $content;
+
+	
+}
+
+function llxHeaderQuest()
+{
+	print '<!doctype html>
+	<html lang="fr">
+	<head>
+	<meta name="robots" content="noindex,nofollow">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="author" content="Dolibarr Development Team">
+	<title>Questionnaire</title>
+	
+	<!-- Includes CSS added by page -->
+	<link rel="stylesheet" type="text/css" title="default" href="'.dol_buildpath('/questionnaire/css/styles.css',1).'">
+	</head>
+
+	<body id="mainbody">
+	<!-- Begin div id-container --><div id="id-container" class="id-container">
+	<!-- Begin right area -->
+	<div id="id-right">
+	<!-- Begin div class="fiche" -->
+	<div class="fiche">';
 }
