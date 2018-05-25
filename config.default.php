@@ -3,7 +3,7 @@
 	if(is_file('../main.inc.php'))$dir = '../';
 	else  if(is_file('../../../main.inc.php'))$dir = '../../../';
 	else $dir = '../../';
-
+//var_dump(INC_FROM_CRON_SCRIPT, $dir);exit;
 
 	if(!defined('INC_FROM_DOLIBARR') && defined('INC_FROM_CRON_SCRIPT')) {
 		include($dir."master.inc.php");

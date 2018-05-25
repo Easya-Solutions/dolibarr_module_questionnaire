@@ -5,6 +5,12 @@
  * and open the template in the editor.
  */
 
+/*if (!defined('INC_FROM_DOLIBARR'))
+{
+        define('INC_FROM_DOLIBARR', '1');
+}*/
+
+
 if (!defined('NOCSRFCHECK'))
 {
 	define('NOCSRFCHECK', '1');
@@ -22,7 +28,9 @@ if (!defined("NOLOGIN"))
 // If this page is public (can be called outside logged session)
 // Change this following line to use the correct relative path (../, ../../, etc)
 
+
 require '../config.php';
+
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 dol_include_once('/questionnaire/class/question.class.php');
@@ -34,6 +42,8 @@ dol_include_once('/questionnaire/lib/questionnaire.lib.php');
 $langs->load('questionnaire@questionnaire');
 
 $form = new Form($db);
+
+
 
 $mode = 'view';
 
@@ -195,7 +205,9 @@ else if ($action == 'validate_answers')
  * View
  */
 $title = $langs->trans("Module104961Name");
-llxHeader('', $title,'', '', 0, 0,'', array('/questionnaire/public/css/styles.css.php'));
+
+llxHeader('', $title,'', '', 0, 0,'', array('/questionnaire/css/styles.css.php'));
+//llxHeader('', $title,'', '', 0, 0,'', array('/questionnaire/public/css/styles.css.php'));
 
 print $formconfirm;
 ?>

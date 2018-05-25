@@ -38,7 +38,7 @@ if (! defined('NOREQUIREMENU'))   define('NOREQUIREMENU',1);  // We need top men
 if (! defined('NOREQUIREHTML'))   define('NOREQUIREHTML',1);
 if (! defined('NOREQUIREAJAX'))   define('NOREQUIREAJAX','1');
 
-echo '.test {}';
+//echo '.test {}';
 // Colors
 $colorbackhmenu1='80,90,120';      // topmenu
 $colorbackvmenu1='248,248,248';      // vmenu
@@ -61,11 +61,10 @@ $fontsize='0.85em';
 $fontsizesmaller='0.75em';
 
 
-echo '.test {}';
-var_dump(DOL_DOCUMENT_ROOT);
+//echo '.test {}';
+//var_dump(DOL_DOCUMENT_ROOT);
 //require_once '../../main.inc.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
-echo '.test {}';
 
 // Load user to have $user->conf loaded (not done into main because of NOLOGIN constant defined)
 if (empty($user->id) && ! empty($_SESSION['dol_login'])) $user->fetch('',$_SESSION['dol_login'],'',1);
@@ -170,7 +169,6 @@ $tmpval=(! empty($tmppart[0]) ? $tmppart[0] : 0)+(! empty($tmppart[1]) ? $tmppar
 if ($tmpval <= 460) { $colortextbacktab='FFFFFF'; }
 else { $colortextbacktab='111111'; }
 
-
 // Format color value to match expected format (may be 'FFFFFF' or '255,255,255')
 $colorbackhmenu1=join(',',colorStringToArray($colorbackhmenu1));
 $colorbackvmenu1=join(',',colorStringToArray($colorbackvmenu1));
@@ -187,9 +185,9 @@ $colortexttitlenotab=join(',',colorStringToArray($colortexttitlenotab));
 $colortexttitle=join(',',colorStringToArray($colortexttitle));
 $colortext=join(',',colorStringToArray($colortext));
 $colortextlink=join(',',colorStringToArray($colortextlink));
-
+echo 'test';
 $nbtopmenuentries=$menumanager->showmenu('topnb');
-
+echo 'test';
 
 $minwidthtmenu=66;		/* minimum width for one top menu entry */
 $heightmenu=46;			/* height of top menu, part with image */
@@ -197,7 +195,7 @@ $heightmenu2=48;        /* height of top menu, part with login  */
 $disableimages = 0;
 $maxwidthloginblock = 130;
 if (! empty($conf->global->THEME_TOPMENU_DISABLE_IMAGE)) { $disableimages = 1; $maxwidthloginblock = 180; $minwidthtmenu=0; }
-
+echo 'test';
 
 print '/*'."\n";
 print 'colorbackbody='.$colorbackbody."\n";
