@@ -171,15 +171,9 @@ if ($action == 'save_answer')
 	}
 	exit;
 }
+
 else if ($action == 'validate_answers')
 {
-	$formconfirm = getFormConfirmquestionnaire($form, $object, $action);
-	if ($action === 'validate_answers')
-		$action = 'answer';
-}else if ($action == 'confirm_validate_answers')
-{
-
-	
 
 	$isOkForValidation = $object->isOkForValidation($fk_invitation);
 
