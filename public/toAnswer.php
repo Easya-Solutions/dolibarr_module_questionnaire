@@ -206,7 +206,7 @@ else if ($action == 'validate_answers')
  */
 $title = $langs->trans("Module104961Name");
 
-llxHeader('', $title,'', '', 0, 0,'', array('/questionnaire/css/styles.css'));
+llxHeader('', $title,'', '',1, 0,'', array('/questionnaire/css/styles.css'));
 //llxHeader('', $title,'', '', 0, 0,'', array('/questionnaire/public/css/styles.css.php'));
 
 print $formconfirm;
