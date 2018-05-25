@@ -64,7 +64,10 @@ class Question extends SeedObject {
 	public function save() {
 		
 		global $user;
-		
+		if(empty($this->answers)) $this->loadAnswers();
+		if(!empty($this->answers)) {
+			foreach($this->answers as &$answer) $answer->delete($user);
+		}
 		return $this->id>0 ? $this->updateCommon($user) : $this->createCommon($user);
 		
 	}

@@ -432,5 +432,11 @@ class InvitationUser extends SeedObject
 			}
 		}
 	}
+	function reopen()
+	{
+		$this->fk_statut = 0;
+		$this->save();
+	}
+	
 
 }
