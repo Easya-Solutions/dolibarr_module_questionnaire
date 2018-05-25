@@ -64,10 +64,7 @@ class Question extends SeedObject {
 	public function save() {
 		
 		global $user;
-		if(empty($this->answers)) $this->loadAnswers();
-		if(!empty($this->answers)) {
-			foreach($this->answers as &$answer) $answer->delete($user);
-		}
+		$this->deleteLinkedAnswers($user);
 		return $this->id>0 ? $this->updateCommon($user) : $this->createCommon($user);
 		
 	}
@@ -135,10 +132,7 @@ class Question extends SeedObject {
 			foreach($this->choices as &$choice) $choice->delete($user);
 		}
 		
-		if(empty($this->answers)) $this->loadAnswers();
-		if(!empty($this->answers)) {
-			foreach($this->answers as &$answer) $answer->delete($user);
-		}
+		$this->deleteLinkedAnswers($user);
 		
 		return parent::deleteCommon($user);
 	}
@@ -164,6 +158,13 @@ class Question extends SeedObject {
 			}
 		}
 		
+	}
+	
+	function deleteLinkedAnswers($user){
+		if(empty($this->answers)) $this->loadAnswers();
+		if(!empty($this->answers)) {
+			foreach($this->answers as &$answer) $answer->delete($user);
+		}
 	}
 	
 }

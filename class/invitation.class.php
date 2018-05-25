@@ -375,7 +375,7 @@ class InvitationUser extends SeedObject
 							$invitation_user->fk_usergroup = $id_grp;
 							$invitation_user->email = $usr->email;
 							$invitation_user->fk_user = $usr->id;
-							$invitation_user->token = bin2hex(random_bytes(16));
+							$invitation_user->token = bin2hex(openssl_random_pseudo_bytes(16)); // When we'll pass to php7 use random_bytes
 							$invitation_user->save();
 						}
 					}
@@ -412,7 +412,7 @@ class InvitationUser extends SeedObject
 				$user->fetch($id_usr);
 				$invitation_user->email = $user->email;
 				$invitation_user->fk_user = $id_usr;
-				$invitation_user->token = bin2hex(random_bytes(16));
+				$invitation_user->token = bin2hex(openssl_random_pseudo_bytes(16));
 				$invitation_user->save();
 			}
 		}
@@ -427,7 +427,7 @@ class InvitationUser extends SeedObject
 				$invitation_user->date_limite_reponse = $this->date_limite_reponse;
 				$invitation_user->fk_user = 0;
 				$invitation_user->email = $email;
-				$invitation_user->token = bin2hex(random_bytes(16));
+				$invitation_user->token = bin2hex(openssl_random_pseudo_bytes(16));
 				$invitation_user->save();
 			}
 		}
