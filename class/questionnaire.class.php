@@ -222,7 +222,10 @@ class Questionnaire extends SeedObject
 		elseif ($mode == 5)	return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($this->labelstatut[$statut],$statuttrans);
 		// mode 6 used by dol_banner() function
 		elseif ($mode == 6)	return '<span class="hideonsmartphone">'.$langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key).' </span>'.img_picto($langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key),$statustrans);
-	}
+		elseif ($mode == 7)	return '<span class="hideonsmartphone">'.$langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key).' </span>';
+
+		
+		}
 	
 	function loadQuestions() {
 		

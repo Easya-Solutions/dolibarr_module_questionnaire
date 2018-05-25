@@ -793,7 +793,7 @@ function _getBanner(&$object, $action, $print_link_apercu = true, $shownav = tru
 
 	$morehtmlleft .= '</div>';
 
-	$tmptxt = $object->getLibStatut(6);
+	$tmptxt = $object->getLibStatut(7);
 	if (empty($tmptxt) || $tmptxt == $object->getLibStatut(3) || $conf->browser->layout == 'phone')
 		$tmptxt = $object->getLibStatut(5);
 	$morehtmlstatus .= $tmptxt;
