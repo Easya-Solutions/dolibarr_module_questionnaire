@@ -760,16 +760,71 @@ function draw_linearscale_answer(&$q) {
 	
 }
 
-function _getBanner(&$object, $action, $print_link_apercu=true, $shownav=true, $show_linkback=true) {
-	
-	global $langs;
-	
-	if($show_linkback) $linkback = '<a href="'.dol_buildpath('/questionnaire/list.php', 1).'">' . $langs->trans("BackToList") . '</a>';
+function _getBanner(&$object, $action, $print_link_apercu = true, $shownav = true, $show_linkback = true)
+{
+
+	global $langs, $form;
+
+	if ($show_linkback)
+		$linkback = '<a href="'.dol_buildpath('/questionnaire/list.php', 1).'">'.$langs->trans("BackToList").'</a>';
 	$morehtmlref = '<div class="refidno">'.getFieldVal($object, 'Title', 'title').'</div>';
 	//$morehtmlref.= '<div class="refidno">'.getFieldVal($object, 'LinkedObject', 'origin').'</div>';
-	if($action !== 'create' && $action !== 'answer' && $print_link_apercu) $morehtmlref.= '<div class="refidno">'.($action === 'apercu' ? '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'">Retour au mode édition</a>' : '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&action=apercu">Visualiser un aperçu</a>').'</div>';
-	dol_banner_tab($object, 'ref', $linkback, $shownav, 'ref', 'ref', $morehtmlref, '', 0, '', '');
-	
+	if ($action !== 'create' && $action !== 'answer' && $print_link_apercu)
+		$morehtmlref .= '<div class="refidno">'.($action === 'apercu' ? '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'">Retour au mode édition</a>' : '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&action=apercu">Visualiser un aperçu</a>').'</div>';
+//	dol_banner_tab($object, 'ref', $linkback, $shownav, 'ref', 'ref', $morehtmlref, '', 0, '', '');
+	$morehtmlleft = '<div class="floatleft inline-block valignmiddle divphotoref">';
+	if ($object->element == 'action')
+	{
+		$width = 80;
+		$cssclass = 'photorefcenter';
+		$nophoto = img_picto('', 'title_agenda', '', false, 1);
+	}
+	else
+	{
+		$width = 14;
+		$cssclass = 'photorefcenter';
+		$picto = $object->picto;
+		if ($object->element == 'project' && !$object->public)
+			$picto = 'project'; // instead of projectpub
+		$nophoto = img_picto('', 'object_'.$picto, '', false, 1);
+	}
+	$morehtmlleft .= '<!-- No photo to show -->';
+	$morehtmlleft .= '<div class="floatleft inline-block valignmiddle divphotoref"><div class="photoref"><img class="photo'.$modulepart.($cssclass ? ' '.$cssclass : '').'" alt="No photo" border="0"'.($width ? ' width="'.$width.'"' : '').' src="'.$nophoto.'"></div></div>';
+
+	$morehtmlleft .= '</div>';
+
+	$tmptxt = $object->getLibStatut(6);
+	if (empty($tmptxt) || $tmptxt == $object->getLibStatut(3) || $conf->browser->layout == 'phone')
+		$tmptxt = $object->getLibStatut(5);
+	$morehtmlstatus .= $tmptxt;
+	// Add alias for thirdparty
+	if (!empty($object->name_alias))
+		$morehtmlref .= '<div class="refidno">'.$object->name_alias.'</div>';
+
+	// Add label
+	if ($object->element == 'product' || $object->element == 'bank_account' || $object->element == 'project_task')
+	{
+		if (!empty($object->label))
+			$morehtmlref .= '<div class="refidno">'.$object->label.'</div>';
+	}
+
+	if (method_exists($object, 'getBannerAddress') && $object->element != 'product' && $object->element != 'bookmark' && $object->element != 'ecm_directories' && $object->element != 'ecm_files')
+	{
+		$morehtmlref .= '<div class="refidno">';
+		$morehtmlref .= $object->getBannerAddress('refaddress', $object);
+		$morehtmlref .= '</div>';
+	}
+	if (!empty($conf->global->MAIN_SHOW_TECHNICAL_ID) && in_array($object->element, array('societe', 'contact', 'member', 'product')))
+	{
+		$morehtmlref .= '<div style="clear: both;"></div><div class="refidno">';
+		$morehtmlref .= $langs->trans("TechnicalID").': '.$object->id;
+		$morehtmlref .= '</div>';
+	}
+
+	print '<div class="'.($onlybanner ? 'arearefnobottom ' : 'arearef ').'heightref valignmiddle" width="100%">';
+	print $form->showrefnav($object, $paramid, $morehtml, $shownav, $fieldid, $fieldref, $morehtmlref, $moreparam, $nodbprefix, $morehtmlleft, $morehtmlstatus, $morehtmlright);
+	print '</div>';
+	print '<div class="underrefbanner clearboth"></div>';
 }
 
 function getFieldVal(&$object, $trans, $field) {
