@@ -507,7 +507,7 @@ function draw_date_for_user(&$q) {
 	
 	global $form;
 	
-	return '<br />'.$form->select_date($q->answers[0]->value, 'date_q'.$q->id, 0, 0, 0, "", 1, 0, 1);
+	return '<br />'.custom_select_date($q->answers[0]->value, 'date_q'.$q->id, 0, 0, 0, "", 1, 0, 1);
 	
 }
 
@@ -1028,4 +1028,386 @@ function llxHeaderQuest()
 	<div class="fiche">';
 	
 	
+}
+
+
+function custom_select_date($set_time = '', $prefix = 're', $h = 0, $m = 0, $empty = 0, $form_name = "", $d = 1, $addnowlink = 0, $nooutput = 0, $disabled = 0, $fullday = '', $addplusone = '', $adddateof = '')
+{
+	global $conf, $langs;
+
+	$retstring = '';
+
+	if ($prefix == '')
+		$prefix = 're';
+	if ($h == '')
+		$h = 0;
+	if ($m == '')
+		$m = 0;
+	$emptydate = 0;
+	$emptyhours = 0;
+	if ($empty == 1)
+	{
+		$emptydate = 1;
+		$emptyhours = 1;
+	}
+	if ($empty == 2)
+	{
+		$emptydate = 0;
+		$emptyhours = 1;
+	}
+	$orig_set_time = $set_time;
+
+	if ($set_time === '' && $emptydate == 0)
+	{
+		include_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
+		$set_time = dol_now('tzuser') - (getServerTimeZoneInt('now') * 3600); // set_time must be relative to PHP server timezone
+	}
+
+	// Analysis of the pre-selection date
+	if (preg_match('/^([0-9]+)\-([0-9]+)\-([0-9]+)\s?([0-9]+)?:?([0-9]+)?/', $set_time, $reg)) // deprecated usage
+	{
+		// Date format 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS'
+		$syear = (!empty($reg[1]) ? $reg[1] : '');
+		$smonth = (!empty($reg[2]) ? $reg[2] : '');
+		$sday = (!empty($reg[3]) ? $reg[3] : '');
+		$shour = (!empty($reg[4]) ? $reg[4] : '');
+		$smin = (!empty($reg[5]) ? $reg[5] : '');
+	}
+	elseif (strval($set_time) != '' && $set_time != -1)
+	{
+		// set_time est un timestamps (0 possible)
+		$syear = dol_print_date($set_time, "%Y");
+		$smonth = dol_print_date($set_time, "%m");
+		$sday = dol_print_date($set_time, "%d");
+		if ($orig_set_time != '')
+		{
+			$shour = dol_print_date($set_time, "%H");
+			$smin = dol_print_date($set_time, "%M");
+			$ssec = dol_print_date($set_time, "%S");
+		}
+		else
+		{
+			$shour = '';
+			$smin = '';
+			$ssec = '';
+		}
+	}
+	else
+	{
+		// Date est '' ou vaut -1
+		$syear = '';
+		$smonth = '';
+		$sday = '';
+		$shour = !isset($conf->global->MAIN_DEFAULT_DATE_HOUR) ? ($h == -1 ? '23' : '') : $conf->global->MAIN_DEFAULT_DATE_HOUR;
+		$smin = !isset($conf->global->MAIN_DEFAULT_DATE_MIN) ? ($h == -1 ? '59' : '') : $conf->global->MAIN_DEFAULT_DATE_MIN;
+		$ssec = !isset($conf->global->MAIN_DEFAULT_DATE_SEC) ? ($h == -1 ? '59' : '') : $conf->global->MAIN_DEFAULT_DATE_SEC;
+	}
+	if ($h == 3)
+		$shour = '';
+	if ($m == 3)
+		$smin = '';
+
+	// You can set MAIN_POPUP_CALENDAR to 'eldy' or 'jquery'
+	$usecalendar = 'combo';
+	if (!empty($conf->use_javascript_ajax) && (empty($conf->global->MAIN_POPUP_CALENDAR) || $conf->global->MAIN_POPUP_CALENDAR != "none"))
+	{
+		$usecalendar = ((empty($conf->global->MAIN_POPUP_CALENDAR) || $conf->global->MAIN_POPUP_CALENDAR == 'eldy') ? 'jquery' : $conf->global->MAIN_POPUP_CALENDAR);
+	}
+	//if (! empty($conf->browser->phone)) $usecalendar='combo';
+
+	if ($d)
+	{
+		// Show date with popup
+		if ($usecalendar != 'combo')
+		{
+			$formated_date = '';
+			//print "e".$set_time." t ".$conf->format_date_short;
+			if (strval($set_time) != '' && $set_time != -1)
+			{
+				//$formated_date=dol_print_date($set_time,$conf->format_date_short);
+				$formated_date = dol_print_date($set_time, $langs->trans("FormatDateShortInput"));  // FormatDateShortInput for dol_print_date / FormatDateShortJavaInput that is same for javascript
+			}
+
+			// Calendrier popup version eldy
+			if ($usecalendar == "eldy")
+			{
+				// Zone de saisie manuelle de la date
+				$retstring .= '<input id="'.$prefix.'" name="'.$prefix.'" type="text" class="maxwidth75" maxlength="11" value="'.$formated_date.'"';
+				$retstring .= ($disabled ? ' disabled' : '');
+				$retstring .= ' onChange="dpChangeDay(\''.$prefix.'\',\''.$langs->trans("FormatDateShortJavaInput").'\'); "';  // FormatDateShortInput for dol_print_date / FormatDateShortJavaInput that is same for javascript
+				$retstring .= '>';
+
+				// Icone calendrier
+				if (!$disabled)
+				{
+					$retstring .= '<button id="'.$prefix.'Button" type="button" class="dpInvisibleButtons"';
+					$base = DOL_URL_ROOT.'/core/';
+					$retstring .= ' onClick="showDP(\''.$base.'\',\''.$prefix.'\',\''.$langs->trans("FormatDateShortJavaInput").'\',\''.$langs->defaultlang.'\');"';
+					$retstring .= '>'.img_object($langs->trans("SelectDate"), 'calendarday', 'class="datecallink"').'</button>';
+				}
+				else
+					$retstring .= '<button id="'.$prefix.'Button" type="button" class="dpInvisibleButtons">'.img_object($langs->trans("Disabled"), 'calendarday', 'class="datecallink"').'</button>';
+
+				$retstring .= '<input type="hidden" id="'.$prefix.'day"   name="'.$prefix.'day"   value="'.$sday.'">'."\n";
+				$retstring .= '<input type="hidden" id="'.$prefix.'month" name="'.$prefix.'month" value="'.$smonth.'">'."\n";
+				$retstring .= '<input type="hidden" id="'.$prefix.'year"  name="'.$prefix.'year"  value="'.$syear.'">'."\n";
+			}
+			elseif ($usecalendar == 'jquery')
+			{
+				if (!$disabled)
+				{
+					// Output javascript for datepicker
+					$retstring .= "<script type='text/javascript'>";
+					$retstring .= "$(function(){ $('#".$prefix."').datepicker({
+							dateFormat: '".$langs->trans("FormatDateShortJQueryInput")."',
+							autoclose: true,
+							todayHighlight: true,";
+					if (!empty($conf->dol_use_jmobile))
+					{
+						$retstring .= "
+								beforeShow: function (input, datePicker) {
+									input.disabled = true;
+								},
+								onClose: function (dateText, datePicker) {
+									this.disabled = false;
+								},
+								";
+					}
+					// Note: We don't need monthNames, monthNamesShort, dayNames, dayNamesShort, dayNamesMin, they are set globally on datepicker component in lib_head.js.php
+					if (empty($conf->global->MAIN_POPUP_CALENDAR_ON_FOCUS))
+					{
+						$retstring .= "
+								showOn: 'button',
+								buttonImage: '".DOL_URL_ROOT."/theme/".$conf->theme."/img/object_calendarday.png',
+								buttonImageOnly: true";
+					}
+					$retstring .= "
+							}) });";
+					$retstring .= "</script>";
+				}
+
+				// Zone de saisie manuelle de la date
+				$retstring .= '<input id="'.$prefix.'" name="'.$prefix.'" type="text" class="maxwidth75" maxlength="11" value="'.$formated_date.'"';
+				$retstring .= ($disabled ? ' disabled' : '');
+				$retstring .= ' onChange="dpChangeDay(\''.$prefix.'\',\''.$langs->trans("FormatDateShortJavaInput").'\'); "';  // FormatDateShortInput for dol_print_date / FormatDateShortJavaInput that is same for javascript
+				$retstring .= '>';
+
+				// Icone calendrier
+				if (!$disabled)
+				{
+					/* Not required. Managed by option buttonImage of jquery
+					  $retstring.=img_object($langs->trans("SelectDate"),'calendarday','id="'.$prefix.'id" class="datecallink"');
+					  $retstring.="<script type='text/javascript'>";
+					  $retstring.="jQuery(document).ready(function() {";
+					  $retstring.='	jQuery("#'.$prefix.'id").click(function() {';
+					  $retstring.="    	jQuery('#".$prefix."').focus();";
+					  $retstring.='    });';
+					  $retstring.='});';
+					  $retstring.="</script>"; */
+				}
+				else
+				{
+					$retstring .= '<button id="'.$prefix.'Button" type="button" class="dpInvisibleButtons">'.img_object($langs->trans("Disabled"), 'calendarday', 'class="datecallink"').'</button>';
+				}
+
+				$retstring .= '<input type="hidden" id="'.$prefix.'day"   name="'.$prefix.'day"   value="'.$sday.'">'."\n";
+				$retstring .= '<input type="hidden" id="'.$prefix.'month" name="'.$prefix.'month" value="'.$smonth.'">'."\n";
+				$retstring .= '<input type="hidden" id="'.$prefix.'year"  name="'.$prefix.'year"  value="'.$syear.'">'."\n";
+			}
+			else
+			{
+				$retstring .= "Bad value of MAIN_POPUP_CALENDAR";
+			}
+		}
+		// Show date with combo selects
+		else
+		{
+			//$retstring.='<div class="inline-block">';
+			// Day
+			$retstring .= '<select'.($disabled ? ' disabled' : '').' class="flat valignmiddle maxwidth50imp" id="'.$prefix.'day" name="'.$prefix.'day">';
+
+			if ($emptydate || $set_time == -1)
+			{
+				$retstring .= '<option value="0" selected>&nbsp;</option>';
+			}
+
+			for ($day = 1; $day <= 31; $day++)
+			{
+				$retstring .= '<option value="'.$day.'"'.($day == $sday ? ' selected' : '').'>'.$day.'</option>';
+			}
+
+			$retstring .= "</select>";
+
+			$retstring .= '<select'.($disabled ? ' disabled' : '').' class="flat valignmiddle maxwidth75imp" id="'.$prefix.'month" name="'.$prefix.'month">';
+			if ($emptydate || $set_time == -1)
+			{
+				$retstring .= '<option value="0" selected>&nbsp;</option>';
+			}
+
+			// Month
+			for ($month = 1; $month <= 12; $month++)
+			{
+				$retstring .= '<option value="'.$month.'"'.($month == $smonth ? ' selected' : '').'>';
+				$retstring .= dol_print_date(mktime(12, 0, 0, $month, 1, 2000), "%b");
+				$retstring .= "</option>";
+			}
+			$retstring .= "</select>";
+
+			// Year
+			if ($emptydate || $set_time == -1)
+			{
+				$retstring .= '<input'.($disabled ? ' disabled' : '').' placeholder="'.dol_escape_htmltag($langs->trans("Year")).'" class="flat maxwidth50imp valignmiddle" type="number" min="0" max="3000" maxlength="4" id="'.$prefix.'year" name="'.$prefix.'year" value="'.$syear.'">';
+			}
+			else
+			{
+				$retstring .= '<select'.($disabled ? ' disabled' : '').' class="flat valignmiddle maxwidth75imp" id="'.$prefix.'year" name="'.$prefix.'year">';
+
+				for ($year = $syear - 10; $year < $syear + 10; $year++)
+				{
+					$retstring .= '<option value="'.$year.'"'.($year == $syear ? ' selected' : '').'>'.$year.'</option>';
+				}
+				$retstring .= "</select>\n";
+			}
+			//$retstring.='</div>';
+		}
+	}
+
+	if ($d && $h)
+		$retstring .= ($h == 2 ? '<br>' : ' ');
+
+	if ($h)
+	{
+		// Show hour
+		$retstring .= '<select'.($disabled ? ' disabled' : '').' class="flat valignmiddle maxwidth50 '.($fullday ? $fullday.'hour' : '').'" id="'.$prefix.'hour" name="'.$prefix.'hour">';
+		if ($emptyhours)
+			$retstring .= '<option value="-1">&nbsp;</option>';
+		for ($hour = 0; $hour < 24; $hour++)
+		{
+			if (strlen($hour) < 2)
+				$hour = "0".$hour;
+			$retstring .= '<option value="'.$hour.'"'.(($hour == $shour) ? ' selected' : '').'>'.$hour.(empty($conf->dol_optimize_smallscreen) ? '' : 'H').'</option>';
+		}
+		$retstring .= '</select>';
+		if ($m && empty($conf->dol_optimize_smallscreen))
+			$retstring .= ":";
+	}
+
+	if ($m)
+	{
+		// Show minutes
+		$retstring .= '<select'.($disabled ? ' disabled' : '').' class="flat valignmiddle maxwidth50 '.($fullday ? $fullday.'min' : '').'" id="'.$prefix.'min" name="'.$prefix.'min">';
+		if ($emptyhours)
+			$retstring .= '<option value="-1">&nbsp;</option>';
+		for ($min = 0; $min < 60; $min++)
+		{
+			if (strlen($min) < 2)
+				$min = "0".$min;
+			$retstring .= '<option value="'.$min.'"'.(($min == $smin) ? ' selected' : '').'>'.$min.(empty($conf->dol_optimize_smallscreen) ? '' : '').'</option>';
+		}
+		$retstring .= '</select>';
+
+		$retstring .= '<input type="hidden" name="'.$prefix.'sec" value="'.$ssec.'">';
+	}
+
+	// Add a "Now" link
+	if ($conf->use_javascript_ajax && $addnowlink)
+	{
+		// Script which will be inserted in the onClick of the "Now" link
+		$reset_scripts = "";
+
+		// Generate the date part, depending on the use or not of the javascript calendar
+		$reset_scripts .= 'jQuery(\'#'.$prefix.'\').val(\''.dol_print_date(dol_now(), 'day').'\');';
+		$reset_scripts .= 'jQuery(\'#'.$prefix.'day\').val(\''.dol_print_date(dol_now(), '%d').'\');';
+		$reset_scripts .= 'jQuery(\'#'.$prefix.'month\').val(\''.dol_print_date(dol_now(), '%m').'\');';
+		$reset_scripts .= 'jQuery(\'#'.$prefix.'year\').val(\''.dol_print_date(dol_now(), '%Y').'\');';
+		/* if ($usecalendar == "eldy")
+		  {
+		  $base=DOL_URL_ROOT.'/core/';
+		  $reset_scripts .= 'resetDP(\''.$base.'\',\''.$prefix.'\',\''.$langs->trans("FormatDateShortJavaInput").'\',\''.$langs->defaultlang.'\');';
+		  }
+		  else
+		  {
+		  $reset_scripts .= 'this.form.elements[\''.$prefix.'day\'].value=formatDate(new Date(), \'d\'); ';
+		  $reset_scripts .= 'this.form.elements[\''.$prefix.'month\'].value=formatDate(new Date(), \'M\'); ';
+		  $reset_scripts .= 'this.form.elements[\''.$prefix.'year\'].value=formatDate(new Date(), \'yyyy\'); ';
+		  } */
+		// Update the hour part
+		if ($h)
+		{
+			if ($fullday)
+				$reset_scripts .= " if (jQuery('#fullday:checked').val() == null) {";
+			//$reset_scripts .= 'this.form.elements[\''.$prefix.'hour\'].value=formatDate(new Date(), \'HH\'); ';
+			$reset_scripts .= 'jQuery(\'#'.$prefix.'hour\').val(\''.dol_print_date(dol_now(), '%H').'\');';
+			if ($fullday)
+				$reset_scripts .= ' } ';
+		}
+		// Update the minute part
+		if ($m)
+		{
+			if ($fullday)
+				$reset_scripts .= " if (jQuery('#fullday:checked').val() == null) {";
+			//$reset_scripts .= 'this.form.elements[\''.$prefix.'min\'].value=formatDate(new Date(), \'mm\'); ';
+			$reset_scripts .= 'jQuery(\'#'.$prefix.'min\').val(\''.dol_print_date(dol_now(), '%M').'\');';
+			if ($fullday)
+				$reset_scripts .= ' } ';
+		}
+		// If reset_scripts is not empty, print the link with the reset_scripts in the onClick
+		if ($reset_scripts && empty($conf->dol_optimize_smallscreen))
+		{
+			$retstring .= ' <button class="dpInvisibleButtons datenowlink" id="'.$prefix.'ButtonNow" type="button" name="_useless" value="now" onClick="'.$reset_scripts.'">';
+			$retstring .= $langs->trans("Now");
+			$retstring .= '</button> ';
+		}
+	}
+
+	// Add a "Plus one hour" link
+	if ($conf->use_javascript_ajax && $addplusone)
+	{
+		// Script which will be inserted in the onClick of the "Add plusone" link
+		$reset_scripts = "";
+
+		// Generate the date part, depending on the use or not of the javascript calendar
+		$reset_scripts .= 'jQuery(\'#'.$prefix.'\').val(\''.dol_print_date(dol_now(), 'day').'\');';
+		$reset_scripts .= 'jQuery(\'#'.$prefix.'day\').val(\''.dol_print_date(dol_now(), '%d').'\');';
+		$reset_scripts .= 'jQuery(\'#'.$prefix.'month\').val(\''.dol_print_date(dol_now(), '%m').'\');';
+		$reset_scripts .= 'jQuery(\'#'.$prefix.'year\').val(\''.dol_print_date(dol_now(), '%Y').'\');';
+		// Update the hour part
+		if ($h)
+		{
+			if ($fullday)
+				$reset_scripts .= " if (jQuery('#fullday:checked').val() == null) {";
+			$reset_scripts .= 'jQuery(\'#'.$prefix.'hour\').val(\''.dol_print_date(dol_now(), '%H').'\');';
+			if ($fullday)
+				$reset_scripts .= ' } ';
+		}
+		// Update the minute part
+		if ($m)
+		{
+			if ($fullday)
+				$reset_scripts .= " if (jQuery('#fullday:checked').val() == null) {";
+			$reset_scripts .= 'jQuery(\'#'.$prefix.'min\').val(\''.dol_print_date(dol_now(), '%M').'\');';
+			if ($fullday)
+				$reset_scripts .= ' } ';
+		}
+		// If reset_scripts is not empty, print the link with the reset_scripts in the onClick
+		if ($reset_scripts && empty($conf->dol_optimize_smallscreen))
+		{
+			$retstring .= ' <button class="dpInvisibleButtons datenowlink" id="'.$prefix.'ButtonPlusOne" type="button" name="_useless2" value="plusone" onClick="'.$reset_scripts.'">';
+			$retstring .= $langs->trans("DateStartPlusOne");
+			$retstring .= '</button> ';
+		}
+	}
+
+	// Add a "Plus one hour" link
+	if ($conf->use_javascript_ajax && $adddateof)
+	{
+		$tmparray = dol_getdate($adddateof);
+		$retstring .= ' - <button class="dpInvisibleButtons datenowlink" id="dateofinvoice" type="button" name="_dateofinvoice" value="now" onclick="jQuery(\'#re\').val(\''.dol_print_date($adddateof, 'day').'\');jQuery(\'#reday\').val(\''.$tmparray['mday'].'\');jQuery(\'#remonth\').val(\''.$tmparray['mon'].'\');jQuery(\'#reyear\').val(\''.$tmparray['year'].'\');">'.$langs->trans("DateInvoice").'</a>';
+	}
+
+	if (!empty($nooutput))
+		return $retstring;
+
+	print $retstring;
+	return;
 }
