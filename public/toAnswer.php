@@ -44,7 +44,6 @@ $langs->load('questionnaire@questionnaire');
 $form = new Form($db);
 
 
-
 $mode = 'view';
 
 $action = GETPOST('action');

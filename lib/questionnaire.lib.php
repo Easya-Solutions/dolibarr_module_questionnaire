@@ -999,10 +999,26 @@ function llxHeaderQuest()
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="author" content="Dolibarr Development Team">
 	<title>Questionnaire</title>
-	
+	<!-- Includes CSS for JQuery (Ajax library) -->
+	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/includes/jquery/css/base/jquery-ui.css',1).'">
+	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/includes/jquery/plugins/jnotify/jquery.jnotify-alt.min.css',1).'">
+	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/includes//jquery/plugins/select2/dist/css/select2.css',1).'">
+	<!-- Includes CSS for font awesome -->
+	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/includes/common/fontawesome/css/font-awesome.min.css',1).'">
 	<!-- Includes CSS added by page -->
 	<link rel="stylesheet" type="text/css" title="default" href="'.dol_buildpath('/questionnaire/css/styles.css',1).'">
+		<!-- Includes JS for JQuery -->
+	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/includes/jquery/js/jquery.min.js',1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/includes/jquery/js/jquery-ui.min.js',1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/includes/jquery/plugins/tablednd/jquery.tablednd.min.js',1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/includes/jquery/plugins/jnotify/jquery.jnotify.min.js',1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/includes/jquery/plugins/flot/jquery.flot.min.js',1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/includes/jquery/plugins/flot/jquery.flot.pie.min.js',1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/includes/jquery/plugins/flot/jquery.flot.stack.min.js',1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/includes/jquery/plugins/select2/dist/js/select2.full.min.js',1).'"></script>
+		<script type="text/javascript" src="'.dol_buildpath('/questionnaire/includes/lib_head.js.php',1).'"></script>
 	</head>
+	
 
 	<body id="mainbody">
 	<!-- Begin div id-container --><div id="id-container" class="id-container">
@@ -1010,4 +1026,6 @@ function llxHeaderQuest()
 	<div id="id-right">
 	<!-- Begin div class="fiche" -->
 	<div class="fiche">';
+	
+	
 }
