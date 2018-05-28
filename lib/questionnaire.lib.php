@@ -760,7 +760,19 @@ function draw_linearscale_answer(&$q) {
 	
 }
 
-function _getBanner(&$object, $action, $print_link_apercu = true, $shownav = true, $show_linkback = true)
+function _getBanner(&$object, $action, $print_link_apercu=true, $shownav=true, $show_linkback=true) {
+	
+	global $langs;
+	
+	if($show_linkback) $linkback = '<a href="'.dol_buildpath('/questionnaire/list.php', 1).'">' . $langs->trans("BackToList") . '</a>';
+	$morehtmlref = '<div class="refidno">'.getFieldVal($object, 'Title', 'title').'</div>';
+	//$morehtmlref.= '<div class="refidno">'.getFieldVal($object, 'LinkedObject', 'origin').'</div>';
+	if($action !== 'create' && $action !== 'answer' && $print_link_apercu) $morehtmlref.= '<div class="refidno">'.($action === 'apercu' ? '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'">Retour au mode édition</a>' : '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&action=apercu">Visualiser un aperçu</a>').'</div>';
+	dol_banner_tab($object, 'ref', $linkback, $shownav, 'ref', 'ref', $morehtmlref, '', 0, '', '');
+	
+}
+
+function _getBannerToAnswer(&$object, $action, $print_link_apercu = true, $shownav = true, $show_linkback = true)
 {
 
 	global $langs, $form;

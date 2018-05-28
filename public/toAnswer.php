@@ -271,7 +271,7 @@ if ($action !== 'create')
 	$shownav = $show_linkback = ($action === 'answer' ? false : true);
 	if ($action === 'answer')
 		$questionnaire_status_forced_key = 'questionnaireStatusValidatedShort';
-	_getBanner($object, $action, true, $shownav, $show_linkback);
+	_getBannerToAnswer($object, $action, true, $shownav, $show_linkback);
 }
 
 $formcore = new TFormCore;
