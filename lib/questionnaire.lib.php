@@ -1173,12 +1173,13 @@ function custom_select_date($set_time = '', $prefix = 're', $h = 0, $m = 0, $emp
 								},
 								";
 					}
+					
 					// Note: We don't need monthNames, monthNamesShort, dayNames, dayNamesShort, dayNamesMin, they are set globally on datepicker component in lib_head.js.php
 					if (empty($conf->global->MAIN_POPUP_CALENDAR_ON_FOCUS))
 					{
 						$retstring .= "
 								showOn: 'button',
-								buttonImage: '".DOL_URL_ROOT."/theme/".$conf->theme."/img/object_calendarday.png',
+								buttonImage: '".dol_buildpath("/questionnaire/img/object_calendarday.png", 1)."',
 								buttonImageOnly: true";
 					}
 					$retstring .= "
