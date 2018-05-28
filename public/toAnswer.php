@@ -63,7 +63,8 @@ $res=$invitation_user->loadBy(array( 'rowid' => $fk_invitation, 'token' => "'$to
 
 if($action === 'answer' && empty($res) ||  empty($invitation_user->id) ||  !empty($invitation_user->fk_statut) || $invitation_user->date_limite_reponse < strtotime(date('Y-m-d')) ){
 	
-	accessforbidden('Date limite de réponse atteinte, token invalide, ou questionnaire déjà complété.');
+	print('Date limite de réponse atteinte, token invalide, ou questionnaire déjà complété.');
+	exit;
 }
 
 
