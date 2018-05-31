@@ -63,7 +63,6 @@ if (!GETPOST('confirmmassaction', 'alpha') && $massaction != 'presend' && $massa
 
 $arrayofselected = is_array($toselect) ? $toselect : array();
 
-
 //var_dump($massaction,$arrayofselected);exit;
 
 if (!empty($massaction) && $massaction == 'send' && !empty($arrayofselected))
@@ -94,7 +93,7 @@ if (!empty($massaction) && $massaction == 'send' && !empty($arrayofselected))
 			setEventMessages($langs->trans("MailSuccessfulySent", $conf->email_from,  $invuser->email), null, 'mesgs');
 		}
 	}
-}elseif($action == 'delete' && GETPOST('confirm') == 'yes' && !empty($arrayofselected)){
+}elseif($massaction == 'delete' && !empty($arrayofselected)){
 
 	foreach ($arrayofselected as $inv_selected)
 	{
@@ -372,15 +371,17 @@ function printMassActionButton()
 	
 	
 	$ret = $formcore->begin_form($_SERVER['PHP_SELF'], 'form_massaction');
-	if ($massaction == 'predelete')
-	{
-		$ret .=  $form->formconfirm($_SERVER["PHP_SELF"], $langs->trans("ConfirmMassDeletion"), $langs->trans("ConfirmMassDeletionQuestion", count($toselect)), "delete", null, '', 0, 200, 500, 1);
-	}
 	$ret .= '<input hidden name="id" type="text" value="'.GETPOST('id').'"/>';
+	
+//	if ($massaction == 'predelete')
+//	{
+//
+//		$ret .=  $form->formconfirm($_SERVER["PHP_SELF"], $langs->trans("ConfirmMassDeletion"), $langs->trans("ConfirmMassDeletionQuestion", count($toselect)), "delete", null, '', 0, 200, 500,1);
+//	}
 
 	$arrayofmassactions = array(
 		'send' => $langs->trans("SendByMail"),
-    'predelete'=>$langs->trans("Delete"),
+    'delete'=>$langs->trans("Delete"),
 	);
 	$massactionbutton = $form->selectMassAction('', $arrayofmassactions);
 
