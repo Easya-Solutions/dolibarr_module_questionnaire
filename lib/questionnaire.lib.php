@@ -177,7 +177,7 @@ function draw_question(&$q, $fk_statut_questionnaire=0) {
 	
 	if($q->type !== 'string' && $q->type !== 'textarea' && $q->type !== 'date' && $q->type !== 'hour' && $q->type !== 'linearscale') {
 			// Liste des choix (lignes)
-			$style_div_lines = ' width: 300px; ';
+			$style_div_lines = ' width: 600px; ';
 			if($question_est_une_grille) $style_div_lines.= ' float: left; ';
 			$res.= '<div style="'.$style_div_lines.'" id="allChoicesLeft_q'.$q->id.'" name="allChoicesLeft_q'.$q->id.'">';
 			$res.= '<div class="refid">Lignes<br /><br /></div>';
@@ -239,6 +239,7 @@ function draw_standard_choice(&$choice, $fk_statut_questionnaire=0) {
 	if(empty($fk_statut_questionnaire)) {
 		$res.= '<input placeholder="Libellé choix" type="text" name="label" class="field" value="'.$choice->label.'" />&nbsp;';
 		$res.= '<a id="del_element_'.$choice->id.'" name="del_element_'.$choice->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteChoice')).'</a>';
+		$res.= '&nbsp;<a href="#" name="link_element_'.$choice->id.'" class="linkquestion" onclick="return false;" data-choice="'.$choice->id.'"><img src="img/link-question.png"/></a><span id="sel_'.$choice->id.'"></span>';
 	}
 	else $res.= $choice->label;
 	$res.= '<br /><br /></div>';

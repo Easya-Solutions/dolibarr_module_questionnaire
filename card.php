@@ -4,6 +4,7 @@ require 'config.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 dol_include_once('/questionnaire/class/question.class.php');
+dol_include_once('/questionnaire/class/question_link.class.php');
 dol_include_once('/questionnaire/class/answer.class.php');
 dol_include_once('/questionnaire/class/questionnaire.class.php');
 dol_include_once('/questionnaire/class/choice.class.php');
@@ -559,6 +560,58 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 	
 					$input.css('background-color','');
 	
+				});
+				
+			});
+
+			$(document).on('click', '[name*=link_element_]', function() {
+				var $btn = $(this);
+				var choice = $btn.data('choice');
+				var $div_question = $btn.closest('div[type=question]');
+				var id_question = $div_question.attr('id');
+				id_question = id_question.replace('question', '');
+				
+				$.ajax({
+					dataType:'json'
+					,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+					,data:{
+						fk_questionnaire:<?php echo $id; ?>
+						,fk_question: id_question
+ 						,fk_choix:choice
+ 						,get:"next-questions"
+					}
+	
+				}).done(function(result) {
+					console.log(result);
+					$('#sel_'+choice).html(result);
+	
+				});
+
+			});
+
+			$(document).on('change', '.select_question', function() {
+				var $select = $(this);
+				var choice = $select.prev().data('choice');
+				var id_question = $select.val();
+				var questionnaire = $select.data('questionnaire');
+
+				$.ajax({
+					dataType:'json'
+					,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+					,data:{
+						put:"link-question"
+						,fk_questionnaire:questionnaire
+						,fk_question: id_question
+ 						,fk_choix:choice
+					}
+				
+				}).done(function(result) {
+					console.log(result);
+					if(result.success == true)
+					{
+						
+						$('#sel_'+choice).html();
+					}
 				});
 				
 			});

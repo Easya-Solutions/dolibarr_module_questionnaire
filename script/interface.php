@@ -2,6 +2,7 @@
 
 require('../config.php');
 dol_include_once('/questionnaire/class/question.class.php');
+dol_include_once('/questionnaire/class/question_link.class.php');
 dol_include_once('/questionnaire/class/choice.class.php');
 dol_include_once('/questionnaire/lib/questionnaire.lib.php');
 
@@ -10,6 +11,7 @@ $put = GETPOST('put');
 
 $fk_questionnaire = GETPOST('fk_questionnaire');
 $fk_question = GETPOST('fk_question');
+$fk_choix = GETPOST('fk_choix', 'int');
 $is_section = GETPOST('is_section');
 $type_question = GETPOST('type_question');
 $type_object = GETPOST('type_object');
@@ -19,12 +21,13 @@ $field = GETPOST('field');
 $value = GETPOST('value');
 $origin = GETPOST('origin');
 
+
 _get($get);
 _put($put);
 
 function _get($case, $obj=null) {
 	
-	global $type_choice, $origin;
+    global $type_choice, $origin, $fk_questionnaire, $fk_question;
 	
 	switch($case) {
 		case 'new_question':
@@ -38,13 +41,17 @@ function _get($case, $obj=null) {
 		case 'select-originid':
 			print json_encode(_getIdsObject($origin, true));
 			break;
+			
+		case 'next-questions':
+		    print json_encode(_getNextQuestions($fk_questionnaire, $fk_question));
+		    break;
 	}
 	
 }
 
 function _put($case) {
 	
-	global $db, $fk_questionnaire, $type_object, $fk_object, $field, $value, $fk_question, $type_choice, $type_question;
+	global $db, $fk_questionnaire, $type_object, $fk_object, $field, $value, $fk_question, $type_choice, $type_question, $fk_choix;
 	
 	switch($case) {
 		
@@ -74,6 +81,9 @@ function _put($case) {
 			print json_encode($res);
 			break;
 			
+		case 'link-question':
+		    print json_encode(_link_question_to_choice($fk_questionnaire, $fk_question, $fk_choix));
+		    break;
 	}
 	
 }
@@ -113,4 +123,43 @@ function del_object($type_object, $fk_object) {
 	$obj->load($fk_object);
 	return  $obj->delete($user);
 	
+}
+
+function _getNextQuestions($fk_questionnaire, $fk_question){
+    
+    global $db;
+    
+    $sql = 'SELECT t.rowid, t.label FROM '.MAIN_DB_PREFIX.'quest_question as t WHERE t.fk_questionnaire = ' . $fk_questionnaire . ' AND t.rowid > '.$fk_question;
+    $res = $db->query($sql);
+    
+    if($res){
+        if($db->num_rows($res)) {
+            
+            $ret = '<select class="select_question" data-questionnaire="'.$fk_questionnaire.'">';
+            $ret.= '<option value=""></option>';
+            while ($obj = $db->fetch_object($res)) $ret .= '<option value="'.$obj->rowid.'">'.$obj->label.'</option>';
+            $ret.= '</select>';
+            
+            return $ret;
+        } else {
+            return "no question after this one";
+        }
+    }
+    
+}
+
+function _link_question_to_choice($fk_questionnaire, $fk_question, $fk_choix) {
+    
+    global $db, $user;
+    
+    $ql = new Questionlink($db);
+    $r = $ql->loadLink(0, $fk_choix);
+    return $r;
+    $ql->fk_questionnaire = $fk_questionnaire;
+    $ql->fk_question = $fk_question;
+    $ql->fk_choix = $fk_choix;
+    
+    $ret = !empty($fk_question) ? $ql->save() : $ql->delete($user);
+    if ($ret > 0) return array("success" => true);
+    else return array("success" => false);
 }
