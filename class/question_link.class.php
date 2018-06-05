@@ -63,8 +63,9 @@ class Questionlink extends SeedObject {
     function loadLink($fk_question = 0, $fk_choix = 0)
     {
         //if (empty($fk_question) && empty($fk_choix) return -1
-        $sql = "SELECT t.rowid, t.fk_questionnaire, t.fk_question, t.fk_choix";
+        $sql = "SELECT t.rowid, t.fk_questionnaire, t.fk_question, t.fk_choix, q.label";
         $sql.= " FROM " .MAIN_DB_PREFIX.$this->table_element. " as t";
+        $sql.= " LEFT JOIN " .MAIN_DB_PREFIX. "quest_question as q ON q.rowid = t.fk_question";
         $sql.= " WHERE 1 = 1";
         if(!empty($fk_question)) $sql.= " AND fk_question=" . $fk_question;
         if(!empty($fk_choix)) $sql.= " AND fk_choix=" . $fk_choix;
@@ -79,6 +80,7 @@ class Questionlink extends SeedObject {
                 $this->fk_questionnaire = $obj->fk_questionnaire;
                 $this->fk_question = $obj->fk_question;
                 $this->fk_choix = $obj->fk_choix;
+                $this->question_label = $obj->label;
                 
                 return $this->id;
             }

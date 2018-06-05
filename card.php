@@ -591,7 +591,7 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 
 			$(document).on('change', '.select_question', function() {
 				var $select = $(this);
-				var choice = $select.prev().data('choice');
+				var choice = $select.parent().prev().data('choice');
 				var id_question = $select.val();
 				var questionnaire = $select.data('questionnaire');
 
@@ -607,11 +607,9 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 				
 				}).done(function(result) {
 					console.log(result);
-					if(result.success == true)
-					{
-						
-						$('#sel_'+choice).html();
-					}
+					console.log('#sel_'+choice);
+					if (id_question == 0) $('#sel_'+choice).html('');
+				
 				});
 				
 			});

@@ -154,7 +154,7 @@ function _link_question_to_choice($fk_questionnaire, $fk_question, $fk_choix) {
     
     $ql = new Questionlink($db);
     $r = $ql->loadLink(0, $fk_choix);
-    return $r;
+    
     $ql->fk_questionnaire = $fk_questionnaire;
     $ql->fk_question = $fk_question;
     $ql->fk_choix = $fk_choix;
