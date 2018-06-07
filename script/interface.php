@@ -20,14 +20,15 @@ $fk_object = GETPOST('fk_object');
 $field = GETPOST('field');
 $value = GETPOST('value');
 $origin = GETPOST('origin');
-
+$links = GETPOST('links');
+$group = GETPOST('group');
 
 _get($get);
 _put($put);
 
 function _get($case, $obj=null) {
 	
-    global $type_choice, $origin, $fk_questionnaire, $fk_question;
+    global $type_choice, $origin, $fk_questionnaire, $fk_question, $fk_choix;
 	
 	switch($case) {
 		case 'new_question':
@@ -43,7 +44,7 @@ function _get($case, $obj=null) {
 			break;
 			
 		case 'next-questions':
-		    print json_encode(_getNextQuestions($fk_questionnaire, $fk_question));
+		    print json_encode(_getNextQuestions($fk_questionnaire, $fk_question, $fk_choix));
 		    break;
 	}
 	
@@ -51,7 +52,7 @@ function _get($case, $obj=null) {
 
 function _put($case) {
 	
-	global $db, $fk_questionnaire, $type_object, $fk_object, $field, $value, $fk_question, $type_choice, $type_question, $fk_choix;
+    global $db, $fk_questionnaire, $type_object, $fk_object, $field, $value, $fk_question, $type_choice, $type_question, $fk_choix, $links, $group;
 	
 	switch($case) {
 		
@@ -83,6 +84,10 @@ function _put($case) {
 			
 		case 'link-question':
 		    print json_encode(_link_question_to_choice($fk_questionnaire, $fk_question, $fk_choix));
+		    break;
+		    
+		case 'add_radio_events':
+		    print json_encode(_radio_links($links, $group));
 		    break;
 	}
 	
@@ -125,19 +130,23 @@ function del_object($type_object, $fk_object) {
 	
 }
 
-function _getNextQuestions($fk_questionnaire, $fk_question){
+function _getNextQuestions($fk_questionnaire, $fk_question, $fk_choix){
     
     global $db;
     
-    $sql = 'SELECT t.rowid, t.label FROM '.MAIN_DB_PREFIX.'quest_question as t WHERE t.fk_questionnaire = ' . $fk_questionnaire . ' AND t.rowid > '.$fk_question;
+    $sql = 'SELECT t.rowid, t.label FROM '.MAIN_DB_PREFIX.'quest_question as t';
+    $sql.= ' WHERE t.fk_questionnaire = ' . $fk_questionnaire . ' AND t.rowid > '.$fk_question;
     $res = $db->query($sql);
+    
+    $ql = new Questionlink($db);
+    $r = $ql->loadLink(0, $fk_choix);
     
     if($res){
         if($db->num_rows($res)) {
             
             $ret = '<select class="select_question" data-questionnaire="'.$fk_questionnaire.'">';
             $ret.= '<option value=""></option>';
-            while ($obj = $db->fetch_object($res)) $ret .= '<option value="'.$obj->rowid.'">'.$obj->label.'</option>';
+            while ($obj = $db->fetch_object($res)) $ret .= '<option value="'.$obj->rowid.'"'.(($r > 0 && $ql->question_label == $obj->label) ? ' selected' : '').'>'.$obj->label.'</option>';
             $ret.= '</select>';
             
             return $ret;
@@ -160,6 +169,8 @@ function _link_question_to_choice($fk_questionnaire, $fk_question, $fk_choix) {
     $ql->fk_choix = $fk_choix;
     
     $ret = !empty($fk_question) ? $ql->save() : $ql->delete($user);
-    if ($ret > 0) return array("success" => true);
+    $ql->loadLink($fk_question, $fk_choix);
+    if ($ret > 0) return array("success" => true, "label" => $ql->question_label);
     else return array("success" => false);
 }
+

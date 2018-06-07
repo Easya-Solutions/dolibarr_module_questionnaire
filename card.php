@@ -570,7 +570,7 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 				var $div_question = $btn.closest('div[type=question]');
 				var id_question = $div_question.attr('id');
 				id_question = id_question.replace('question', '');
-				
+				console.log(choice);
 				$.ajax({
 					dataType:'json'
 					,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
@@ -584,7 +584,6 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 				}).done(function(result) {
 					console.log(result);
 					$('#sel_'+choice).html(result);
-	
 				});
 
 			});
@@ -609,11 +608,12 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 					console.log(result);
 					console.log('#sel_'+choice);
 					if (id_question == 0) $('#sel_'+choice).html('');
+					else $('#sel_'+choice).html('Lié à : ' + result.label)
 				
 				});
 				
 			});
-			
+
 		});
 		
 	</script>
@@ -622,6 +622,64 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 
 }
 
+if($action === 'apercu') {
+    $ql = new Questionlink($db);
+    $links = $ql->loadLinks($id);
+    ?>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('.el_linked').each(function(){
+			$(this).hide();
+        });
+    <?php
+    $link_done = array();
+    foreach ($links as $qId => $cId){
+    ?>
+    	var choix = $('[value='+<?php echo $cId; ?>+']');
+    	var question = $('#question'+<?php echo $qId; ?>);
+    	var type = choix.attr('type');
+
+    	if (choix.data('done') !== true)
+    	{
+    		if (type == 'checkbox')
+    		{
+    			choix.click(function(e) {
+    				console.log($(this).val());
+    				question.toggle();
+    			});
+    			
+    		} else if (type == 'radio') {
+    			var name = choix.attr('name');
+    			
+    			$('[name="'+name+'"').each(function(){
+    				$(this).click(function(e) {
+						if ($(this).data('unable') !== undefined) $('#question'+$(this).data('unable')).show();
+						if (typeof $(this).data('disable') == 'string'){
+							console.log($(this).data('disable'), typeof $(this).data('disable'));
+    						hideIt = $(this).data('disable').split('|');
+    						hideIt.forEach(function(element) {
+    							$('#question'+element).hide();
+    						});
+						} else if (typeof $(this).data('disable') == 'number') {
+							$('#question'+$(this).data('disable')).hide();
+						}
+        			});
+    				
+    				$(this).attr('data-done', true);
+    			});
+    
+    		} else if(choix.parent().find('option') !== undefined) { // cas du select
+				
+    		}
+    	}
+	<?php
+	}
+	
+	?>
+    });
+	</script>
+	<?php
+}
 ?>
 
 <script type="text/javascript">

@@ -32,9 +32,9 @@ class Questionlink extends SeedObject {
         $this->entity = $conf->entity;
     }
     
-    static function loadLinks($fk_questionnaire)
+    function loadLinks($fk_questionnaire)
     {
-        $sql = "SELECT t.fk_question, t.fk_choice FROM " . MAIN_DB_PREFIX . $this->table_element ." as t WHERE t.fk_questionnaire = ". $fk_questionnaire;
+        $sql = "SELECT t.fk_question, t.fk_choix FROM " . MAIN_DB_PREFIX . $this->table_element ." as t WHERE t.fk_questionnaire = ". $fk_questionnaire;
         
         $res = $this->db->query($sql);
         $ret = array();
@@ -44,7 +44,7 @@ class Questionlink extends SeedObject {
             {
                 while ($obj = $this->db->fetch_object($res))
                 {
-                    $ret[$obj->fk_question] = $obj->fk_choice;
+                    $ret[$obj->fk_question] = $obj->fk_choix;
                 }
             }
         }

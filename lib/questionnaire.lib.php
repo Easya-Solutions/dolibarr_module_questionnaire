@@ -269,9 +269,18 @@ function draw_linearscale_choice(&$choice, $title, $fk_statut_questionnaire=0) {
 
 function draw_question_for_user(&$q) {
 	
+    global $db;
+    
+    dol_include_once('/questionnaire/class/question_link.class.php');
+    $ql = new Questionlink($db);
+    $ret = $ql->loadLink($q->id);
+    
+    $addClass = '';
+    if($ret > 0) $addClass = ' el_linked"';
+    
 	if(empty($q->choices)) $q->loadChoices();
 	if(!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale'/*Pas de choix pour ces types là*/) {
-		$res = '<div class="element" type="question" id="question'.$q->id.'">';
+		$res = '<div class="element'.$addClass.'" type="question" id="question'.$q->id.'">';
 		$res.= '<div class="refid">'.$q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
 		
 		switch($q->type) {
@@ -343,7 +352,7 @@ function draw_select_for_user(&$q) {
 	
 	global $form;
 	
-	$tab = array();
+	$tab = array('' => '');
 	foreach($q->choices as &$choix) {
 		$tab[$choix->id] = $choix->label;
 	}
@@ -353,6 +362,18 @@ function draw_select_for_user(&$q) {
 
 function draw_listradio_for_user(&$q) {
 	
+    global $db;
+    
+    dol_include_once('/questionnaire/class/question_link.class.php');
+    
+    $links = array();
+    foreach($q->choices as &$choix) {
+        $ql = new Questionlink($db);
+        $r = $ql->loadLink(0, $choix->id);
+        
+        if($r > 0) $links[$choix->id] = $ql->fk_question;
+    }
+    
 	$res = '<br />';
 	//var_dump($q->choices);exit;
 	foreach($q->choices as &$choix) {
@@ -362,7 +383,17 @@ function draw_listradio_for_user(&$q) {
 				$res.= 'checked';
 			}
 		}
-		$res.= ' name="TAnswer['.$q->id.'][]" value="'.$choix->id.'">&nbsp;'.$choix->label.'<br />';
+		
+		$data_unable = "";
+		$data_disable = array();
+		foreach ($links as $ch => $quest){
+		    if($choix->id == $ch) $data_unable = $quest;
+		    else $data_disable[] = $quest;
+		}
+		$res.= ' name="TAnswer['.$q->id.'][]" value="'.$choix->id.'"';
+		if(!empty($data_unable)) $res.= ' data-unable='.$data_unable;
+		if(!empty($data_disable)) $res.= ' data-disable='.implode('|', $data_disable);
+		$res.= '>&nbsp;'.$choix->label.'<br />';
 	}
 	
 	return $res;
