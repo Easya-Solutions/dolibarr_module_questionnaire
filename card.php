@@ -582,7 +582,7 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 					}
 	
 				}).done(function(result) {
-					console.log(result);
+					//console.log(result);
 					$('#sel_'+choice).html(result);
 				});
 
@@ -605,8 +605,8 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 					}
 				
 				}).done(function(result) {
-					console.log(result);
-					console.log('#sel_'+choice);
+					//console.log(result);
+					//console.log('#sel_'+choice);
 					if (id_question == 0) $('#sel_'+choice).html('');
 					else $('#sel_'+choice).html('Lié à : ' + result.label)
 				
@@ -632,7 +632,7 @@ if($action === 'apercu' || $action === 'answer') {
 			$(this).hide();
         });
     <?php
-    $link_done = array();
+    
     foreach ($links as $qId => $cId){
     ?>
     	var choix = $('[value='+<?php echo $cId; ?>+']');
@@ -644,15 +644,18 @@ if($action === 'apercu' || $action === 'answer') {
     		if (type == 'checkbox')
     		{
     			choix.click(function(e) {
+    				question = $('#question'+$(this).data('enable'));
+    				//console.log($(this).data('enable'));
     				question.toggle(); // on fait apparaitre la question liée suivant la valeur de la checkbox
     			});
+    			choix.attr('data-done', true);
     			
     		} else if (type == 'radio') {
     			var name = choix.attr('name');
     			
     			$('[name="'+name+'"').each(function(){ // on récupère tous les radio du groupe pour apliquer un comportement hide/show en fonction des paramètres
     				$(this).click(function(e) {
-						if ($(this).data('unable') !== undefined) $('#question'+$(this).data('unable')).show(); // s'il y a une question liée, on l'affiche
+						if ($(this).data('enable') !== undefined) $('#question'+$(this).data('enable')).show(); // s'il y a une question liée, on l'affiche
 						if (typeof $(this).data('disable') == 'string'){ // s'il y a plusieurs question à cacher
 							
     						hideIt = $(this).data('disable').split('|');
@@ -669,58 +672,40 @@ if($action === 'apercu' || $action === 'answer') {
     			});
     
     		} else if(choix.parent().find('option') !== undefined) { // cas du select
-				options = choix.parent().find('option');
+    			options = choix.parent().find('option');
+				params = choix.parent().data('params')
 				
 				array_val = [];
 				options.each(function(){
-					array_val.push($(this).val())
+					if (params[$(this).val()]['enable'].length > 0) $(this).attr('data-enable', params[$(this).val()]['enable']);//console.log($(this).val());
+					if (params[$(this).val()]['disable'].length > 0) {
+						$(this).attr('data-disable', params[$(this).val()]['disable'].join('|'));
+					}
+					$(this).attr('data-done', true);
 				});
 
-				// on envoie le tableau des options du select pour récupérer un tableau des data-unable/data-disable à leur appliquer
-				$.ajax({
-					dataType:'json'
-					,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
-					,data:{
-						put:"select-choice"
-						,fk_question: <?php echo $qId; ?>
- 						,group:array_val
-					}
-				
-				}).done(function(result) {
-					// console.log(result);
-					options.each(function(){
-						
-						unable = result['choix'+$(this).val()]['unable'];
-						if(unable !== "") $(this).attr('data-unable', unable);
+				choix.parent().attr('data-params', '');
 
-						disable = result['choix'+$(this).val()]['disable'];
-						if(disable.length !== 0) $(this).attr('data-disable',disable.join('|'));
+				choix.parent().change(function(e){
+					opt = $(this).find('option[value="'+$(this).val()+'"]');
+					if (opt.data('enable') !== undefined) $('#question'+opt.data('enable')).show();
+					if (typeof opt.data('disable') == 'string'){ // s'il y a plusieurs question à cacher
 						
-					});
-
-					if (choix.parent().data('done') !== true){
-    					choix.parent().change(function(e){
-        					unable = $(this).find('option[value="'+$(this).val()+'"]').data('unable');
-    						if(unable !== undefined) $('#question'+unable).show();
-    						
-    						disable = $(this).find('option[value="'+$(this).val()+'"]').data('disable');
-    						if (typeof disable == 'string'){
-        						hideIt = disable.split('|');
-        						hideIt.forEach(function(element) {
-        							$('#question'+element).hide();
-        						});
-    						} else if (typeof disable == 'number') {
-    							$('#question'+disable).hide();
-    						}
-    					});
+						hideIt = opt.data('disable').split('|');
+						hideIt.forEach(function(element) {
+							$('#question'+element).hide();
+						});
+						
+					} else if (typeof opt.data('disable') == 'number') { // s'il n'y a qu'une autre question liée dans ce group de radio
+						$('#question'+opt.data('disable')).hide();
 					}
-					
-					choix.attr('data-done', true);
-					choix.parent().attr('data-done', true);
-					
 				});
     		}
     	}
+
+    	$('[data-enable]').each(function(e){ 
+        	console.log($(this).checked);
+        });
 	<?php
 	}
 	

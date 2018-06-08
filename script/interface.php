@@ -180,22 +180,23 @@ function _select_links($group) {
     $ret = array();
     
     $ql = new Questionlink($db);
+    
     foreach ($group as $fk_choix){
-        $ret['choix'.$fk_choix]['unable'] = "";
+        $ret['choix'.$fk_choix]['enable'] = "";
         $ret['choix'.$fk_choix]['disable'] = array();
         if(!empty($fk_choix)){
             $r = $ql->loadLink(0, $fk_choix);
-            if ($r > 0) $ret['choix'.$fk_choix]['unable'] = $ql->fk_question;
+            if ($r > 0) $ret['choix'.$fk_choix]['enable'] = $ql->fk_question;
         }
     }
     
     foreach ($ret as $fk_choix => $val) {
         
-        if(!empty($val['unable']))
+        if(!empty($val['enable']))
         {
             foreach ($group as $choix){
                 
-                if('choix'.$choix !== $fk_choix) array_push($ret['choix'.$choix]['disable'], $val['unable']);
+                if('choix'.$choix !== $fk_choix) array_push($ret['choix'.$choix]['disable'], $val['enable']);
             }
         }
     }

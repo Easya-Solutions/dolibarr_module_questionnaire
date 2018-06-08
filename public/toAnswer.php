@@ -34,6 +34,7 @@ require '../config.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 dol_include_once('/questionnaire/class/question.class.php');
+dol_include_once('/questionnaire/class/question_link.class.php');
 dol_include_once('/questionnaire/class/answer.class.php');
 dol_include_once('/questionnaire/class/questionnaire.class.php');
 dol_include_once('/questionnaire/class/choice.class.php');
@@ -373,8 +374,8 @@ elseif ($action === 'answer')
 		{
 			if (empty($q->answers))
 				$q->loadAnswers($fk_invitation);
-			print draw_question_for_user($q).'<br />';
-			print '<br /><b><hr style="height:1px;border:none;color:#333;background-color:#333;" /></b><br />';
+			print draw_question_for_user($q).'<br /><br />';
+			//print '<br /><b><hr style="height:1px;border:none;color:#333;background-color:#333;" /></b><br />';
 		}
 	}
 	print '</div>';
@@ -551,6 +552,111 @@ if ((empty($action) || $action === 'view') && empty($object->fk_statut))
 }
 ?>
 
+
+<?php
+if($action === 'apercu' || $action === 'answer') {
+    $ql = new Questionlink($db);
+    $links = $ql->loadLinks($id);
+    ?>
+    <script type="text/javascript">
+    $(document).ready(function() {
+//         $('.el_linked').each(function(){
+// 			$(this).hide();
+//         });
+    <?php
+    
+    foreach ($links as $qId => $cId){
+    ?>
+    	var choix = $('[value='+<?php echo $cId; ?>+']');
+    	var question = $('#question'+<?php echo $qId; ?>);
+    	var type = choix.attr('type');
+
+    	if (choix.data('done') !== true)
+    	{
+    		if (type == 'checkbox')
+    		{
+    			choix.click(function(e) {
+    				question = $('#question'+$(this).data('enable'));
+    				//console.log($(this).data('enable'));
+    				question.toggle(); // on fait apparaitre la question liée suivant la valeur de la checkbox
+    			});
+    			choix.attr('data-done', true);
+    			
+    		} else if (type == 'radio') {
+    			var name = choix.attr('name');
+    			
+    			$('[name="'+name+'"').each(function(){ // on récupère tous les radio du groupe pour apliquer un comportement hide/show en fonction des paramètres
+    				$(this).click(function(e) {
+						if ($(this).data('enable') !== undefined) $('#question'+$(this).data('enable')).show(); // s'il y a une question liée, on l'affiche
+						if (typeof $(this).data('disable') == 'string'){ // s'il y a plusieurs question à cacher
+							
+    						hideIt = $(this).data('disable').split('|');
+    						hideIt.forEach(function(element) {
+    							$('#question'+element).hide();
+    						});
+    						
+						} else if (typeof $(this).data('disable') == 'number') { // s'il n'y a qu'une autre question liée dans ce group de radio
+							$('#question'+$(this).data('disable')).hide();
+						}
+        			});
+    				
+    				$(this).attr('data-done', true);
+    			});
+    
+    		} else if(choix.parent().find('option') !== undefined) { // cas du select
+				options = choix.parent().find('option');
+				params = choix.parent().data('params')
+				
+				array_val = [];
+				options.each(function(){
+					if (params[$(this).val()]['enable'].length > 0) $(this).attr('data-enable', params[$(this).val()]['enable']);//console.log($(this).val());
+					if (params[$(this).val()]['disable'].length > 0) {
+						$(this).attr('data-disable', params[$(this).val()]['disable'].join('|'));
+					}
+					$(this).attr('data-done', true);
+				});
+
+				choix.parent().attr('data-params', '');
+
+				choix.parent().change(function(e){
+					opt = $(this).find('option[value="'+$(this).val()+'"]');
+					if (opt.data('enable') !== undefined) $('#question'+opt.data('enable')).show();
+					if (typeof opt.data('disable') == 'string'){ // s'il y a plusieurs question à cacher
+						
+						hideIt = opt.data('disable').split('|');
+						hideIt.forEach(function(element) {
+							$('#question'+element).hide();
+						});
+						
+					} else if (typeof opt.data('disable') == 'number') { // s'il n'y a qu'une autre question liée dans ce group de radio
+						$('#question'+opt.data('disable')).hide();
+					}
+				});
+
+    		}
+    	}
+
+    	
+	<?php
+	}
+	
+	?>
+	$('[data-enable]').each(function(e){ 
+		console.log($(this));
+    	if($(this).attr('checked') !== undefined){
+    		$('#question'+$(this).data('enable')).removeClass('el_linked');
+    	} else if($(this).attr('selected') !== undefined) $('#question'+$(this).data('enable')).removeClass('el_linked');
+    });
+
+	$('.el_linked').each(function(){
+		$(this).hide();
+    });
+    
+    });
+	</script>
+	<?php
+}
+?>
 <script type="text/javascript">
 
 <?php if ($action !== 'apercu' && $action !== 'answer') print 'setQuestionDivCSS();'; ?>

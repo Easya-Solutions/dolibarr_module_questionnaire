@@ -350,13 +350,42 @@ function draw_textarea_for_user(&$q) {
 
 function draw_select_for_user(&$q) {
 	
-	global $form;
+	global $form, $db;
 	
+	dol_include_once('/questionnaire/class/question_link.class.php');
+	
+	$addparam = '';
 	$tab = array('' => '');
+	$params = array('' =>array('enable' => '', 'disable' => array()));
 	foreach($q->choices as &$choix) {
 		$tab[$choix->id] = $choix->label;
+		
+		// partie réponses liées à une question suivante
+		$params[$choix->id]['disable'] = array();
+		$params[$choix->id]['enable'] = array();
+		$ql = new Questionlink($db);
+		$r = $ql->loadLink(0, $choix->id);
+		if($r > 0) $params[$ql->fk_choix]['enable'] = $ql->fk_question;
 	}
-	return $form->selectarray('TAnswer['.$q->id.'][]', $tab, $q->answers[0]->fk_choix);
+	
+	if (!empty($params)){
+	    foreach ($params as $fk_choix => $val){
+	        if(!empty($val['enable']))
+	        {
+	            foreach ($tab as $choix => $label){
+	                if((int)$choix !== $fk_choix && !in_array($val['enable'], $params[$choix]['disable'])) array_push($params[$choix]['disable'], $val['enable']);
+	            }
+	        }
+	        //echo '<pre>'; var_dump($params);
+	    }
+	    
+	    $addparam = "data-params=";
+	    $addparam .= json_encode($params);
+	}
+	
+	
+	
+	return $form->selectarray('TAnswer['.$q->id.'][]', $tab, $q->answers[0]->fk_choix, 0, 0, 0,$addparam);
 	
 }
 
@@ -384,14 +413,14 @@ function draw_listradio_for_user(&$q) {
 			}
 		}
 		
-		$data_unable = "";
+		$data_enable = "";
 		$data_disable = array();
 		foreach ($links as $ch => $quest){
-		    if($choix->id == $ch) $data_unable = $quest;
+		    if($choix->id == $ch) $data_enable = $quest;
 		    else $data_disable[] = $quest;
 		}
 		$res.= ' name="TAnswer['.$q->id.'][]" value="'.$choix->id.'"';
-		if(!empty($data_unable)) $res.= ' data-unable='.$data_unable;
+		if(!empty($data_enable)) $res.= ' data-enable='.$data_enable;
 		if(!empty($data_disable)) $res.= ' data-disable='.implode('|', $data_disable);
 		$res.= '>&nbsp;'.$choix->label.'<br />';
 	}
@@ -402,6 +431,10 @@ function draw_listradio_for_user(&$q) {
 
 function draw_listcheckbox_for_user(&$q) {
 	
+    global $db;
+    
+    dol_include_once('/questionnaire/class/question_link.class.php');
+    
 	$res = '<br />';
 	foreach($q->choices as &$choix) {
 		$res.= '<input type="checkbox" ';
@@ -413,7 +446,13 @@ function draw_listcheckbox_for_user(&$q) {
 				}
 			}
 		}
-		$res.= ' name="TAnswer['.$q->id.'][]" value="'.$choix->id.'" />&nbsp;'.$choix->label.'<br />';
+		$res.= ' name="TAnswer['.$q->id.'][]" value="'.$choix->id.'" ';
+		
+		$ql = new Questionlink($db);
+		$r = $ql->loadLink(0, $choix->id);
+		if($r > 0) $res.= ' data-enable="'.$ql->fk_question.'"';
+		
+		$res.= '/>&nbsp;'.$choix->label.'<br />';
 	}
 	
 	return $res;
