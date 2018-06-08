@@ -622,7 +622,7 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 
 }
 
-if($action === 'apercu') {
+if($action === 'apercu' || $action === 'answer') {
     $ql = new Questionlink($db);
     $links = $ql->loadLinks($id);
     ?>
@@ -644,23 +644,23 @@ if($action === 'apercu') {
     		if (type == 'checkbox')
     		{
     			choix.click(function(e) {
-    				console.log($(this).val());
-    				question.toggle();
+    				question.toggle(); // on fait apparaitre la question liée suivant la valeur de la checkbox
     			});
     			
     		} else if (type == 'radio') {
     			var name = choix.attr('name');
     			
-    			$('[name="'+name+'"').each(function(){
+    			$('[name="'+name+'"').each(function(){ // on récupère tous les radio du groupe pour apliquer un comportement hide/show en fonction des paramètres
     				$(this).click(function(e) {
-						if ($(this).data('unable') !== undefined) $('#question'+$(this).data('unable')).show();
-						if (typeof $(this).data('disable') == 'string'){
-							console.log($(this).data('disable'), typeof $(this).data('disable'));
+						if ($(this).data('unable') !== undefined) $('#question'+$(this).data('unable')).show(); // s'il y a une question liée, on l'affiche
+						if (typeof $(this).data('disable') == 'string'){ // s'il y a plusieurs question à cacher
+							
     						hideIt = $(this).data('disable').split('|');
     						hideIt.forEach(function(element) {
     							$('#question'+element).hide();
     						});
-						} else if (typeof $(this).data('disable') == 'number') {
+    						
+						} else if (typeof $(this).data('disable') == 'number') { // s'il n'y a qu'une autre question liée dans ce group de radio
 							$('#question'+$(this).data('disable')).hide();
 						}
         			});
@@ -669,7 +669,56 @@ if($action === 'apercu') {
     			});
     
     		} else if(choix.parent().find('option') !== undefined) { // cas du select
+				options = choix.parent().find('option');
 				
+				array_val = [];
+				options.each(function(){
+					array_val.push($(this).val())
+				});
+
+				// on envoie le tableau des options du select pour récupérer un tableau des data-unable/data-disable à leur appliquer
+				$.ajax({
+					dataType:'json'
+					,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+					,data:{
+						put:"select-choice"
+						,fk_question: <?php echo $qId; ?>
+ 						,group:array_val
+					}
+				
+				}).done(function(result) {
+					// console.log(result);
+					options.each(function(){
+						
+						unable = result['choix'+$(this).val()]['unable'];
+						if(unable !== "") $(this).attr('data-unable', unable);
+
+						disable = result['choix'+$(this).val()]['disable'];
+						if(disable.length !== 0) $(this).attr('data-disable',disable.join('|'));
+						
+					});
+
+					if (choix.parent().data('done') !== true){
+    					choix.parent().change(function(e){
+        					unable = $(this).find('option[value="'+$(this).val()+'"]').data('unable');
+    						if(unable !== undefined) $('#question'+unable).show();
+    						
+    						disable = $(this).find('option[value="'+$(this).val()+'"]').data('disable');
+    						if (typeof disable == 'string'){
+        						hideIt = disable.split('|');
+        						hideIt.forEach(function(element) {
+        							$('#question'+element).hide();
+        						});
+    						} else if (typeof disable == 'number') {
+    							$('#question'+disable).hide();
+    						}
+    					});
+					}
+					
+					choix.attr('data-done', true);
+					choix.parent().attr('data-done', true);
+					
+				});
     		}
     	}
 	<?php

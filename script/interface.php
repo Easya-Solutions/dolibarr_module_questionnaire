@@ -86,8 +86,8 @@ function _put($case) {
 		    print json_encode(_link_question_to_choice($fk_questionnaire, $fk_question, $fk_choix));
 		    break;
 		    
-		case 'add_radio_events':
-		    print json_encode(_radio_links($links, $group));
+		case 'select-choice':
+		    print json_encode(_select_links($group));
 		    break;
 	}
 	
@@ -174,3 +174,30 @@ function _link_question_to_choice($fk_questionnaire, $fk_question, $fk_choix) {
     else return array("success" => false);
 }
 
+function _select_links($group) {
+    
+    global $db;
+    $ret = array();
+    
+    $ql = new Questionlink($db);
+    foreach ($group as $fk_choix){
+        $ret['choix'.$fk_choix]['unable'] = "";
+        $ret['choix'.$fk_choix]['disable'] = array();
+        if(!empty($fk_choix)){
+            $r = $ql->loadLink(0, $fk_choix);
+            if ($r > 0) $ret['choix'.$fk_choix]['unable'] = $ql->fk_question;
+        }
+    }
+    
+    foreach ($ret as $fk_choix => $val) {
+        
+        if(!empty($val['unable']))
+        {
+            foreach ($group as $choix){
+                
+                if('choix'.$choix !== $fk_choix) array_push($ret['choix'.$choix]['disable'], $val['unable']);
+            }
+        }
+    }
+    return $ret;
+}
