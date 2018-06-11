@@ -261,7 +261,7 @@ else
 {
 	if ($action !== 'answer')
 		$head = questionnaire_prepare_head($object);
-	$picto = dol_buildpath('/questionnaire/img/object_questionnaire.png', 1);
+	$picto = dol_buildpath('/questionnaire/public/img/object_questionnaire.png', 1);
 	dol_fiche_head($head, 'card', $langs->trans("questionnaire"), 0, $picto, 1);
 }
 
