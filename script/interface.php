@@ -126,7 +126,15 @@ function del_object($type_object, $fk_object) {
 	
 	$obj = new $type_object($db);
 	$obj->load($fk_object);
-	return  $obj->delete($user);
+	$res = $obj->delete($user);
+	
+	if($type_object == "choice"){
+	    $ql = new Questionlink($db);
+	    $r =$ql->loadLink(0, $fk_object);
+	    if ($r > 0) $ql->delete($user);
+	}
+	
+	return  $res;
 	
 }
 

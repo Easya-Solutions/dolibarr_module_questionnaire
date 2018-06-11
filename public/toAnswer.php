@@ -579,6 +579,9 @@ if($action === 'apercu' || $action === 'answer') {
     				question = $('#question'+$(this).data('enable'));
     				//console.log($(this).data('enable'));
     				question.toggle(); // on fait apparaitre la question liée suivant la valeur de la checkbox
+    				pos = question.css('position');
+    				if (pos == 'absolute') question.css('position', 'static');
+    				else question.css('position', 'absolute');
     			});
     			choix.attr('data-done', true);
     			
@@ -587,16 +590,16 @@ if($action === 'apercu' || $action === 'answer') {
     			
     			$('[name="'+name+'"').each(function(){ // on récupère tous les radio du groupe pour apliquer un comportement hide/show en fonction des paramètres
     				$(this).click(function(e) {
-						if ($(this).data('enable') !== undefined) $('#question'+$(this).data('enable')).show(); // s'il y a une question liée, on l'affiche
+						if ($(this).data('enable') !== undefined) $('#question'+$(this).data('enable')).show().css('position', 'static'); // s'il y a une question liée, on l'affiche
 						if (typeof $(this).data('disable') == 'string'){ // s'il y a plusieurs question à cacher
 							
     						hideIt = $(this).data('disable').split('|');
     						hideIt.forEach(function(element) {
-    							$('#question'+element).hide();
+    							$('#question'+element).hide().css('position', 'absolute');
     						});
     						
 						} else if (typeof $(this).data('disable') == 'number') { // s'il n'y a qu'une autre question liée dans ce group de radio
-							$('#question'+$(this).data('disable')).hide();
+							$('#question'+$(this).data('disable')).hide().css('position', 'absolute');
 						}
         			});
     				
@@ -620,16 +623,16 @@ if($action === 'apercu' || $action === 'answer') {
 
 				choix.parent().change(function(e){
 					opt = $(this).find('option[value="'+$(this).val()+'"]');
-					if (opt.data('enable') !== undefined) $('#question'+opt.data('enable')).show();
+					if (opt.data('enable') !== undefined) $('#question'+opt.data('enable')).show().css('position', 'static');
 					if (typeof opt.data('disable') == 'string'){ // s'il y a plusieurs question à cacher
 						
 						hideIt = opt.data('disable').split('|');
 						hideIt.forEach(function(element) {
-							$('#question'+element).hide();
+							$('#question'+element).hide().css('position', 'absolute');
 						});
 						
-					} else if (typeof opt.data('disable') == 'number') { // s'il n'y a qu'une autre question liée dans ce group de radio
-						$('#question'+opt.data('disable')).hide();
+					} else if (typeof opt.data('disable') == 'number') { // s'il n'y a qu'une autre question liée dans ce group d'option
+						$('#question'+opt.data('disable')).hide().css('position', 'absolute');
 					}
 				});
 
@@ -649,7 +652,7 @@ if($action === 'apercu' || $action === 'answer') {
     });
 
 	$('.el_linked').each(function(){
-		$(this).hide();
+		$(this).hide().css('position', 'absolute');
     });
     
     });
