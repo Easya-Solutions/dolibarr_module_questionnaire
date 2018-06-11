@@ -568,8 +568,8 @@ if($action === 'apercu' || $action === 'answer') {
     
     foreach ($links as $qId => $cId){
     ?>
-    	var choix = $('[value='+<?php echo $cId; ?>+']');
-    	var question = $('#question'+<?php echo $qId; ?>);
+    	var choix = $('[value=<?php echo $cId; ?>]');
+    	var question = $('#question<?php echo $qId; ?>');
     	var type = choix.attr('type');
 
     	if (choix.data('done') !== true)

@@ -83,10 +83,15 @@ class Questionlink extends SeedObject {
                 $this->question_label = $obj->label;
                 
                 return $this->id;
+            } else{ // pas de lien trouvé
+                return 0;
             }
-            return 0;
+            
+        } else { // probleme de requête
+            $this->errors[] = $this->db->lasterror;
+            return -1;
         }
-        return -1;
+        
     }
     
     public function delete(User &$user)

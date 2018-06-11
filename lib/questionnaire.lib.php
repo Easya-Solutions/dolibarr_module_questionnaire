@@ -380,7 +380,7 @@ function draw_select_for_user(&$q) {
 	    }
 	    
 	    $addparam = "data-params=";
-	    $addparam .= json_encode($params);
+	    $addparam .= "'".json_encode($params)."'";
 	}
 	
 	
