@@ -718,4 +718,4 @@ if($action === 'apercu' || $action === 'answer') {
 </script>
 
 <?php
-llxFooter();
+//llxFooter();
