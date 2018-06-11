@@ -194,6 +194,12 @@ if (empty($reshook))
 			break;
 		case 'confirm_validate':
 			$object->setValid();
+			$object->loadInvitations();
+			if(!empty($object->invitations)){
+				foreach($object->invitations as $invit){
+					if($invit->fk_statut == 1)$invit->reopen();
+				}
+			}
 			
 			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
 			exit;
@@ -306,9 +312,30 @@ else
 	dol_fiche_head($head, 'card', $langs->trans("questionnaire"), 0, $picto, 1);
 }
 
-if($action !== 'create') {
+if ($action !== 'create')
+{
 	$shownav = $show_linkback = ($action === 'answer' ? false : true);
-	if($action === 'answer') $questionnaire_status_forced_key = 'questionnaireStatusValidatedShort';
+	$object->loadQuestions();
+	
+	if($action === 'answer' ) $questionnaire_status_forced_key = 'questionnaireStatusValidatedShort';
+	
+	if (!empty($object->questions) && $action === 'answer')
+	{
+		foreach ($object->questions as $quest)
+		{
+			if ($quest->loadAnswers($fk_invitation))
+			{
+				if (!empty($quest->answers))
+				{
+					$questionnaire_status_forced_key = 'questionnaireStatusClosed';
+					$object->fk_statut=2;
+					break;
+				}
+			}
+		}
+	}
+	
+	
 	_getBanner($object, $action, true, $shownav, $show_linkback);
 }
 
@@ -399,7 +426,7 @@ if(empty($action) || $action === 'view' || $action === 'validate' || $action ===
 		}
 	}
 	print '</div>';
-	print '<div class="center"><input class="butAction" name="subSave" type="SUBMIT" value="Enregistrer"/><input name="subValid" type="SUBMIT" class="butAction"/>';
+	print '<div class="center"><input class="butAction" name="subSave" type="SUBMIT" value="'.$langs->trans('SaveAnswer').'"/><input name="subValid" type="SUBMIT" class="butAction"  value="'.$langs->trans('Validate').'"/>';
 	print '</form>';
 }
 

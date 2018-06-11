@@ -270,6 +270,26 @@ if ($action !== 'create')
 	$shownav = $show_linkback = ($action === 'answer' ? false : true);
 	if ($action === 'answer')
 		$questionnaire_status_forced_key = 'questionnaireStatusValidatedShort';
+
+		if(empty($object->questions))$object->loadQuestions();
+
+	if (!empty($object->questions) && $action === 'answer')
+	{
+		foreach ($object->questions as $quest)
+		{
+			if ($quest->loadAnswers($fk_invitation) )
+			{
+				
+				if (!empty($quest->answers))
+				{
+					$questionnaire_status_forced_key = 'questionnaireStatusClosed';
+					$object->fk_statut = 2;
+					break;
+				}
+			}
+		}
+	}
+
 	_getBannerToAnswer($object, $action, true, $shownav, $show_linkback);
 }
 
@@ -378,7 +398,7 @@ elseif ($action === 'answer')
 		}
 	}
 	print '</div>';
-	print '<div class="center"><input class="butAction" name="subSave" type="SUBMIT" value="Enregistrer"/><input name="subValid" type="SUBMIT" class="butAction"/>';
+	print '<div class="center"><input class="butAction" name="subSave" type="SUBMIT" value="'.$langs->trans('SaveAnswer').'"/><input name="subValid" type="SUBMIT" class="butAction"  value="'.$langs->trans('Validate').'"/>';
 	print '</form>';
 }
 

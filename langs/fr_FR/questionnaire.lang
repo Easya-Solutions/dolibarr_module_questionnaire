@@ -28,6 +28,7 @@ questionnaireStatusOpened=Ouvert
 questionnaireAnswerStatus=Statut questionnaire pour l'utilisateur
 questionnaireStatusNotSent=Non envoyé
 questionnaireStatusSent=Envoyé
+questionnaireStatusClosed=Sauvegardé
 
 answerValidate=Validé
 
@@ -59,6 +60,7 @@ questionnaireDeleteQuestion=Supprimer question
 
 # CARD TPL
 Save=Enregistrer
+SaveAnswer=Sauvegarder
 CreateDraft=Créer brouillon
 Cancel=Annuler
 Validate=Valider

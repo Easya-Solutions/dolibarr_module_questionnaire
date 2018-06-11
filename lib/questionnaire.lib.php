@@ -521,8 +521,13 @@ function draw_hour_for_user(&$q) {
 
 function draw_linearscale_for_user(&$q) {
 	if(empty($q->choices)) $q->loadChoices();
-	return '<br /><div class="slidecontainer"><input type="range" class="slider-color" id="linearscal_q'.$q->id.'" name="linearscal_q'.$q->id.'" min="'.$q->choices[0]->label.'" max="'.$q->choices[1]->label.'" step="'.$q->choices[2]->label.'" value="'.$q->answers[0]->value.'"/><br />
-			<span>Valeur :&nbsp;</span><span style="font-weight:bold;color:red" id="val_linearscal_q'.$q->id.'">'.$q->answers[0]->value.'</span></div>';
+	if(empty($q->answers[0]->value)){
+		$answer = $q->choices[0]->label;
+	}else {
+		$answer = $q->answers[0]->value;
+	}
+	return '<br /><div class="slidecontainer"><input type="range" class="slider-color" id="linearscal_q'.$q->id.'" name="linearscal_q'.$q->id.'" min="'.$q->choices[0]->label.'" max="'.$q->choices[1]->label.'" step="'.$q->choices[2]->label.'" value="'.$answer.'"/><br />
+			<span>Valeur :&nbsp;</span><span style="font-weight:bold;color:red" id="val_linearscal_q'.$q->id.'">'.$answer.'</span></div>';
 }
 
 function setField($type_object, $fk_object, $field, $value) {

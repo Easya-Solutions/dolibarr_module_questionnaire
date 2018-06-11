@@ -263,7 +263,7 @@ function _seeAnswersUser(&$object, $fk_invituser)
 	$res .= '</div>';
 
 
-	if (!empty($invUser->fk_statut))
+	if ($invUser->fk_statut ==1)
 	{
 		$res .= '<form name="answerQuestionnaire" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'">';
 		$res .= '<input type="HIDDEN" name="fk_invitation_user" value="'.$fk_invituser.'"/>';
