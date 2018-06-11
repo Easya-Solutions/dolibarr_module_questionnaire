@@ -374,7 +374,7 @@ elseif ($action === 'answer')
 		{
 			if (empty($q->answers))
 				$q->loadAnswers($fk_invitation);
-			print draw_question_for_user($q).'<br /><br />';
+			print draw_question_for_user($q);
 			//print '<br /><b><hr style="height:1px;border:none;color:#333;background-color:#333;" /></b><br />';
 		}
 	}
@@ -555,6 +555,7 @@ if ((empty($action) || $action === 'view') && empty($object->fk_statut))
 
 <?php
 if($action === 'apercu' || $action === 'answer') {
+    
     $ql = new Questionlink($db);
     $links = $ql->loadLinks($id);
     ?>

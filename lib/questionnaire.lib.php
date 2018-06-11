@@ -331,7 +331,7 @@ function draw_question_for_user(&$q) {
 				
 		}
 		
-		$res.= '</div>';
+		$res.= '<br><br></div>';
 	}
 	return $res;
 }
