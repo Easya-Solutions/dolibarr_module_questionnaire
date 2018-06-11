@@ -799,6 +799,7 @@ function _getBannerToAnswer(&$object, $action, $print_link_apercu = true, $shown
 		if ($object->element == 'project' && !$object->public)
 			$picto = 'project'; // instead of projectpub
 		$nophoto = img_picto('', 'object_'.$picto, '', false, 1);
+		$nophoto   =str_replace('img','public/img',$nophoto);
 	}
 	$morehtmlleft .= '<!-- No photo to show -->';
 	$morehtmlleft .= '<div class="floatleft inline-block valignmiddle divphotoref"><div class="photoref"><img class="photo'.$modulepart.($cssclass ? ' '.$cssclass : '').'" alt="No photo" border="0"'.($width ? ' width="'.$width.'"' : '').' src="'.$nophoto.'"></div></div>';
