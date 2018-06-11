@@ -609,4 +609,4 @@ if ((empty($action) || $action === 'view') && empty($object->fk_statut))
 </script>
 
 <?php
-llxFooter();
+//llxFooter();
