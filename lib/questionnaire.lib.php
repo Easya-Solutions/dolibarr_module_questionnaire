@@ -239,14 +239,21 @@ function draw_standard_choice(&$choice, $fk_statut_questionnaire=0) {
 	dol_include_once('/questionnaire/class/question_link.class.php');
 	$ql = new Questionlink($db);
 	$r = $ql->loadLink(0, $choice->id);
+
+	$q = new Question($db);
+	$q->fetch($choice->fk_question);
+	
+	$is_choix = ($q->type == 'listcheckbox' || $q->type == 'listradio' || $q->type == 'select');
 	
 	if(empty($fk_statut_questionnaire)) {
 		$res.= '<input placeholder="Libellé choix" type="text" name="label" class="field" value="'.$choice->label.'" />&nbsp;';
 		$res.= '<a id="del_element_'.$choice->id.'" name="del_element_'.$choice->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteChoice')).'</a>';
-		$res.= '&nbsp;<a href="#" name="link_element_'.$choice->id.'" class="linkquestion" onclick="return false;" data-choice="'.$choice->id.'"><img src="img/link-question.png"/></a>';
-		$res.= '<span id="sel_'.$choice->id.'">';
-		if($r > 0) $res.= 'Lié à : '.$ql->question_label;
-		$res.= '</span>';
+		if($is_choix){
+		    $res.= '&nbsp;<a href="#" name="link_element_'.$choice->id.'" class="linkquestion" onclick="return false;" data-choice="'.$choice->id.'"><img src="img/link-question.png"/></a>';
+    		    $res.= '<span id="sel_'.$choice->id.'">';
+    		    if($r > 0) $res.= 'Lié à : '.$ql->question_label;
+    		    $res.= '</span>';
+		}
 	}
 	else $res.= $choice->label;
 	$res.= '<br /><br /></div>';
