@@ -159,7 +159,7 @@ function _getListAnswers(&$object)
 	$res = $r->renderArray($db, $TData, array(
 		'limit' => array(
 			'page' => 1
-			, 'nbLine' => '20'
+			, 'nbLine' => 500
 		)
 		, 'translate' => array(
 		)
