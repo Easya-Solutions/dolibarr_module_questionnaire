@@ -227,12 +227,10 @@ function _getListInvitations(&$object)
 //if($user->rights->societe->creer) $arrayofmassactions['createbills']=$langs->trans("CreateInvoiceForThisCustomer");
 
 
-
-
 	$res = $r->renderArray($db, $TData, array(
 		'limit' => array(
 			'page' => 1
-			, 'nbLine' => '20'
+			, 'nbLine' => 500
 		)
 		, 'translate' => array(
 		)
