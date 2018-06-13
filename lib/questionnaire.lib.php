@@ -288,7 +288,7 @@ function draw_question_for_user(&$q) {
 	if(empty($q->choices)) $q->loadChoices();
 	if(!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale'/*Pas de choix pour ces types là*/) {
 		$res = '<div class="element'.$addClass.'" type="question" id="question'.$q->id.'">';
-		$res.= '<div class="refid">'.htmlentities($q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : ''), ENT_NOQUOTES, 'UTF-8').'</div>';
+		$res.= '<div class="refid">'.$q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
 		
 		switch($q->type) {
 			
@@ -1086,6 +1086,7 @@ function llxHeaderQuest()
 	print '<!doctype html>
 	<html lang="fr">
 	<head>
+	  <meta charset="UTF-8">
 	<meta name="robots" content="noindex,nofollow">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="author" content="Dolibarr Development Team">
@@ -1093,7 +1094,7 @@ function llxHeaderQuest()
 	<!-- Includes CSS for JQuery (Ajax library) -->
 	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/public/includes/jquery/css/base/jquery-ui.css',1).'">
 	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/jnotify/jquery.jnotify-alt.min.css',1).'">
-	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/public/includes//jquery/plugins/select2/dist/css/select2.css',1).'">
+	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/select2/dist/css/select2.css',1).'">
 	<!-- Includes CSS for font awesome -->
 	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/public/includes/common/fontawesome/css/font-awesome.min.css',1).'">
 	<!-- Includes CSS added by page -->
