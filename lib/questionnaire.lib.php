@@ -288,7 +288,7 @@ function draw_question_for_user(&$q) {
 	if(empty($q->choices)) $q->loadChoices();
 	if(!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale'/*Pas de choix pour ces types là*/) {
 		$res = '<div class="element'.$addClass.'" type="question" id="question'.$q->id.'">';
-		$res.= '<div class="refid">'.$q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
+		$res.= '<div class="refid">'.htmlentities($q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : ''), ENT_NOQUOTES, 'UTF-8').'</div>';
 		
 		switch($q->type) {
 			
