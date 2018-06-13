@@ -4,6 +4,7 @@ require 'config.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 dol_include_once('/questionnaire/class/question.class.php');
+dol_include_once('/questionnaire/class/question_link.class.php');
 dol_include_once('/questionnaire/class/answer.class.php');
 dol_include_once('/questionnaire/class/questionnaire.class.php');
 dol_include_once('/questionnaire/class/choice.class.php');
@@ -589,7 +590,57 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 				});
 				
 			});
-			
+
+			$(document).on('click', '[name*=link_element_]', function() {
+				var $btn = $(this);
+				var choice = $btn.data('choice');
+				var $div_question = $btn.closest('div[type=question]');
+				var id_question = $div_question.attr('id');
+				id_question = id_question.replace('question', '');
+				console.log(choice);
+				$.ajax({
+					dataType:'json'
+					,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+					,data:{
+						fk_questionnaire:<?php echo $id; ?>
+						,fk_question: id_question
+ 						,fk_choix:choice
+ 						,get:"next-questions"
+					}
+	
+				}).done(function(result) {
+					//console.log(result);
+					$('#sel_'+choice).html(result);
+				});
+
+			});
+
+			$(document).on('change', '.select_question', function() {
+				var $select = $(this);
+				var choice = $select.parent().prev().data('choice');
+				var id_question = $select.val();
+				var questionnaire = $select.data('questionnaire');
+
+				$.ajax({
+					dataType:'json'
+					,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+					,data:{
+						put:"link-question"
+						,fk_questionnaire:questionnaire
+						,fk_question: id_question
+ 						,fk_choix:choice
+					}
+				
+				}).done(function(result) {
+					//console.log(result);
+					//console.log('#sel_'+choice);
+					if (id_question == 0) $('#sel_'+choice).html('');
+					else $('#sel_'+choice).html('Lié à : ' + result.label);
+				
+				});
+				
+			});
+
 		});
 		
 	</script>
@@ -598,6 +649,111 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 
 }
 
+if($action === 'apercu' || $action === 'answer') {
+    $ql = new Questionlink($db);
+    $links = $ql->loadLinks($id);
+    ?>
+    <script type="text/javascript">
+    $(document).ready(function() {
+//         $('.el_linked').each(function(){
+// 			$(this).hide();
+//         });
+    <?php
+    
+    foreach ($links as $qId => $cId){
+    ?>
+    	var choix = $('[value='+<?php echo $cId; ?>+']');
+    	var question = $('#question'+<?php echo $qId; ?>);
+    	var type = choix.attr('type');
+
+    	if (choix.data('done') !== true)
+    	{
+    		if (type == 'checkbox')
+    		{
+    			choix.click(function(e) {
+    				question = $('#question'+$(this).data('enable'));
+    				//console.log($(this).data('enable'));
+    				question.toggle(); // on fait apparaitre la question liée suivant la valeur de la checkbox
+    				pos = question.css('position');
+    				if (pos == 'absolute') question.css('position', 'static');
+    				else question.css('position', 'absolute');
+    			});
+    			choix.attr('data-done', true);
+    			
+    		} else if (type == 'radio') {
+    			var name = choix.attr('name');
+    			
+    			$('[name="'+name+'"').each(function(){ // on récupère tous les radio du groupe pour apliquer un comportement hide/show en fonction des paramètres
+    				$(this).click(function(e) {
+						if ($(this).data('enable') !== undefined) $('#question'+$(this).data('enable')).show().css('position', 'static'); // s'il y a une question liée, on l'affiche
+						if (typeof $(this).data('disable') == 'string'){ // s'il y a plusieurs question à cacher
+							
+    						hideIt = $(this).data('disable').split('|');
+    						hideIt.forEach(function(element) {
+    							$('#question'+element).hide().css('position', 'absolute');
+    						});
+    						
+						} else if (typeof $(this).data('disable') == 'number') { // s'il n'y a qu'une autre question liée dans ce group de radio
+							$('#question'+$(this).data('disable')).hide().css('position', 'absolute');
+						}
+        			});
+    				
+    				$(this).attr('data-done', true);
+    			});
+    
+    		} else if(choix.parent().find('option') !== undefined) { // cas du select
+    			options = choix.parent().find('option');
+				params = choix.parent().data('params')
+				
+				array_val = [];
+				options.each(function(){
+					if (params[$(this).val()]['enable'].length > 0) $(this).attr('data-enable', params[$(this).val()]['enable']);//console.log($(this).val());
+					if (params[$(this).val()]['disable'].length > 0) {
+						$(this).attr('data-disable', params[$(this).val()]['disable'].join('|'));
+					}
+					$(this).attr('data-done', true);
+				});
+
+				choix.parent().attr('data-params', '');
+
+				choix.parent().change(function(e){
+					opt = $(this).find('option[value="'+$(this).val()+'"]');
+					if (opt.data('enable') !== undefined) $('#question'+opt.data('enable')).show().css('position', 'static');
+					if (typeof opt.data('disable') == 'string'){ // s'il y a plusieurs question à cacher
+						
+						hideIt = opt.data('disable').split('|');
+						hideIt.forEach(function(element) {
+							$('#question'+element).hide().css('position', 'absolute');
+						});
+						
+					} else if (typeof opt.data('disable') == 'number') { // s'il n'y a qu'une autre question liée dans ce group d'option
+						$('#question'+opt.data('disable')).hide().css('position', 'absolute');
+					}
+				});
+
+    		}
+    	}
+
+    	
+	<?php
+	}
+	
+	?>
+	$('[data-enable]').each(function(e){ 
+		console.log($(this));
+    	if($(this).attr('checked') !== undefined){
+    		$('#question'+$(this).data('enable')).removeClass('el_linked');
+    	} else if($(this).attr('selected') !== undefined) $('#question'+$(this).data('enable')).removeClass('el_linked');
+    });
+
+	$('.el_linked').each(function(){
+		$(this).hide().css('position', 'absolute');
+    });
+    
+    });
+	</script>
+	<?php
+}
 ?>
 
 <script type="text/javascript">

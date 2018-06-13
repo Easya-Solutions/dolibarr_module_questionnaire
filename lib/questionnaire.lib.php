@@ -177,7 +177,7 @@ function draw_question(&$q, $fk_statut_questionnaire=0) {
 	
 	if($q->type !== 'string' && $q->type !== 'textarea' && $q->type !== 'date' && $q->type !== 'hour' && $q->type !== 'linearscale') {
 			// Liste des choix (lignes)
-			$style_div_lines = ' width: 300px; ';
+			$style_div_lines = ' width: 600px; ';
 			if($question_est_une_grille) $style_div_lines.= ' float: left; ';
 			$res.= '<div style="'.$style_div_lines.'" id="allChoicesLeft_q'.$q->id.'" name="allChoicesLeft_q'.$q->id.'">';
 			$res.= '<div class="refid">Lignes<br /><br /></div>';
@@ -232,13 +232,28 @@ function draw_choice(&$choice, $fk_statut_questionnaire=0, $type='', $title='') 
 
 function draw_standard_choice(&$choice, $fk_statut_questionnaire=0) {
 	
-	global $langs;
+	global $langs, $db;
 	
 	$res.= '<div class="element" type="choice" id="choice'.$choice->id.'">';
+	
+	dol_include_once('/questionnaire/class/question_link.class.php');
+	$ql = new Questionlink($db);
+	$r = $ql->loadLink(0, $choice->id);
+
+	$q = new Question($db);
+	$q->fetch($choice->fk_question);
+	
+	$is_choix = ($q->type == 'listcheckbox' || $q->type == 'listradio' || $q->type == 'select');
 	
 	if(empty($fk_statut_questionnaire)) {
 		$res.= '<input placeholder="Libellé choix" type="text" name="label" class="field" value="'.$choice->label.'" />&nbsp;';
 		$res.= '<a id="del_element_'.$choice->id.'" name="del_element_'.$choice->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteChoice')).'</a>';
+		if($is_choix){
+		    $res.= '&nbsp;<a href="#" name="link_element_'.$choice->id.'" class="linkquestion" onclick="return false;" data-choice="'.$choice->id.'"><img src="img/link-question.png"/></a>';
+    		    $res.= '<span id="sel_'.$choice->id.'">';
+    		    if($r > 0) $res.= 'Lié à : '.$ql->question_label;
+    		    $res.= '</span>';
+		}
 	}
 	else $res.= $choice->label;
 	$res.= '<br /><br /></div>';
@@ -261,9 +276,18 @@ function draw_linearscale_choice(&$choice, $title, $fk_statut_questionnaire=0) {
 
 function draw_question_for_user(&$q) {
 	
+    global $db;
+    
+    dol_include_once('/questionnaire/class/question_link.class.php');
+    $ql = new Questionlink($db);
+    $ret = $ql->loadLink($q->id);
+    
+    $addClass = '';
+    if($ret > 0) $addClass = ' el_linked"';
+    
 	if(empty($q->choices)) $q->loadChoices();
 	if(!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale'/*Pas de choix pour ces types là*/) {
-		$res = '<div class="element" type="question" id="question'.$q->id.'">';
+		$res = '<div class="element'.$addClass.'" type="question" id="question'.$q->id.'">';
 		$res.= '<div class="refid">'.$q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
 		
 		switch($q->type) {
@@ -314,7 +338,7 @@ function draw_question_for_user(&$q) {
 				
 		}
 		
-		$res.= '</div>';
+		$res.= '<br><br></div>';
 	}
 	return $res;
 }
@@ -333,18 +357,59 @@ function draw_textarea_for_user(&$q) {
 
 function draw_select_for_user(&$q) {
 	
-	global $form;
+	global $form, $db;
 	
-	$tab = array();
+	dol_include_once('/questionnaire/class/question_link.class.php');
+	
+	$addparam = '';
+	$tab = array('' => '');
+	$params = array('' =>array('enable' => '', 'disable' => array()));
 	foreach($q->choices as &$choix) {
 		$tab[$choix->id] = $choix->label;
+		
+		// partie réponses liées à une question suivante
+		$params[$choix->id]['disable'] = array();
+		$params[$choix->id]['enable'] = array();
+		$ql = new Questionlink($db);
+		$r = $ql->loadLink(0, $choix->id);
+		if($r > 0) $params[$ql->fk_choix]['enable'] = $ql->fk_question;
 	}
-	return $form->selectarray('TAnswer['.$q->id.'][]', $tab, $q->answers[0]->fk_choix);
+	
+	if (!empty($params)){
+	    foreach ($params as $fk_choix => $val){
+	        if(!empty($val['enable']))
+	        {
+	            foreach ($tab as $choix => $label){
+	                if((int)$choix !== $fk_choix && !in_array($val['enable'], $params[$choix]['disable'])) array_push($params[$choix]['disable'], $val['enable']);
+	            }
+	        }
+	        //echo '<pre>'; var_dump($params);
+	    }
+	    
+	    $addparam = "data-params=";
+	    $addparam .= "'".json_encode($params)."'";
+	}
+	
+	
+	
+	return $form->selectarray('TAnswer['.$q->id.'][]', $tab, $q->answers[0]->fk_choix, 0, 0, 0,$addparam);
 	
 }
 
 function draw_listradio_for_user(&$q) {
 	
+    global $db;
+    
+    dol_include_once('/questionnaire/class/question_link.class.php');
+    
+    $links = array();
+    foreach($q->choices as &$choix) {
+        $ql = new Questionlink($db);
+        $r = $ql->loadLink(0, $choix->id);
+        
+        if($r > 0) $links[$choix->id] = $ql->fk_question;
+    }
+    
 	$res = '<br />';
 	//var_dump($q->choices);exit;
 	foreach($q->choices as &$choix) {
@@ -354,7 +419,17 @@ function draw_listradio_for_user(&$q) {
 				$res.= 'checked';
 			}
 		}
-		$res.= ' name="TAnswer['.$q->id.'][]" value="'.$choix->id.'">&nbsp;'.$choix->label.'<br />';
+		
+		$data_enable = "";
+		$data_disable = array();
+		foreach ($links as $ch => $quest){
+		    if($choix->id == $ch) $data_enable = $quest;
+		    else $data_disable[] = $quest;
+		}
+		$res.= ' name="TAnswer['.$q->id.'][]" value="'.$choix->id.'"';
+		if(!empty($data_enable)) $res.= ' data-enable='.$data_enable;
+		if(!empty($data_disable)) $res.= ' data-disable='.implode('|', $data_disable);
+		$res.= '>&nbsp;'.$choix->label.'<br />';
 	}
 	
 	return $res;
@@ -363,6 +438,10 @@ function draw_listradio_for_user(&$q) {
 
 function draw_listcheckbox_for_user(&$q) {
 	
+    global $db;
+    
+    dol_include_once('/questionnaire/class/question_link.class.php');
+    
 	$res = '<br />';
 	foreach($q->choices as &$choix) {
 		$res.= '<input type="checkbox" ';
@@ -374,7 +453,13 @@ function draw_listcheckbox_for_user(&$q) {
 				}
 			}
 		}
-		$res.= ' name="TAnswer['.$q->id.'][]" value="'.$choix->id.'" />&nbsp;'.$choix->label.'<br />';
+		$res.= ' name="TAnswer['.$q->id.'][]" value="'.$choix->id.'" ';
+		
+		$ql = new Questionlink($db);
+		$r = $ql->loadLink(0, $choix->id);
+		if($r > 0) $res.= ' data-enable="'.$ql->fk_question.'"';
+		
+		$res.= '/>&nbsp;'.$choix->label.'<br />';
 	}
 	
 	return $res;
