@@ -172,6 +172,8 @@ if (empty($reshook))
 			}
 			
 			if(isset($_REQUEST['subSave'])) {
+				$invitation->fk_statut=2;
+				$invitation->save();
 				setEventMessage($langs->trans('questionnaireSaved'));
 				header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=answer&fk_invitation='.$fk_invitation);
 			} else { // Validation finale
