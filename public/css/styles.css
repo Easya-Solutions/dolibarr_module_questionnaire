@@ -903,7 +903,9 @@ td.showDragHandle {
 #id-container {
 	display: table;					/* DOL_XXX Empeche fonctionnement correct du scroll horizontal sur tableau, avec datatable ou CSS */
 	table-layout: fixed;
-    width: 100%;
+    width: 80%;
+    margin-left: auto;
+  margin-right: auto;
 }
 #id-right, #id-left {
 	padding-top: 16px;
@@ -914,8 +916,8 @@ td.showDragHandle {
 	vertical-align: top;
 }
 #id-right {	/* This must stay id-right and not be replaced with echo $right */
-	width: 100%;
-	background: rgb(255,255,255);
+	width: 80%;
+	background-color: #F6F6F6;
 }
 #id-left {
 /*	background-color: #fff;
@@ -1879,7 +1881,7 @@ div.tabBar {
     border-top: 1px solid #BBB;
     /* border-bottom: 1px solid #AAA; */
 	width: auto;
-	background: rgb(255,255,255);
+	background-color: #F6F6F6;
 }
 div.tabBar div.titre {
 	padding-top: 20px;

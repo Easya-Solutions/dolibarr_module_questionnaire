@@ -864,7 +864,7 @@ function _getBanner(&$object, $action, $print_link_apercu=true, $shownav=true, $
 
 function _getBannerToAnswer(&$object, $action, $print_link_apercu = true, $shownav = true, $show_linkback = true)
 {
-
+/**
 	global $langs, $form;
 
 	if ($show_linkback)
@@ -925,9 +925,14 @@ function _getBannerToAnswer(&$object, $action, $print_link_apercu = true, $shown
 	}
 
 	print '<div class="'.($onlybanner ? 'arearefnobottom ' : 'arearef ').'heightref valignmiddle" width="100%">';
-	print $form->showrefnav($object, $paramid, $morehtml, $shownav, $fieldid, $fieldref, '', $moreparam, $nodbprefix, $morehtmlleft, $morehtmlstatus, $morehtmlright);
-	print '</div>';
-	print '<div class="underrefbanner clearboth"></div>';
+
+	print '</div>';*/
+	print '<div class="inline-block floatleft valignmiddle refid">';
+	print "$object->title</div>";
+	print ' <div class="underrefbanner clearboth"></div>';
+	
+	
+	
 }
 
 function getFieldVal(&$object, $trans, $field) {
