@@ -160,17 +160,19 @@ function draw_question(&$q, $fk_statut_questionnaire=0) {
 	$form = new Form($db);
 	
 	//$res = '<div style="background-color:'.$bgcol_questionnaire[$bg_color].';" class="element" type="question" id="question'.$q->id.'">';
-	$res = '<div class="element" type="question" id="question'.$q->id.'">';
+	$res = '<div class="element edit" type="question" id="question'.$q->id.' ">';
 	$res.= '<div class="refid">Question : '.$q->TTypes[$q->type].'<br /></div>';
 	if(empty($fk_statut_questionnaire)) $res.= '<input size="100" placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
 	else $res.= '<STRONG>'.$q->label.'</STRONG>&nbsp;';
-	if(empty($fk_statut_questionnaire)) {
+	/*if(empty($fk_statut_questionnaire)) {
 		$res.= '<input type="checkbox" title="Réponse obligatoire ?" class="field"';
 		$res.= ' name="compulsory_answer"';
 		$res.= (int)$q->compulsory_answer > 0 ? 'checked="checked"' : '';
 		$res.= '/>';
-	} elseif(!empty($q->compulsory_answer)) $res.= ' <STRONG>(réponse obligatoire)</STRONG>';
-	if(empty($fk_statut_questionnaire)) $res.= '&nbsp;<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteQuestion')).'</a>';
+	} elseif(!empty($q->compulsory_answer)) $res.= ' <STRONG>(réponse obligatoire)</STRONG>';*/
+	//if(empty($fk_statut_questionnaire)) $res.= '&nbsp;<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteQuestion')).'</a>';
+	if(empty($fk_statut_questionnaire)) $res.= '&nbsp;<a id="back" name="back" href="'.dol_buildpath('questionnaire/card.php',2).'?id='.$q->fk_questionnaire.'&fk_question='.$q->id.'"> <img src="'.dol_buildpath('questionnaire/img/back.png',2).'" alt="'.$langs->trans('questionnaireBack').'" height="42" width="42"> </a>';
+
 	$res.= '<br /><br />';
 	
 	// Pas de choix pour les types string et textarea
@@ -1508,4 +1510,77 @@ function custom_select_date($set_time = '', $prefix = 're', $h = 0, $m = 0, $emp
 
 	print $retstring;
 	return;
+}
+
+function draw_question_for_admin(&$q) {
+	
+    global $db;
+    
+    dol_include_once('/questionnaire/class/question_link.class.php');
+    $ql = new Questionlink($db);
+    $ret = $ql->loadLink($q->id);
+    
+    $addClass = '';
+    if($ret > 0) $addClass = ' el_linked"';
+    
+	if(empty($q->choices)) $q->loadChoices();
+	if(!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale'/*Pas de choix pour ces types là*/) {
+		//#4fa4ff
+		if(empty($q->compulsory_answer))$res = '<tr><td width=5%><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #cccccc; margin-left: auto;margin-right: auto;" aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></td>';
+		else $res = '<tr><td width=5%><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #4fa4ff; margin-left: auto;margin-right: auto;" aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></td>';
+		$res .= '<td width=95%><div class="element'.$addClass.'" type="question" id="question'.$q->id.'"  style="cursor: pointer;" onclick="editQuestion('.$q->id.')">';
+		$res.= '<div class="refid">'.$q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
+		
+		switch($q->type) {
+			
+			case 'string':
+				$res.= draw_string_for_user($q);
+				break;
+			
+			case 'grillestring':
+				$res.= draw_grillestring_for_user($q);
+				break;
+				
+			case 'textarea':
+				$res.= draw_textarea_for_user($q);
+				break;
+				
+			case 'select':
+				$res.= draw_select_for_user($q);
+				break;
+				
+			case 'listradio':
+				$res.= draw_listradio_for_user($q);
+				break;
+				
+			case 'grilleradio':
+				$res.= draw_grilleradio_for_user($q);
+				break;
+				
+			case 'listcheckbox':
+				$res.= draw_listcheckbox_for_user($q);
+				break;
+				
+			case 'grillecheckbox':
+				$res.= draw_grillecheckbox_for_user($q);
+				break;
+				
+			case 'date':
+				$res.= draw_date_for_user($q);
+				break;
+			
+			case 'hour':
+				$res.= draw_hour_for_user($q);
+				break;
+			
+			case 'linearscale':
+				$res.= draw_linearscale_for_user($q);
+				break;
+				
+		}
+		
+		$res.= '<br><br></div></td></tr>';
+	}
+	
+	return $res;
 }

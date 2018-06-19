@@ -5,6 +5,7 @@ dol_include_once('/questionnaire/class/question.class.php');
 dol_include_once('/questionnaire/class/question_link.class.php');
 dol_include_once('/questionnaire/class/choice.class.php');
 dol_include_once('/questionnaire/lib/questionnaire.lib.php');
+dol_include_once('/core/class/html.form.class.php');
 
 $get = GETPOST('get');
 $put = GETPOST('put');
@@ -22,16 +23,20 @@ $value = GETPOST('value');
 $origin = GETPOST('origin');
 $links = GETPOST('links');
 $group = GETPOST('group');
-
+$form = new Form($db);
 _get($get);
 _put($put);
 
 function _get($case, $obj=null) {
 	
-    global $type_choice, $origin, $fk_questionnaire, $fk_question, $fk_choix;
+    global $type_choice, $origin, $fk_questionnaire, $fk_question, $fk_choix,$db;
 	
 	switch($case) {
 		case 'new_question':
+			if(empty($obj)) {
+				$obj = new Question($db);
+				$obj->load($fk_question);
+			}
 			print json_encode(draw_question($obj));
 			break;
 		
@@ -46,6 +51,20 @@ function _get($case, $obj=null) {
 		case 'next-questions':
 		    print json_encode(_getNextQuestions($fk_questionnaire, $fk_question, $fk_choix));
 		    break;
+		
+		case 'back_to_question':
+			
+			if(empty($obj) && !empty($fk_question)) {
+				$fk_question = str_replace('question','',$fk_question);
+				$fk_question = str_replace(' ','',$fk_question);
+
+				$obj = new Question($db);
+				$obj->load($fk_question);
+				print json_encode(draw_question_for_admin($obj));
+			}
+			
+			
+			break;
 	}
 	
 }
@@ -88,6 +107,16 @@ function _put($case) {
 		    
 		case 'select-choice':
 		    print json_encode(_select_links($group));
+		    break;
+		
+		case 'set_compulsory':
+			$q = new Question($db);
+			$q->load($fk_question);
+			if($q->compulsory_answer == 0)$q->compulsory_answer = 1;
+			elseif($q->compulsory_answer == 1)$q->compulsory_answer = 0;
+			$q->save();
+			
+		    _get('back_to_question');
 		    break;
 	}
 	
@@ -175,7 +204,7 @@ function _link_question_to_choice($fk_questionnaire, $fk_question, $fk_choix) {
     $ql->fk_questionnaire = $fk_questionnaire;
     $ql->fk_question = $fk_question;
     $ql->fk_choix = $fk_choix;
-    
+   
     $ret = !empty($fk_question) ? $ql->save() : $ql->delete($user);
     $ql->loadLink($fk_question, $fk_choix);
     if ($ret > 0) return array("success" => true, "label" => $ql->question_label);

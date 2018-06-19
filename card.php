@@ -256,7 +256,14 @@ if (empty($reshook))
  */
 
 $title=$langs->trans("Module104961Name");
-llxHeader('',$title);
+
+$TArrayOfCss = array();
+
+if((float) DOL_VERSION == 6.0) {
+$TArrayOfCss[] = '/theme/common/fontawesome/css/font-awesome.css';
+}
+
+llxHeader('',$title, '','',0,0, array(), $TArrayOfCss);
 
 print $formconfirm;
 
@@ -339,7 +346,7 @@ if ($action !== 'create')
 	}
 	
 	
-	_getBanner($object, $action, true, $shownav, $show_linkback);
+	_getBanner($object, $action, false, $shownav, $show_linkback);
 }
 
 $formcore = new TFormCore;
@@ -390,14 +397,20 @@ print '<hr /><br /><br />';
 if(empty($action) || $action === 'view' || $action === 'validate' || $action === 'delete' || $action === 'modif' || $action === 'clone') {
 	
 	if(empty($object->questions)) $object->loadQuestions();
-	
+	print '<table style="width: 100%;">';
 	print '<div id="allQuestions">';
 	
 	if(!empty($object->questions)) {
-		foreach($object->questions as &$q) print draw_question($q, $object->fk_statut);
+		foreach($object->questions as &$q){
+			if(!empty($object->fk_statut)){
+				print draw_question_for_user($q);
+			}else{
+				print draw_question_for_admin($q);
+			}
+		}
 	}
 	
-	print '</div>';
+	print '</div></table>';
 	
 	if(empty($object->fk_statut)) {
 		
@@ -769,7 +782,7 @@ if($action === 'apercu' || $action === 'answer') {
 			// Suppression anciennes classes
 			$(item).removeClass('pair');
 			$(item).removeClass('impair');
-
+			
 			// Ajout nouvelles classes
 			if(i % 2 == 0) $(item).addClass('pair');
 			else $(item).addClass('impair');
@@ -777,10 +790,77 @@ if($action === 'apercu' || $action === 'answer') {
 		});
 		
 	}
+	
+	function setCompulsory(id){
+		
+		$compulsory = $("#compulsory"+id);
+		
+		$.ajax({
+				dataType:'json'
+				,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+						,data:{
+								fk_question:id
+								,put:"set_compulsory"
+							}
+
+			}).done(function(res) {
+
+				$compulsory.closest('tr').after(res);
+				$compulsory.closest('tr').remove();
+				setQuestionDivCSS();
+			});
+	}
+	
+	function editQuestion(id){
+		
+		$div_origin = $("#question"+id);
+		
+		$.ajax({
+				dataType:'json'
+				,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+						,data:{
+								fk_question:id
+								,get:"new_question"
+							}
+
+			}).done(function(res) {
+
+				$div_origin.after(res);
+				$div_origin.remove();
+				setQuestionDivCSS();
+			});
+			
+	
+
+			
+		$to_hide = $(".edit");
+		$.ajax({
+				dataType:'json'
+				,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+						,data:{
+								fk_question:$to_hide.attr('id')
+								,get:"back_to_question"
+							}
+
+			}).done(function(res) {
+			
+				
+				$to_hide.closest('tr').after(res);
+				$to_hide.closest('tr').remove();
+				
+				setQuestionDivCSS();
+			});
+			
+		
+	}
 
 	$(document).ready(function () {
-		
-		// Echelles linéaires
+	
+		var fk_question = getUrlParameter('fk_question');
+		if(fk_question != undefined){
+			window.location.hash='question'+fk_question;
+		}
+			// Echelles linéaires
 		$(document).on('input', 'input[type=range]', function() {
 			var qid = $(this).attr('name').replace('linearscal_q', '');
 			$('span[id="val_linearscal_q'+qid+'"]').html($(this).val());
@@ -810,6 +890,22 @@ if($action === 'apercu' || $action === 'answer') {
 		});
 
 	});
+	
+	
+	var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
+};
 
 </script>
 
