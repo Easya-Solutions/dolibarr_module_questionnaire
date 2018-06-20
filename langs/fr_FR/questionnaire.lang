@@ -25,7 +25,7 @@ questionnaireStatusValidated=Validé - En attente de réponses
 questionnaireStatusRefused=Refusée (fermée)
 questionnaireStatusAccepted=Acceptée (fermée)
 questionnaireStatusOpened=Ouvert
-questionnaireAnswerStatus=Statut questionnaire pour l'utilisateur
+questionnaireAnswerStatus=Statut questionnaire 
 questionnaireStatusNotSent=Non envoyé
 questionnaireStatusSent=Envoyé
 questionnaireStatusClosed=Sauvegardé
@@ -98,7 +98,7 @@ CloneQuestionnaire=Cloner questionnaire
 
 # ANSWERS
 questionnaireUserAnswersOf=<h3>Réponses de : %s</h3>
-QuestionnaireSeeAnswerLink=Visualisation réponses utilisateur
+QuestionnaireSeeAnswerLink=Visualisation réponses
 
 # ADMIN
 questionnaireSimpleNumRefModelDesc=Renvoie le numéro sous la forme QUyymm-nnnn où yy est l'année, mm le mois et nnnn un compteur séquentiel sans rupture et sans remise à 0

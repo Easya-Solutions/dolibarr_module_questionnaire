@@ -231,7 +231,8 @@ class InvitationUser extends SeedObject
 
 		$this->fields = array(
 			'fk_questionnaire' => array('type' => 'integer', 'index' => true)
-			, 'fk_user' => array('type' => 'integer', 'index' => true)
+			, 'fk_element' => array('type' => 'integer', 'index' => true)
+			, 'type_element' => array('type' => 'string')
 			, 'fk_usergroup' => array('type' => 'integer', 'index' => true)
 			, 'token' => array('type' => 'string')
 			, 'email' => array('type' => 'string')
@@ -436,6 +437,12 @@ class InvitationUser extends SeedObject
 	{
 		$this->fk_statut = 0;
 		$this->save();
+	}
+	
+	function getFk_element(){
+		
+		
+		return $this->fk_element;
 	}
 	
 
