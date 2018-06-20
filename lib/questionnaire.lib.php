@@ -171,7 +171,7 @@ function draw_question(&$q, $fk_statut_questionnaire=0) {
 		$res.= '/>';
 	} elseif(!empty($q->compulsory_answer)) $res.= ' <STRONG>(réponse obligatoire)</STRONG>';*/
 	//if(empty($fk_statut_questionnaire)) $res.= '&nbsp;<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteQuestion')).'</a>';
-	if(empty($fk_statut_questionnaire)) $res.= '&nbsp;<a id="back" name="back" href="'.dol_buildpath('questionnaire/card.php',2).'?id='.$q->fk_questionnaire.'&fk_question='.$q->id.'"> <img src="'.dol_buildpath('questionnaire/img/back.png',2).'" alt="'.$langs->trans('questionnaireBack').'" height="42" width="42"> </a>';
+	if(empty($fk_statut_questionnaire)) $res.= '&nbsp;<a id="back" name="back" href="'.dol_buildpath('questionnaire/card.php',2).'?id='.$q->fk_questionnaire.'&fk_question='.$q->id.'"><i class="fa fa-undo" style="font-size:2em;" aria-hidden="true"></i></a>';
 
 	$res.= '<br /><br />';
 	
@@ -1514,7 +1514,7 @@ function custom_select_date($set_time = '', $prefix = 're', $h = 0, $m = 0, $emp
 
 function draw_question_for_admin(&$q) {
 	
-    global $db;
+    global $db, $langs;
     
     dol_include_once('/questionnaire/class/question_link.class.php');
     $ql = new Questionlink($db);
@@ -1526,9 +1526,9 @@ function draw_question_for_admin(&$q) {
 	if(empty($q->choices)) $q->loadChoices();
 	if(!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale'/*Pas de choix pour ces types là*/) {
 		//#4fa4ff
-		if(empty($q->compulsory_answer))$res = '<tr><td width=5%><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #cccccc; margin-left: auto;margin-right: auto;" aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></td>';
-		else $res = '<tr><td width=5%><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #4fa4ff; margin-left: auto;margin-right: auto;" aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></td>';
-		$res .= '<td width=95%><div class="element'.$addClass.'" type="question" id="question'.$q->id.'"  style="cursor: pointer;" onclick="editQuestion('.$q->id.')">';
+		if(empty($q->compulsory_answer))$res = '<tr><td width=3%><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #cccccc; margin-left: auto;margin-right: auto;" aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></a></td>';
+		else $res = '<tr class="oddeven"><td width=3%><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #4fa4ff; margin-left: auto;margin-right: auto;" aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></a></td>';
+		$res .= '<td width=93%><div class="element'.$addClass.'" type="question" id="question'.$q->id.'"  style="cursor: pointer;" onclick="editQuestion('.$q->id.')">';
 		$res.= '<div class="refid">'.$q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
 		
 		switch($q->type) {
@@ -1578,8 +1578,8 @@ function draw_question_for_admin(&$q) {
 				break;
 				
 		}
-		
-		$res.= '<br><br></div></td></tr>';
+		$res .= '</div></td><td width="3%"><a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteQuestion')).'</a>&nbsp;<i   class="fa fa-th"></i>';
+		$res.= '<br><br></td></tr>';
 	}
 	
 	return $res;

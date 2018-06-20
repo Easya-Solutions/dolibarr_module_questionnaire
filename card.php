@@ -397,29 +397,34 @@ print '<hr /><br /><br />';
 if(empty($action) || $action === 'view' || $action === 'validate' || $action === 'delete' || $action === 'modif' || $action === 'clone') {
 	
 	if(empty($object->questions)) $object->loadQuestions();
-	print '<table style="width: 100%;">';
-	print '<div id="allQuestions">';
+	if(empty($object->fk_statut))$content = '<table style="width: 100%;">';
+	$content .= '<div id="allQuestions">';
 	
 	if(!empty($object->questions)) {
 		foreach($object->questions as &$q){
 			if(!empty($object->fk_statut)){
-				print draw_question_for_user($q);
+				$content .=draw_question_for_user($q);
 			}else{
-				print draw_question_for_admin($q);
+				$content .=draw_question_for_admin($q);
 			}
 		}
 	}
 	
-	print '</div></table>';
+	$content .= '</div>';
+	if(empty($object->fk_statut)) $content .= '</table>';
 	
 	if(empty($object->fk_statut)) {
 		
 		$q = new Question($db);
-		print '<div id="addQuestion" class="center"><br /><br />'.$form->selectarray('select_choice', $q->TTypes);
-		print '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button><br /><br /></div>';
+		$content .= '<div id="addQuestion" class="center"><br /><br />'.$form->selectarray('select_choice', $q->TTypes);
+		$content .= '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button><br /><br /></div>';
 		
 	}
+	$parameters = array('content'=>$content);
 	
+	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by some
+	
+	if(empty($reshook)) print $content;
 } elseif($action === 'apercu') {
 	if(empty($object->questions)) $object->loadQuestions();
 	print '<div id="allQuestions">';
@@ -542,8 +547,13 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 	
 			$(document).on('click', '[name*=del_element_]', function() {
 	
-				var $div = $(this).closest('div[class*=element]')
+				var $div = $(this).closest('div[class*=element]');
 				var type_object = $div.attr('type');
+				if(type_object == undefined){
+					
+					var $div = $(this).parent().parent().find('div[class*=element]');
+					var type_object = $div.attr('type');
+				}
 				var id_obj = $div.attr('id');
 				id_obj = id_obj.replace('choice', '');
 				id_obj = id_obj.replace('question', '');
@@ -559,6 +569,7 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 	
 				}).done(function(res) {
 	
+					if(type_object == 'question')$div.closest('tr').remove();
 					$div.remove();
 					setQuestionDivCSS();
 	
@@ -780,12 +791,12 @@ if($action === 'apercu' || $action === 'answer') {
 		$(document).find('div[type=question]').each(function(i, item) {
 			
 			// Suppression anciennes classes
-			$(item).removeClass('pair');
-			$(item).removeClass('impair');
+			$(item).closest('tr').removeClass('pair');
+			$(item).closest('tr').removeClass('impair');
 			
 			// Ajout nouvelles classes
-			if(i % 2 == 0) $(item).addClass('pair');
-			else $(item).addClass('impair');
+			if(i % 2 == 0) $(item).closest('tr').addClass('pair');
+			else $(item).closest('tr').addClass('impair');
 			
 		});
 		
