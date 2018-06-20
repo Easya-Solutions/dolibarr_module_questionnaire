@@ -58,4 +58,18 @@ class Choice extends SeedObject {
 		return parent::deleteCommon($user);
 	}
 	
+	public function loadByType($type)
+	{
+		
+		$res = $this->db->query("SELECT rowid FROM ".MAIN_DB_PREFIX.$this->table_element." WHERE type='$type' AND fk_question=".$this->fk_question." ");		
+		if ($obj = $this->db->fetch_object($res))
+		{
+			return $this->fetch($obj->rowid);
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 }

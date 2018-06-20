@@ -181,9 +181,13 @@ function draw_question(&$q, $fk_statut_questionnaire=0) {
 			if($question_est_une_grille) $style_div_lines.= ' float: left; ';
 			$res.= '<div style="'.$style_div_lines.'" id="allChoicesLeft_q'.$q->id.'" name="allChoicesLeft_q'.$q->id.'">';
 			$res.= '<div class="refid">Lignes<br /><br /></div>';
+			if($question_est_une_grille)$res.= '<div class="element" type="choice-title-line" id="question'.$q->id.'"><input id="title-line'.$q->id.'" type="text" class="field" name="label"  placeholder="Titre Lignes"/><br /><br /> </div>';
 			$q->loadChoices();
 			if(!empty($q->choices)) {
 				foreach($q->choices as &$choice) {
+					if($choice->type === 'titleline') {
+						?><script>$(document).ready(function () {$("#title-line<?php echo $q->id; ?>").val("<?php echo $choice->label ; ?>");});</script><?php
+					}
 					if($choice->type === 'line') $res.= draw_choice($choice, $fk_statut_questionnaire);
 				}
 			}
@@ -194,8 +198,13 @@ function draw_question(&$q, $fk_statut_questionnaire=0) {
 			if($question_est_une_grille) {
 				$res.= '<div style="float: left;" id="allChoicesRight_q'.$q->id.'">';
 				$res.= '<div class="refid">Colonnes<br /><br /></div>';
+				$res.= '<div class="element"  type="choice-title-column" id="question'.$q->id.'"><input type="text" id="title-column'.$q->id.'" class="field" name="label" placeholder="Titre Colonnes"/><br /><br /> </div>';
+
 				if(!empty($q->choices)) {
 					foreach($q->choices as &$choice) {
+						if($choice->type === 'titlecolumn') {
+						?><script>$(document).ready(function () {$("#title-column<?php echo $q->id; ?>").val("<?php echo $choice->label ; ?>");});</script><?php
+					}
 						if($choice->type === 'column') $res.= draw_choice($choice, $fk_statut_questionnaire);
 					}
 				}
@@ -468,8 +477,18 @@ function draw_listcheckbox_for_user(&$q) {
 
 function draw_grilleradio_for_user(&$q) {
 	
-	$res = '<br /><table class="noborder"><tr><td></td>';
+	$res = '<br /><table class="noborder"><tr><td><div align="right" style="padding-right:20px;" id="titlecolumn'.$q->id.'"></div><div  id="titleline'.$q->id.'"></div></td>';
 	foreach($q->choices as &$choix_col) {
+		if($choix_col->type == 'titlecolumn') {
+			 ?> <script>$(document).ready(function(){$("#titlecolumn<?php echo $q->id; ?>").html("<strong><?php echo $choix_col->label ;?></strong>");
+						$("#titlecolumn<?php echo $q->id; ?>").parent('td').attr('style',"background-image: linear-gradient( to top right, #F8F8F8 48%, black, #F8F8F8 52%);");
+						});</script> 
+			<?php	
+		}elseif($choix_col->type == 'titleline') {
+			 ?> <script>$(document).ready(function(){$("#titleline<?php echo $q->id; ?>").html("<strong><?php echo $choix_col->label ;?></strong>");
+					 $("#titleline<?php echo $q->id; ?>").parent('td').attr('style',"background-image: linear-gradient( to top right, #F8F8F8 48%, black, #F8F8F8 52%);");});</script> 
+			<?php	
+		}
 		if($choix_col->type === 'column') $res.= '<td>'.$choix_col->label.'</td>';
 	}
 	$res.= '</tr>';
@@ -508,16 +527,26 @@ function draw_grilleradio_for_user(&$q) {
 
 function draw_grillecheckbox_for_user(&$q) {
 	
-	$res = '<br /><table class="noborder"><tr><td></td>';
-	foreach($q->choices as &$choix_col) {
-		if($choix_col->type === 'column') $res.= '<td>'.$choix_col->label.'</td>';
+	$res = '<br /><table class="noborder"><tr><td><div align="right" style="padding-right:20px;" id="titlecolumn'.$q->id.'"></div><div  id="titleline'.$q->id.'"></div></td>';
+	foreach($q->choices as &$choix_col) {	 
+		if($choix_col->type == 'titlecolumn') {
+			 ?> <script>$(document).ready(function(){$("#titlecolumn<?php echo $q->id; ?>").html("<strong><?php echo $choix_col->label ;?></strong>");
+						$("#titlecolumn<?php echo $q->id; ?>").parent('td').attr('style',"background-image: linear-gradient( to top right, #F8F8F8 48%, black, #F8F8F8 52%);");
+						});</script> 
+			<?php	
+		}elseif($choix_col->type == 'titleline') {
+			 ?> <script>$(document).ready(function(){$("#titleline<?php echo $q->id; ?>").html("<strong><?php echo $choix_col->label ;?></strong>");
+					 $("#titleline<?php echo $q->id; ?>").parent('td').attr('style',"background-image: linear-gradient( to top right, #F8F8F8 48%, black, #F8F8F8 52%);");});</script> 
+			<?php	
+		}
+		if($choix_col->type === 'column') $res.= '<td >'.$choix_col->label.'</td>';
 	}
 	$res.= '</tr>';
 	
 	$first_line=true;
 	foreach($q->choices as &$choix_line) {
 		
-		if($choix_line->type === 'line') $res.= '<tr><td>'.$choix_line->label.'</td>';
+		if($choix_line->type === 'line') $res.= '<tr ><td>'.$choix_line->label.'</td>';
 		else continue;
 		
 		foreach($q->choices as &$choix_col) {
@@ -548,8 +577,18 @@ function draw_grillecheckbox_for_user(&$q) {
 
 function draw_grillestring_for_user(&$q) {
 	
-	$res = '<br /><table class="noborder"><tr><td></td>';
+	$res = '<br /><table class="noborder"><tr><td><div align="right" style="padding-right:20px;" id="titlecolumn'.$q->id.'"></div><div  id="titleline'.$q->id.'"></div></td>';
 	foreach($q->choices as &$choix_col) {
+		if($choix_col->type == 'titlecolumn') {
+			 ?> <script>$(document).ready(function(){$("#titlecolumn<?php echo $q->id; ?>").html("<strong><?php echo $choix_col->label ;?></strong>");
+						$("#titlecolumn<?php echo $q->id; ?>").parent('td').attr('style',"background-image: linear-gradient( to top right, #F8F8F8 48%, black, #F8F8F8 52%);");
+						});</script> 
+			<?php	
+		}elseif($choix_col->type == 'titleline') {
+			 ?> <script>$(document).ready(function(){$("#titleline<?php echo $q->id; ?>").html("<strong><?php echo $choix_col->label ;?></strong>");
+					 $("#titleline<?php echo $q->id; ?>").parent('td').attr('style',"background-image: linear-gradient( to top right, #F8F8F8 48%, black, #F8F8F8 52%);");});</script> 
+			<?php	
+		}
 		if($choix_col->type === 'column') $res.= '<td>'.$choix_col->label.'</td>';
 	}
 	$res.= '</tr>';
@@ -619,9 +658,25 @@ function setField($type_object, $fk_object, $field, $value) {
 	
 	global $db;
 	
+	if($type_object == 'choice-title-line' || $type_object == 'choice-title-column'){
+		$type = $type_object ;
+		$type_object = 'choice';
+	}
+	
 	$type_object = ucfirst($type_object);
 	$obj = new $type_object($db);
-	$obj->load($fk_object);
+	if($type == 'choice-title-line' || $type == 'choice-title-column'){
+		if($type == 'choice-title-line')$obj->type = 'titleline';
+		else $obj->type = 'titlecolumn';
+		$obj->fk_question = $fk_object;
+		$res = $obj->loadByType( $obj->type,$db);
+		if(empty($res)){
+			if($type == 'choice-title-line')$obj->type = 'titleline';
+			else $obj->type = 'titlecolumn';
+			$obj->fk_question = $fk_object;
+		}
+		
+	}else $obj->load($fk_object);
 	$obj->{$field} = $value;
 	return $obj->save();
 	
