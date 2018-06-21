@@ -171,7 +171,7 @@ function draw_question(&$q, $fk_statut_questionnaire=0) {
 		$res.= '/>';
 	} elseif(!empty($q->compulsory_answer)) $res.= ' <STRONG>(réponse obligatoire)</STRONG>';*/
 	//if(empty($fk_statut_questionnaire)) $res.= '&nbsp;<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteQuestion')).'</a>';
-	if(empty($fk_statut_questionnaire)) $res.= '&nbsp;<a id="back" name="back" href="'.dol_buildpath('questionnaire/card.php',2).'?id='.$q->fk_questionnaire.'&fk_question='.$q->id.'"><i class="fa fa-undo" style="font-size:2em;" aria-hidden="true"></i></a>';
+	if(empty($fk_statut_questionnaire)) $res.= '&nbsp;<a id="back" name="back" href="'.dol_buildpath('questionnaire/card.php',2).'?id='.$q->fk_questionnaire.'&fk_question='.$q->id.'"><i class="fa fa-eye" style="font-size:2em;" aria-hidden="true"></i></a>';
 
 	$res.= '<br /><br />';
 	
