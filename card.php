@@ -257,7 +257,7 @@ if (empty($reshook))
 
 $title=$langs->trans("Module104961Name");
 
-$TArrayOfCss = array();
+$TArrayOfCss = array('/questionnaire/css/questionnaire.css');
 
 if((float) DOL_VERSION == 6.0) {
 $TArrayOfCss[] = '/theme/common/fontawesome/css/font-awesome.css';
@@ -397,7 +397,10 @@ print '<hr /><br /><br />';
 if(empty($action) || $action === 'view' || $action === 'validate' || $action === 'delete' || $action === 'modif' || $action === 'clone') {
 	
 	if(empty($object->questions)) $object->loadQuestions();
-	if(empty($object->fk_statut))$content = '<table style="width: 100%;">';
+	if(empty($object->fk_statut)){
+		$content = '<table style="width: 100%;border-collapse: collapse;">';
+		$content.=draw_add_element_line();
+	}
 	$content .= '<div id="allQuestions">';
 	
 	if(!empty($object->questions)) {
@@ -815,7 +818,7 @@ if($action === 'apercu' || $action === 'answer') {
 							}
 
 			}).done(function(res) {
-
+				$compulsory.closest('tr').next('tr').remove();//delete add element
 				$compulsory.closest('tr').after(res);
 				$compulsory.closest('tr').remove();
 				setQuestionDivCSS();
@@ -835,7 +838,7 @@ if($action === 'apercu' || $action === 'answer') {
 							}
 
 			}).done(function(res) {
-
+				//$div_origin.closest('tr').next('tr').remove();//delete add element
 				$div_origin.after(res);
 				$div_origin.remove();
 				setQuestionDivCSS();
@@ -854,8 +857,7 @@ if($action === 'apercu' || $action === 'answer') {
 							}
 
 			}).done(function(res) {
-			
-				
+				$to_hide.closest('tr').next('tr').remove();//delete add element
 				$to_hide.closest('tr').after(res);
 				$to_hide.closest('tr').remove();
 				
@@ -899,6 +901,26 @@ if($action === 'apercu' || $action === 'answer') {
 
 			});
 		});
+		
+		$('.bt-add-element').on('click', function(e){
+			
+			$(this).parent().find('.add-element').slideDown();
+			$(this).parent().removeClass('close');
+			$(this).parent().addClass('open');
+			
+			
+		});
+		
+		$('.bt-close-element').on('click', function(e){
+			
+			$(this).parent().find('.add-element').slideUp();
+			$(this).parent().removeClass('open');
+			$(this).parent().addClass('close');
+			
+			
+		});
+		
+		
 
 	});
 	
@@ -918,6 +940,13 @@ if($action === 'apercu' || $action === 'answer') {
     }
 };
 
+
+function showElement(){
+	
+	
+	
+	
+}
 </script>
 
 <?php

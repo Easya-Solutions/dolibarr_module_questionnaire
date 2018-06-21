@@ -96,6 +96,15 @@ class Question extends SeedObject {
 		
 	}
 	
+	function getGrilleTitle(){
+		if(!empty($this->choices)) {
+				foreach($this->choices as &$choice) {
+					if($choice->type == 'titleline') return $choice->label;
+				}
+			}
+			return '';
+	}
+	
 	function loadAnswers($fk_invitation_user=null) {
 		
 		global $db;

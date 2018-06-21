@@ -183,13 +183,12 @@ function draw_question(&$q, $fk_statut_questionnaire=0) {
 			if($question_est_une_grille) $style_div_lines.= ' float: left; ';
 			$res.= '<div style="'.$style_div_lines.'" id="allChoicesLeft_q'.$q->id.'" name="allChoicesLeft_q'.$q->id.'">';
 			$res.= '<div class="refid">Lignes<br /><br /></div>';
-			if($question_est_une_grille)$res.= '<div class="element" type="choice-title-line" id="question'.$q->id.'"><input id="title-line'.$q->id.'" type="text" class="field" name="label"  placeholder="Titre Lignes"/><br /><br /> </div>';
 			$q->loadChoices();
+			if($question_est_une_grille)$res.= '<div class="element" type="choice-title-line" id="question'.$q->id.'"><input id="title-line'.$q->id.'" type="text" class="field" name="label"  placeholder="Titre Lignes" value="'.$q->getGrilleTitle().'"></input><br /><br /> </div>';
+			
+			
 			if(!empty($q->choices)) {
 				foreach($q->choices as &$choice) {
-					if($choice->type === 'titleline') {
-						?><script>$(document).ready(function () {$("#title-line<?php echo $q->id; ?>").val("<?php echo $choice->label ; ?>");});</script><?php
-					}
 					if($choice->type === 'line') $res.= draw_choice($choice, $fk_statut_questionnaire);
 				}
 			}
@@ -476,13 +475,9 @@ function draw_listcheckbox_for_user(&$q) {
 
 function draw_grilleradio_for_user(&$q) {
 	
-	$res = '<br /><table class="noborder"><tr><td><div  id="titleline'.$q->id.'"></div></td>';
+	$res = '<br /><table class="noborder"><tr><td><div  id="titleline'.$q->id.'"><strong>'.$q->getGrilleTitle().'</strong></div></td>';
 	foreach($q->choices as &$choix_col) {
-		if($choix_col->type == 'titleline') {
-			 ?> <script>$(document).ready(function(){$("#titleline<?php echo $q->id; ?>").html("<strong><?php echo $choix_col->label ;?></strong>");
-					});</script> 
-			<?php	
-		}
+		
 		if($choix_col->type === 'column') $res.= '<td>'.$choix_col->label.'</td>';
 	}
 	$res.= '</tr>';
@@ -521,13 +516,9 @@ function draw_grilleradio_for_user(&$q) {
 
 function draw_grillecheckbox_for_user(&$q) {
 	
-	$res = '<br /><table class="noborder"><tr><td><div  id="titleline'.$q->id.'"></div></td>';
+	$res = '<br /><table class="noborder"><tr><td><div  id="titleline'.$q->id.'" ><strong>'.$q->getGrilleTitle().'</strong></div></td>';
 	foreach($q->choices as &$choix_col) {	 
-		if($choix_col->type == 'titleline') {
-			 ?> <script>$(document).ready(function(){$("#titleline<?php echo $q->id; ?>").html("<strong><?php echo $choix_col->label ;?></strong>");
-					});</script> 
-			<?php	
-		}
+		
 		if($choix_col->type === 'column') $res.= '<td >'.$choix_col->label.'</td>';
 	}
 	$res.= '</tr>';
@@ -566,13 +557,9 @@ function draw_grillecheckbox_for_user(&$q) {
 
 function draw_grillestring_for_user(&$q) {
 	
-	$res = '<br /><table class="noborder"><tr><td><div  id="titleline'.$q->id.'"></div></td>';
+	$res = '<br /><table class="noborder"><tr><td><div  id="titleline'.$q->id.'"><strong>'.$q->getGrilleTitle().'</strong></div></td>';
 	foreach($q->choices as &$choix_col) {
-		if($choix_col->type == 'titleline') {
-			 ?> <script>$(document).ready(function(){$("#titleline<?php echo $q->id; ?>").html("<strong><?php echo $choix_col->label ;?></strong>");
-					});</script> 
-			<?php	
-		}
+		
 		if($choix_col->type === 'column') $res.= '<td>'.$choix_col->label.'</td>';
 	}
 	$res.= '</tr>';
@@ -1563,8 +1550,8 @@ function draw_question_for_admin(&$q) {
 	if(empty($q->choices)) $q->loadChoices();
 	if(!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale'/*Pas de choix pour ces types là*/) {
 		//#4fa4ff
-		if(empty($q->compulsory_answer))$res = '<tr><td width=3%><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #cccccc; margin-left: auto;margin-right: auto;" aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></a></td>';
-		else $res = '<tr class="oddeven"><td width=3%><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #4fa4ff; margin-left: auto;margin-right: auto;" aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></a></td>';
+		if(empty($q->compulsory_answer))$res = '<tr><td width=3% style="text-align: center;"><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #cccccc; " aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></a></td>';
+		else $res = '<tr class="oddeven"><td width=3% style="text-align: center;"><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #4fa4ff; margin-left: auto;margin-right: auto;" aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></a></td>';
 		$res .= '<td width=93%><div class="element'.$addClass.'" type="question" id="question'.$q->id.'"  style="cursor: pointer;" onclick="editQuestion('.$q->id.')">';
 		$res.= '<div class="refid">'.$q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
 		
@@ -1616,8 +1603,16 @@ function draw_question_for_admin(&$q) {
 				
 		}
 		$res .= '</div></td><td width="3%"><a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteQuestion')).'</a>&nbsp;<i   class="fa fa-th"></i>';
-		$res.= '<br><br></td></tr>';
+		$res.= '</td></tr>';
+		$res.=draw_add_element_line();
 	}
+	
+	return $res;
+}
+
+function draw_add_element_line(){
+	
+	$res = '<tr  ><td colspan=3><div class="add-element-wrap close"><span class="bt-close-element" ><i class="fa fa-close" aria-hidden="true"></i></span><span class="bt-add-element" ><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;  Ajouter un élément&nbsp;</span><div class="add-element">srteststests</div></div></td></tr>';
 	
 	return $res;
 }
