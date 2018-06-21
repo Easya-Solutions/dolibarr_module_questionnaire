@@ -30,7 +30,7 @@ print '</div>';
 $sql = 'SELECT DISTINCT  i_usr.rowid as id_usrinvit, q.rowid, q.title, i_usr.date_limite_reponse
 			FROM '.MAIN_DB_PREFIX.'quest_questionnaire q
 			INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation_user i_usr ON (i_usr.fk_questionnaire = q.rowid)
-			WHERE i_usr.fk_user = '.$user->id.'
+			WHERE i_usr.fk_element = '.$user->id.' AND type_element="user"
 			AND i_usr.fk_statut != 1
 			AND i_usr.date_limite_reponse >= "'.date('Y-m-d').'"
 ORDER BY i_usr.rowid DESC

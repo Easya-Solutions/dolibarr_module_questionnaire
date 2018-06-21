@@ -1073,7 +1073,7 @@ function prepareMailContent($invuser,$fk_questionnaire)
 {
 	$content = "Bonjour, \nNous vous invitons à répondre au questionnaire suivant : ";
 		
-	if(!empty($invuser->fk_user))$content.=dol_buildpath('/questionnaire/card.php?id='.$fk_questionnaire.'&action=answer&fk_invitation='.$invuser->id.'&token='.$invuser->token, 2);
+	if(!empty($invuser->fk_element) && ($invuser->type_element='user'))$content.=dol_buildpath('/questionnaire/card.php?id='.$fk_questionnaire.'&action=answer&fk_invitation='.$invuser->id.'&token='.$invuser->token, 2);
 	else $content.=dol_buildpath('/questionnaire/public/toAnswer.php?id='.$fk_questionnaire.'&action=answer&fk_invitation='.$invuser->id.'&token='.$invuser->token, 2);
 	$content.=" \nVous avez jusqu'au ".date('d/m/Y',$invuser->date_limite_reponse).' pour y répondre.';
 	

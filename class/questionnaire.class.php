@@ -438,7 +438,7 @@ class Questionnaire extends SeedObject
 		{
 			foreach ($this->invitations as $invitation)
 			{
-				$alreadyInvitedFkUsers[] = $invitation->fk_user;
+				$alreadyInvitedFkUsers[$invitation->type_element] = $invitation->fk_element;
 				$alreadyInvitedEmails[] = $invitation->email;
 			}
 		}

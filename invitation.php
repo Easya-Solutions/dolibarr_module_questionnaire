@@ -181,7 +181,7 @@ print $TBS->render('tpl/invitation.tpl.php'
 			, 'showStatus' => $object->getLibStatut(1)
 			, 'list_invitations' => _getListInvitations($object)
 			, 'massaction' => printMassActionButton()
-			,'fk_user' => $invitation->fk_user
+			,'fk_user' => $invitation->fk_element
 		)
 		, 'langs' => $langs
 		, 'user' => $user
@@ -210,10 +210,10 @@ function _getListInvitations(&$object)
 
 	$r = new TListviewTBS('invitation_list', dol_buildpath('/questionnaire/tpl/questionnaire_list.tpl.php'));
 
-	$sql = 'SELECT invu.fk_usergroup, invu.fk_user, invu.email, invu.date_limite_reponse, invu.sent, invu.rowid as id_user, \'\' AS action';
+	$sql = 'SELECT invu.fk_usergroup,invu.type_element, invu.fk_element, invu.email, invu.date_limite_reponse, invu.sent, invu.rowid as id_user, \'\' AS action';
 	$sql .= ' FROM '.MAIN_DB_PREFIX.'quest_invitation_user invu ';
 	$sql .= ' WHERE fk_questionnaire = '.$object->id;
-	$sql .= ' AND (invu.fk_user > 0 OR invu.email != "") ';
+	$sql .= ' AND (invu.fk_element > 0 OR invu.email != "") ';
 	$resql = $db->query($sql);
 	$TData = array();
 	if (!empty($resql) && $db->num_rows($resql) > 0)
@@ -236,7 +236,7 @@ function _getListInvitations(&$object)
 		)
 		, 'link' => array(
 		)
-		, 'hide' => array('id_user')
+		, 'hide' => array('id_user','type_element')
 		, 'type' => array()
 		, 'liste' => array(
 			'titre' => $langs->trans('TitleConformiteNormeList')
@@ -253,14 +253,14 @@ function _getListInvitations(&$object)
 			 'date_limite_reponse' => $langs->trans('questionnaire_date_limite_reponse')
 			, 'sent' => $langs->trans('Status')
 			, 'email' => $langs->trans('Email')
-			, 'fk_user' => $langs->trans('User')
+			, 'fk_element' => $langs->trans('Element')
 			, 'action' => $langs->trans('Action').'&nbsp;&nbsp;&nbsp;'.$form->showCheckAddButtons('checkforselect', 1)
 			, 'fk_usergroup' => $langs->trans('Group')
 		)
 		, 'orderBy' => array('cn.rowid' => 'DESC')
 		, 'eval' => array(
 			'date_limite_reponse' => '_getDateFr("@date_limite_reponse@")'
-			, 'fk_user' => '_getNomUrl(@fk_user@,Externe)'
+			, 'fk_element' => '_getNomUrl(@fk_element@,Externe,@type_element@)'
 			, 'sent' => '_libStatut(@sent@)'
 			, 'action' => '_actionLink(@id_user@)'
 			, 'fk_usergroup' => '_getNomUrlGrp(@fk_usergroup@)'
@@ -314,15 +314,15 @@ function _getUserGroups()
 	return $TRes;
 }
 
-function _getNomUrl($fk_user, $email)
+function _getNomUrl($fk_element, $email,$type_element)
 {
 
 	global $db;
-
-	$u = new User($db);
-	$u->fetch($fk_user);
-	if (!empty($fk_user))
-		$res = $u->getNomUrl(1);
+	$type_element= ucfirst($type_element);
+	$u = new $type_element($db);
+	$u->fetch($fk_element);
+	if (!empty($fk_element) && method_exists($u, 'getNomUrl'))
+		$res = $u->getNomUrl(1);	
 	else
 		$res = $email;
 	return $res;

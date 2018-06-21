@@ -441,7 +441,7 @@ class modquestionnaire extends DolibarrModules
 		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'quest_choice as choice on (choice.rowid=ans.fk_choix)';
 		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'quest_choice as colonne on (colonne.rowid=ans.fk_choix_col)';
 		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'quest_invitation_user as inv_user on (ans.fk_invitation_user=inv_user.rowid)';
- 		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'user as user on (user.rowid=inv_user.fk_user)';
+ 		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'user as user on (user.rowid=inv_user.fk_element AND inv_user.type_element="user")';
 		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'usergroup_user as grpusr on (grpusr.fk_user=user.rowid)';
 		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'usergroup as grp on (grp.rowid=grpusr.fk_usergroup)';
 		 

@@ -207,6 +207,7 @@ class InvitationUser extends SeedObject
 
 	public $table_element = 'quest_invitation_user';
 	public $element = 'invitation_user';
+	public $fk_element;
 
 	/**
 	 * Draft status
@@ -366,7 +367,7 @@ class InvitationUser extends SeedObject
 				{
 					foreach ($group_users as &$usr)
 					{
-						if (in_array($usr->id, $alreadyInvitedFKUsers))
+						if (in_array($usr->id, $alreadyInvitedFKUsers['user']))
 							continue;
 						else
 						{
@@ -375,7 +376,8 @@ class InvitationUser extends SeedObject
 							$invitation_user->date_limite_reponse = $this->date_limite_reponse;
 							$invitation_user->fk_usergroup = $id_grp;
 							$invitation_user->email = $usr->email;
-							$invitation_user->fk_user = $usr->id;
+							$invitation_user->fk_element = $usr->id;
+							$invitation_user->type_element = 'user';
 							$invitation_user->token = bin2hex(openssl_random_pseudo_bytes(16)); // When we'll pass to php7 use random_bytes
 							$invitation_user->save();
 						}
@@ -389,7 +391,7 @@ class InvitationUser extends SeedObject
 		{
 
 			foreach ($users as $id_user)
-				if (!in_array($id_user, $alreadyInvitedFKUsers))
+				if (!in_array($id_user, $alreadyInvitedFKUsers['user']))
 					$all_users[] = $id_user;
 		}
 
@@ -412,7 +414,8 @@ class InvitationUser extends SeedObject
 				$invitation_user->date_limite_reponse = $this->date_limite_reponse;
 				$user->fetch($id_usr);
 				$invitation_user->email = $user->email;
-				$invitation_user->fk_user = $id_usr;
+				$invitation_user->fk_element = $id_usr;
+				$invitation_user->type_element = 'user';
 				$invitation_user->token = bin2hex(openssl_random_pseudo_bytes(16));
 				$invitation_user->save();
 			}
@@ -426,7 +429,7 @@ class InvitationUser extends SeedObject
 				$invitation_user = new InvitationUser($db);
 				$invitation_user->fk_questionnaire = $this->fk_questionnaire;
 				$invitation_user->date_limite_reponse = $this->date_limite_reponse;
-				$invitation_user->fk_user = 0;
+				$invitation_user->fk_element = 0;
 				$invitation_user->email = $email;
 				$invitation_user->token = bin2hex(openssl_random_pseudo_bytes(16));
 				$invitation_user->save();
