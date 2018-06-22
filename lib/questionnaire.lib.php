@@ -1540,19 +1540,13 @@ function draw_question_for_admin(&$q) {
 	
     global $db, $langs;
     
-    dol_include_once('/questionnaire/class/question_link.class.php');
-    $ql = new Questionlink($db);
-    $ret = $ql->loadLink($q->id);
-    
-    $addClass = '';
-    if($ret > 0) $addClass = ' el_linked"';
+  
     
 	if(empty($q->choices)) $q->loadChoices();
 	if(!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale'/*Pas de choix pour ces types là*/) {
 		//#4fa4ff
-		if(empty($q->compulsory_answer))$res = '<tr><td width=3% style="text-align: center;"><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #cccccc; " aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></a></td>';
-		else $res = '<tr class="oddeven"><td width=3% style="text-align: center;"><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #4fa4ff; margin-left: auto;margin-right: auto;" aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></a></td>';
-		$res .= '<td width=93%><div class="element'.$addClass.'" type="question" id="question'.$q->id.'"  style="cursor: pointer;" onclick="editQuestion('.$q->id.')">';
+		$res = drawMandatory($q);
+		
 		$res.= '<div class="refid">'.$q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
 		
 		switch($q->type) {
@@ -1602,8 +1596,8 @@ function draw_question_for_admin(&$q) {
 				break;
 				
 		}
-		$res .= '</div></td><td width="3%"><a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteQuestion')).'</a>&nbsp;<i   class="fa fa-th"></i>';
-		$res.= '</td></tr>';
+		$res .= '</div>';
+		$res.= draw_action_element($q);
 		$res.=draw_add_element_line();
 	}
 	
@@ -1611,8 +1605,52 @@ function draw_question_for_admin(&$q) {
 }
 
 function draw_add_element_line(){
+	global $langs;
+	$res = '<tr  ><td colspan=3><div class="add-element-wrap close"><span class="bt-close-element" ><i class="fa fa-close" aria-hidden="true"></i></span><span class="bt-add-element" ><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;  Ajouter un élément&nbsp;</span>'
+		. '<div class="add-element">'
+		. '<span class="elements" type="question" onClick="showQuestion();"><span class="qt-icon"><i class="fa fa-quora" aria-hidden="true"></i></span><span class="qt-label">Question</span></span>'
+		. '<span class="elements" type="saut-de-page"><span class="qt-icon"><i class="fa fa-plus" aria-hidden="true"></i></span><span class="qt-label">Saut de pages</span></span>'
+		. '<span class="elements" type="titre"><span class="qt-icon">T</span><span class="qt-label">Titre</span></span>'
+		. '<span class="elements" type="separateur"><span class="qt-icon">/</span><span class="qt-label">Séparateur</span></span>'
+		. '<span class="elements" type="paragraphe"><span class="qt-icon"><i class="fa fa-paragraph" aria-hidden="true"></i></span><span class="qt-label">Paragraphe</span></span>'
+
+		. '<span class="questions" type="string"><span class="qt-icon"><i class="fa fa-font" aria-hidden="true"></i></span><span class="qt-label">'. $langs->trans('questionnaireTypeString').' </span></span>'
+		. '<span class="questions" type="textarea"><span class="qt-icon"><i class="fa fa-font" aria-hidden="true"></i>...</span><span class="qt-label">'.$langs->trans('questionnaireTypeTextArea').' </span></span>'
+		. '<span class="questions" type="select"><span class="qt-icon"><i class="fa fa-list" aria-hidden="true"></i></span><span class="qt-label">'. $langs->trans('questionnaireTypeSelect').' </span></span>'
+		. '<span class="questions" type="listradio"><span class="qt-icon"><i class="fa fa-dot-circle-o" aria-hidden="true"></i></span><span class="qt-label">'. $langs->trans('questionnaireTypeRadio').' </span></span>'
+		. '<span class="questions" type="listcheckbox"><span class="qt-icon"><i class="fa fa-check-square-o" aria-hidden="true"></i></span><span class="qt-label">'. $langs->trans('questionnaireTypeCheckbox').' </span></span>'
 	
-	$res = '<tr  ><td colspan=3><div class="add-element-wrap close"><span class="bt-close-element" ><i class="fa fa-close" aria-hidden="true"></i></span><span class="bt-add-element" ><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;  Ajouter un élément&nbsp;</span><div class="add-element">srteststests</div></div></td></tr>';
+		
+		. '<span class="questions" type="grilleradio"><span class="qt-icon">G<i class="fa fa-dot-circle-o" aria-hidden="true"></i></span><span class="qt-label">'. $langs->trans('questionnaireTypeGrilleRadio').' </span></span>'
+		. '<span class="questions" type="grillecheckbox"><span class="qt-icon">G<i class="fa fa-check-square-o" aria-hidden="true"></i></span><span class="qt-label">'. $langs->trans('questionnaireTypeGrilleCheckbox').' </span></span>'
+		. '<span class="questions" type="grillestring"><span class="qt-icon">G<i class="fa fa-font" aria-hidden="true"></i></span><span class="qt-label">'. $langs->trans('questionnaireTypeGrilleString').'</span> </span>'
+		. '<span class="questions" type="date"><span class="qt-icon"><i class="fa fa-calendar" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeDate').' </span></span>'
+		. '<span class="questions" type="hour"><span class="qt-icon"><i class="fa fa-clock-o" aria-hidden="true"></i></span><span class="qt-label">'. $langs->trans('questionnaireTypeHour').' </span></span>'
+		. '<span class="questions" type="linearscale"><span class="qt-icon"><i class="fa fa-sliders" aria-hidden="true"></i></span><span class="qt-label">'. $langs->trans('questionnaireTypeLinearScale').'</span> </span>'
+
+		. '</div>'
+		. '</div></td></tr>';
 	
 	return $res;
+}	
+
+function drawMandatory($q){
+	global $db;
+	  dol_include_once('/questionnaire/class/question_link.class.php');
+		$ql = new Questionlink($db);
+		$ret = $ql->loadLink($q->id);
+
+		$addClass = '';
+		if($ret > 0) $addClass = ' el_linked"';
+		if(empty($q->compulsory_answer))$res = '<tr><td width=3% style="text-align: center;"><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #cccccc; " aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></a></td>';
+		else $res = '<tr class="oddeven"><td width=3% style="text-align: center;"><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #4fa4ff; margin-left: auto;margin-right: auto;" aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></a></td>';
+		$res .= '<td width=93%><div class="element'.$addClass.'" type="question" id="question'.$q->id.'"  style="cursor: pointer;" onclick="editQuestion('.$q->id.')">';
+		return $res;
+}
+
+function draw_action_element($q){
+	global $langs;
+		$res= '</td><td width="3%"><a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteQuestion')).'</a>&nbsp;<i   class="fa fa-th"></i>';
+		$res.= '</td></tr>';
+		return $res;
 }

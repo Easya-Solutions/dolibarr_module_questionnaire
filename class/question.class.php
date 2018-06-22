@@ -29,6 +29,7 @@ class Question extends SeedObject {
 				,'compulsory_answer'=>array('type'=>'integer') // Rép. obligatoire ou non
 				,'originid'=>array('type'=>'integer')
 				,'origin'=>array('type'=>'string')
+				,'rang'=>array('type'=>'integer')
 		);
 		
 		$this->TTypes = array(

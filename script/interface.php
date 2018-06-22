@@ -36,9 +36,13 @@ function _get($case, $obj=null) {
 			if(empty($obj)) {
 				$obj = new Question($db);
 				$obj->load($fk_question);
+				print json_encode(draw_question($obj));
+				break;
+			}else {
+				print json_encode(drawMandatory($obj).draw_question($obj).draw_action_element($obj).draw_add_element_line());
+				break;
 			}
-			print json_encode(draw_question($obj));
-			break;
+			
 		
 		case 'new_choice':
 			print json_encode(draw_choice($obj));

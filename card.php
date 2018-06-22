@@ -419,8 +419,8 @@ if(empty($action) || $action === 'view' || $action === 'validate' || $action ===
 	if(empty($object->fk_statut)) {
 		
 		$q = new Question($db);
-		$content .= '<div id="addQuestion" class="center"><br /><br />'.$form->selectarray('select_choice', $q->TTypes);
-		$content .= '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button><br /><br /></div>';
+		//$content .= '<div id="addQuestion" class="center"><br /><br />'.$form->selectarray('select_choice', $q->TTypes);
+		//$content .= '<button class="butAction" id="butAddQuestion" name="butAddQuestion">Ajouter une question</button><br /><br /></div>';
 		
 	}
 	$parameters = array('content'=>$content);
@@ -572,7 +572,10 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 	
 				}).done(function(res) {
 	
-					if(type_object == 'question')$div.closest('tr').remove();
+					if(type_object == 'question'){
+						$div.closest('tr').next('tr').remove();//delete add element
+						$div.closest('tr').remove();
+					}
 					$div.remove();
 					setQuestionDivCSS();
 	
@@ -916,11 +919,44 @@ if($action === 'apercu' || $action === 'answer') {
 			$(this).parent().find('.add-element').slideUp();
 			$(this).parent().removeClass('open');
 			$(this).parent().addClass('close');
+			$(".elements").show();
+			$(".questions").hide();
 			
 			
 		});
+		//New question
+		$('.questions').on('click', function(e){
+			var type = $(this).attr('type');
+			var elem = $(this);
+				$.ajax({
+					dataType:'json'
+					,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+							,data:{
+									fk_questionnaire:<?php echo (int)$object->id ?>
+									,type_question:type
+									,put:"add-question"
+								}
+	
+				}).done(function(res) {
+	
+					elem.closest('tr').after(res);
+					
+					$('.bt-close-element').parent().find('.add-element').slideUp();
+					$('.bt-close-element').parent().removeClass('open');
+					$('.bt-close-element').parent().addClass('close');
+					$(".elements").show();
+					$(".questions").hide();
+					
+					
+					setQuestionDivCSS();
+	
+				});
+				
+				
 		
+		});
 		
+		$(".questions").hide();
 
 	});
 	
@@ -941,11 +977,9 @@ if($action === 'apercu' || $action === 'answer') {
 };
 
 
-function showElement(){
-	
-	
-	
-	
+function showQuestion(){
+	$(".elements").hide();
+	$(".questions").show();
 }
 </script>
 
