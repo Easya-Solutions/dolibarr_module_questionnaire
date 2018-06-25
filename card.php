@@ -905,7 +905,7 @@ if($action === 'apercu' || $action === 'answer') {
 			});
 		});
 		
-		$('.bt-add-element').on('click', function(e){
+		$('body').on('click','.bt-add-element', function(e){
 			
 			$(this).parent().find('.add-element').slideDown();
 			$(this).parent().removeClass('close');
@@ -914,7 +914,7 @@ if($action === 'apercu' || $action === 'answer') {
 			
 		});
 		
-		$('.bt-close-element').on('click', function(e){
+		$('body').on('click','.bt-close-element', function(e){
 			
 			$(this).parent().find('.add-element').slideUp();
 			$(this).parent().removeClass('open');
@@ -925,7 +925,7 @@ if($action === 'apercu' || $action === 'answer') {
 			
 		});
 		//New question
-		$('.questions').on('click', function(e){
+		$('body').on('click','.questions', function(e){
 			var type = $(this).attr('type');
 			var elem = $(this);
 				$.ajax({

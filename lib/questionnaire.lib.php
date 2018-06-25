@@ -1654,3 +1654,60 @@ function draw_action_element($q){
 		$res.= '</td></tr>';
 		return $res;
 }
+
+function add_js_element(){
+	return '<script>'
+		. '$(".bt-add-element").on("click", function(e){
+			
+			$(this).parent().find(".add-element").slideDown();
+			$(this).parent().removeClass("close");
+			$(this).parent().addClass("open");
+			
+			
+		});
+		
+		$(".bt-close-element").on("click", function(e){
+			
+			$(this).parent().find(".add-element").slideUp();
+			$(this).parent().removeClass("open");
+			$(this).parent().addClass("close");
+			$(".elements").show();
+			$(".questions").hide();
+			
+			
+		});
+		//New question
+		$(".questions").on("click", function(e){
+			var type = $(this).attr("type");
+			var elem = $(this);
+				$.ajax({
+					dataType:"json"
+					,url:"'. dol_buildpath("/questionnaire/script/interface.php",1) .'"
+							,data:{
+									fk_questionnaire:'.  (int)$object->id .'
+									,type_question:type
+									,put:"add-question"
+								}
+	
+				}).done(function(res) {
+	
+					elem.closest("tr").after(res);
+					
+					$(".bt-close-element").parent().find(".add-element").slideUp();
+					$(".bt-close-element").parent().removeClass("open");
+					$(".bt-close-element").parent().addClass("close");
+					$(".elements").show();
+					$(".questions").hide();
+					
+					
+					setQuestionDivCSS();
+	
+				});
+				
+				
+		
+		});
+		
+		$(".questions").hide();'
+		. '</script>';
+}
