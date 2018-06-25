@@ -83,6 +83,10 @@ questionnaireTypeGrilleString=Grille de chaînes
 questionnaireTypeDate=Date
 questionnaireTypeHour=Heure
 questionnaireTypeLinearScale=Echelle linéaire
+questionnaireTypePage=Saut de page
+questionnaireTypeTitle=Titre
+questionnaireTypeSeparator=Séparateur
+questionnaireTypeParagraph=Paragraphe
 
 # form confirm
 ConfirmValidateQuestionnaire=Êtes-vous sûr de vouloir valider ce questionnaire sous la référence <STRONG>%s</STRONG> ?

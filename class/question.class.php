@@ -44,7 +44,13 @@ class Question extends SeedObject {
 				,'date' => $langs->trans('questionnaireTypeDate')
 				,'hour' => $langs->trans('questionnaireTypeHour')
 				,'linearscale' => $langs->trans('questionnaireTypeLinearScale')
+				,'page' => $langs->trans('questionnaireTypePage')
+				,'title' => $langs->trans('questionnaireTypeTitle')
+				,'separator' => $langs->trans('questionnaireTypeSeparator')
+				,'paragraph' => $langs->trans('questionnaireTypeParagraph')
 		);
+		
+		
 		
 		$this->init();
 		

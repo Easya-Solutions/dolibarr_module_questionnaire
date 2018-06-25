@@ -10,13 +10,15 @@ and open the template in the editor.
 
 span.elements, span.questions{
     display:inline-block;
-    width: 20%;
+    width: 18%;
     text-align: center;
     cursor: pointer;
     border-radius:5px 5px 5px 5px; 
+    
 }
 span.questions{
     width:15%;
+     padding:5px;
 }
 span.elements:hover,div.add-element-wrap.open .bt-close-element:hover, span.questions:hover{
     background-color: #4FA4FF;
@@ -26,9 +28,7 @@ span.qt-label, span.qt-icon{
     display:block;
     
 }
-span.questions{
-    padding:5px;
-}
+
  span.qt-icon{
       
       font:normal normal normal 14px/1 FontAwesome;
@@ -103,4 +103,8 @@ div.add-element-wrap.open .bt-close-element{
 }
 div.add-element-wrap.close .bt-add-element:hover{
     background-color: #4FA4FF;
+}
+
+span.elements{
+    padding:5px;
 }

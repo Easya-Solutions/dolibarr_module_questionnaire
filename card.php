@@ -408,6 +408,7 @@ if(empty($action) || $action === 'view' || $action === 'validate' || $action ===
 			if(!empty($object->fk_statut)){
 				$content .=draw_question_for_user($q);
 			}else{
+				
 				$content .=draw_question_for_admin($q);
 			}
 		}
@@ -925,7 +926,7 @@ if($action === 'apercu' || $action === 'answer') {
 			
 		});
 		//New question
-		$('body').on('click','.questions', function(e){
+		$('body').on('click','.question*', function(e){
 			var type = $(this).attr('type');
 			var elem = $(this);
 			var rang= $(this).closest('tr').prev().attr('rang');

@@ -38,10 +38,14 @@ function _get($case, $obj=null) {
 			if(empty($obj)) {
 				$obj = new Question($db);
 				$obj->load($fk_question);
-				print json_encode(draw_question($obj));
+				
+				if($obj->type == 'separator' ||  $obj->type == 'page')print json_encode(draw_question_for_admin($obj));
+				else print json_encode(draw_question($obj));
+				
 				break;
 			}else {
-				print json_encode(drawMandatory($obj,0).draw_question($obj).draw_action_element($obj).draw_add_element_line());
+				if($obj->type == 'separator' ||  $obj->type == 'page')print json_encode(draw_question_for_admin($obj));
+				else print json_encode(drawMandatory($obj,0).draw_question($obj).draw_action_element($obj).draw_add_element_line());
 				break;
 			}
 			
@@ -137,6 +141,7 @@ function add_question($fk_questionnaire, $type_question, $rang=0) {
 	$q->fk_questionnaire = $fk_questionnaire;
 	$q->type = $type_question;
 	$q->rang = $rang;
+	if($q->type =='page' || $q->type=='separator')$q->label=$q->TTypes[$q->type];
 	$q->incrementAllRank();
 	$q->save();
 	
