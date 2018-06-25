@@ -811,7 +811,6 @@ if($action === 'apercu' || $action === 'answer') {
 	function setCompulsory(id){
 		
 		$compulsory = $("#compulsory"+id);
-		
 		$.ajax({
 				dataType:'json'
 				,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
@@ -842,6 +841,7 @@ if($action === 'apercu' || $action === 'answer') {
 
 			}).done(function(res) {
 				//$div_origin.closest('tr').next('tr').remove();//delete add element
+			
 				$div_origin.after(res);
 				$div_origin.remove();
 				setQuestionDivCSS();
@@ -928,12 +928,17 @@ if($action === 'apercu' || $action === 'answer') {
 		$('body').on('click','.questions', function(e){
 			var type = $(this).attr('type');
 			var elem = $(this);
+			var rang= $(this).closest('tr').prev().attr('rang');
+			if(rang == undefined) rang=0;
+			else rang = parseInt(rang)+1;
+			
 				$.ajax({
 					dataType:'json'
 					,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
 							,data:{
 									fk_questionnaire:<?php echo (int)$object->id ?>
 									,type_question:type
+									,rang: rang
 									,put:"add-question"
 								}
 	
@@ -952,6 +957,22 @@ if($action === 'apercu' || $action === 'answer') {
 	
 				});
 				
+				$to_hide = $(".edit");
+		$.ajax({
+				dataType:'json'
+				,url:"<?php echo dol_buildpath('/questionnaire/script/interface.php',1) ?>"
+						,data:{
+								fk_question:$to_hide.attr('id')
+								,get:"back_to_question"
+							}
+
+			}).done(function(res) {
+				$to_hide.closest('tr').next('tr').remove();//delete add element
+				$to_hide.closest('tr').after(res);
+				$to_hide.closest('tr').remove();
+				
+				setQuestionDivCSS();
+			});
 				
 		
 		});

@@ -141,7 +141,7 @@ class Question extends SeedObject {
 		if(!empty($this->choices)) {
 			foreach($this->choices as &$choice) $choice->delete($user);
 		}
-		
+		$this->decrementAllRank();
 		$this->deleteLinkedAnswers($user);
 		
 		return parent::deleteCommon($user);
@@ -175,6 +175,19 @@ class Question extends SeedObject {
 		if(!empty($this->answers)) {
 			foreach($this->answers as &$answer) $answer->delete($user);
 		}
+	}
+	
+	function incrementAllRank(){
+		global $db;
+		$sql = "UPDATE ".MAIN_DB_PREFIX.$this->table_element." SET rang = (rang+1) WHERE fk_questionnaire = $this->fk_questionnaire AND rang >= $this->rang";
+		$db->query($sql);
+		
+	}
+	function decrementAllRank(){
+		global $db;
+		$sql = "UPDATE ".MAIN_DB_PREFIX.$this->table_element." SET rang = (rang-1) WHERE fk_questionnaire = $this->fk_questionnaire AND rang >= $this->rang";
+		$db->query($sql);
+		
 	}
 	
 }

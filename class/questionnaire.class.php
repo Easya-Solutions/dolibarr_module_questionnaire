@@ -237,7 +237,7 @@ class Questionnaire extends SeedObject
 		$sql = 'SELECT rowid
 				FROM '.MAIN_DB_PREFIX.$q->table_element.'
 				WHERE fk_questionnaire = '.$this->id.
-				' ORDER BY rang';
+				' ORDER BY rang, rowid';
 		$resql = $db->query($sql);
 		if(!empty($resql) && $db->num_rows($resql) > 0) {
 			$this->questions = array();

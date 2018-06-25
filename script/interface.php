@@ -23,6 +23,8 @@ $value = GETPOST('value');
 $origin = GETPOST('origin');
 $links = GETPOST('links');
 $group = GETPOST('group');
+$rang = GETPOST('rang');
+
 $form = new Form($db);
 _get($get);
 _put($put);
@@ -39,7 +41,7 @@ function _get($case, $obj=null) {
 				print json_encode(draw_question($obj));
 				break;
 			}else {
-				print json_encode(drawMandatory($obj).draw_question($obj).draw_action_element($obj).draw_add_element_line());
+				print json_encode(drawMandatory($obj,0).draw_question($obj).draw_action_element($obj).draw_add_element_line());
 				break;
 			}
 			
@@ -75,12 +77,13 @@ function _get($case, $obj=null) {
 
 function _put($case) {
 	
-    global $db, $fk_questionnaire, $type_object, $fk_object, $field, $value, $fk_question, $type_choice, $type_question, $fk_choix, $links, $group;
+    global $db, $fk_questionnaire, $type_object, $fk_object, $field, $value, $fk_question, $type_choice, $type_question, $fk_choix, $links, $group, $rang;
 	
 	switch($case) {
 		
 		case 'add-question':
-			$q = add_question($fk_questionnaire, $type_question);
+			
+			$q = add_question($fk_questionnaire, $type_question, $rang);
 			if($type_question === 'linearscale') {
 				$q->choices = array();
 				$q->choices[] = add_choice($q->id, 'from');
@@ -126,13 +129,15 @@ function _put($case) {
 	
 }
 
-function add_question($fk_questionnaire, $type_question) {
+function add_question($fk_questionnaire, $type_question, $rang=0) {
 	
 	global $db;
 	
 	$q = new Question($db);
 	$q->fk_questionnaire = $fk_questionnaire;
 	$q->type = $type_question;
+	$q->rang = $rang;
+	$q->incrementAllRank();
 	$q->save();
 	
 	return $q;

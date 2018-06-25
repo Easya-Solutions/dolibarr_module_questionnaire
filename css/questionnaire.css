@@ -1,0 +1,106 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 21 juin 2018, 14:57:33
+    Author     : quentin
+*/
+
+span.elements, span.questions{
+    display:inline-block;
+    width: 20%;
+    text-align: center;
+    cursor: pointer;
+    border-radius:5px 5px 5px 5px; 
+}
+span.questions{
+    width:15%;
+}
+span.elements:hover,div.add-element-wrap.open .bt-close-element:hover, span.questions:hover{
+    background-color: #4FA4FF;
+}
+
+span.qt-label, span.qt-icon{
+    display:block;
+    
+}
+span.questions{
+    padding:5px;
+}
+ span.qt-icon{
+      
+      font:normal normal normal 14px/1 FontAwesome;
+      font-size:2em;
+      font-weight: bold;
+ }
+div.add-element-wrap{
+    height: 3px;
+    position: relative;
+     border-top: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    text-align: center;
+    border-radius:5px 5px 5px 5px; 
+}
+
+
+div.add-element-wrap.close:hover, div.add-element-wrap.open{
+    background-color: #6c6c6d;
+    min-height: 3px;
+    text-align: center;
+}
+div.add-element-wrap.open{
+    height: auto;
+ }
+
+div.add-element{
+    color: #fff;
+    background-color: #6c6c6d;
+     border-radius:5px 5px 5px 5px; 
+    text-align: left;
+    display: block;
+    padding:1em;
+}
+div.add-element-wrap.close .bt-add-element{
+}
+
+div.add-element-wrap.close div.add-element, div.add-element-wrap.close .bt-close-element{
+    display: none;
+}
+
+
+div.add-element-wrap.close:hover .bt-add-element, div.add-element-wrap.open .bt-close-element{
+    display:inline;
+    position: absolute;
+    margin-top:-12px;
+    background-color: #6c6c6d;
+    padding: 5px;
+    color:#fff;
+    -moz-border-radius:5px 5px 5px 5px;  
+    border-radius:5px 5px 5px 5px; 
+    cursor: pointer;
+    width: 150px;
+    margin-left:-75px;
+    text-align: center;
+}
+
+div.add-element-wrap.open .bt-close-element{
+    width: auto;
+    margin-left:-1em;
+    padding: 5px 10px;
+    
+}
+
+.bt-add-element{
+    
+    display:none;
+}
+
+
+.line{
+    display:block;
+}
+div.add-element-wrap.close .bt-add-element:hover{
+    background-color: #4FA4FF;
+}

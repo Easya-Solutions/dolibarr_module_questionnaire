@@ -1634,17 +1634,20 @@ function draw_add_element_line(){
 	return $res;
 }	
 
-function drawMandatory($q){
+function drawMandatory($q,$edit=1){
 	global $db;
 	  dol_include_once('/questionnaire/class/question_link.class.php');
 		$ql = new Questionlink($db);
 		$ret = $ql->loadLink($q->id);
+		
+		if(!empty($edit)) $function = 'onclick="editQuestion('.$q->id.')"';
+		else $function ="";
 
 		$addClass = '';
 		if($ret > 0) $addClass = ' el_linked"';
-		if(empty($q->compulsory_answer))$res = '<tr><td width=3% style="text-align: center;"><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #cccccc; " aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></a></td>';
-		else $res = '<tr class="oddeven"><td width=3% style="text-align: center;"><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #4fa4ff; margin-left: auto;margin-right: auto;" aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></a></td>';
-		$res .= '<td width=93%><div class="element'.$addClass.'" type="question" id="question'.$q->id.'"  style="cursor: pointer;" onclick="editQuestion('.$q->id.')">';
+		if(empty($q->compulsory_answer))$res = '<tr rang="'.$q->rang.'"><td width=3% style="text-align: center;"><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #cccccc; " aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></a></td>';
+		else $res = '<tr class="oddeven"  rang="'.$q->rang.'"><td width=3% style="text-align: center;"><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #4fa4ff; margin-left: auto;margin-right: auto;" aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></a></td>';
+		$res .= '<td width=93%><div class="element'.$addClass.'" type="question" id="question'.$q->id.'"  style="cursor: pointer;" '.$function.'>';
 		return $res;
 }
 
@@ -1655,7 +1658,7 @@ function draw_action_element($q){
 		return $res;
 }
 
-function add_js_element(){
+/*function add_js_element(){
 	return '<script>'
 		. '$(".bt-add-element").on("click", function(e){
 			
@@ -1710,4 +1713,4 @@ function add_js_element(){
 		
 		$(".questions").hide();'
 		. '</script>';
-}
+}*/
