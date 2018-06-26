@@ -934,7 +934,7 @@ if($action === 'apercu' || $action === 'answer') {
 			
 		});
 		//New question
-		$('body').on('click','.question*', function(e){
+		$('body').on('click','span[class*="questio"]', function(e){
 			var type = $(this).attr('type');
 			var elem = $(this);
 			var rang= $(this).closest('tr').prev().attr('rang');
