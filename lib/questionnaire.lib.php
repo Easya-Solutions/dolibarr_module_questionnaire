@@ -390,7 +390,7 @@ function draw_question_for_user(&$q)
 				break;
 		}
 
-		$res .= '<br><br></div>';
+		$res .= '</div>';
 	}
 	return $res;
 }
@@ -1826,12 +1826,12 @@ function draw_pagination($page, $object)
 	{
 		print '<div class="paginationquest">';
 		
-
+			list($myNb,$totalNb)=$object->getNbQuestions();
+			print '<span id="sumup">'.$myNb.'/'.$totalNb.'</span>';
 
 		if ($object->nbpages < 5)
 		{
-			list($myNb,$totalNb)=$object->getNbQuestions();
-			print '<span id="sumup">'.$myNb.'/'.$totalNb.'</span>';
+		
 			if ($action != 'answer')
 			{
 				if ($page > 1)
