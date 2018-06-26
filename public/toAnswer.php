@@ -56,6 +56,10 @@ $origin = GETPOST('origin');
 $originid = GETPOST('originid');
 $fk_user_invitation = GETPOST('fk_userinvit');
 $token = GETPOST('token');
+$page=GETPOST('page');
+$gotopage = GETPOST('gotopage');
+if(empty($page))$page=1;
+
 
 $invitation_user = new InvitationUser($db);
 $res=$invitation_user->loadBy(array( 'rowid' => $fk_invitation, 'token' => "'$token'"));
@@ -84,7 +88,7 @@ $hookmanager->initHooks(array('questionnairecard', 'globalcard'));
 if ($action == 'save_answer')
 {
 	// Suppression anciennes réponses
-	$object->deleteAllAnswersUser($fk_invitation);
+	$object->deleteAllAnswersUser($fk_invitation,$page);
 
 	$TAnswer = GETPOST('TAnswer');
 
@@ -176,7 +180,7 @@ if ($action == 'save_answer')
 		$invitation_user->fk_statut=2;
 		$invitation_user->save();
 
-		header('Location: '.dol_buildpath('/questionnaire/public/toAnswer.php', 1).'?id='.$object->id.'&action=answer&fk_invitation='.$fk_invitation."&token=".$token);
+		header('Location: '.dol_buildpath('/questionnaire/public/toAnswer.php', 1).'?id='.$object->id.'&action=answer&fk_invitation='.$fk_invitation."&token=".$token.'&page='.$gotopage);
 	}
 	else
 	{ // Validation finale
@@ -274,7 +278,7 @@ if ($action !== 'create')
 	if ($action === 'answer')
 		$questionnaire_status_forced_key = 'questionnaireStatusValidatedShort';
 
-		if(empty($object->questions))$object->loadQuestions();
+		if(empty($object->questions))$object->loadQuestions($page);
 
 	if (!empty($object->questions) && $action === 'answer')
 	{
@@ -386,10 +390,13 @@ elseif ($action === 'answer')
 	print '<form name="answerQuestionnaire" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.$id.'">';
 	print '<input type="HIDDEN" name="fk_invitation" value="'.$fk_invitation.'"/>';
 	print '<input type="HIDDEN" name="token" value="'.$token.'"/>';
+	print '<input type="HIDDEN" name="page" value="'.$page.'"/>';
+	print '<input type="HIDDEN" name="gotopage" value="'.$page.'"/>';
 	print '<input type="HIDDEN" name="action" value="save_answer"/>';
 	if (empty($object->questions))
-		$object->loadQuestions();
+		$object->loadQuestions($page);
 	print '<div id="allQuestions">';
+	draw_pagination($page, $object);
 	if (!empty($object->questions))
 	{
 		foreach ($object->questions as &$q)
@@ -397,7 +404,7 @@ elseif ($action === 'answer')
 			if (empty($q->answers))
 				$q->loadAnswers($fk_invitation);
 			print draw_question_for_user($q);
-			//print '<br /><b><hr style="height:1px;border:none;color:#333;background-color:#333;" /></b><br />';
+			print '<br /><br />';
 		}
 	}
 	print '</div>';
@@ -735,6 +742,13 @@ if($action === 'apercu' || $action === 'answer') {
 
             });
         });
+		
+		$(".paginationquest a").on('click', function(){
+                       $("input[name='gotopage']").val($(this).attr('page'));
+               
+                       $("input[name='subSave']").click();
+       
+               });
 
     });
 

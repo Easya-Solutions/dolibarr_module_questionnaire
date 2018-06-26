@@ -167,9 +167,11 @@ function draw_question(&$q, $fk_statut_questionnaire = 0)
 	//$res = '<div style="background-color:'.$bgcol_questionnaire[$bg_color].';" class="element" type="question" id="question'.$q->id.'">';
 	$res = '<div class="element edit" type="question" id="question'.$q->id.' ">';
 	$res .= '<div class="refid">Question : '.$q->TTypes[$q->type].'<br /></div>';
-	if (empty($fk_statut_questionnaire) )
-		if( $q->type =='paragraph')$res.='<textarea size="100" placeholder="Question" type="text" name="label" rows="7"  cols="50" class="field" id="label" name="label" >'.$q->label.'</textarea>';
-		else $res .= '<input size="100" placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
+	if (empty($fk_statut_questionnaire))
+		if ($q->type == 'paragraph')
+			$res .= '<textarea size="100" placeholder="Question" type="text" name="label" rows="7"  cols="50" class="field" id="label" name="label" >'.$q->label.'</textarea>';
+		else
+			$res .= '<input size="100" placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
 	else
 		$res .= '<STRONG>'.$q->label.'</STRONG>&nbsp;';
 	/* if(empty($fk_statut_questionnaire)) {
@@ -186,7 +188,7 @@ function draw_question(&$q, $fk_statut_questionnaire = 0)
 
 	// Pas de choix pour les types string et textarea
 
-	if ($q->type !== 'string' && $q->type !== 'textarea' && $q->type !== 'date' && $q->type !== 'hour' && $q->type !== 'linearscale' && $q->type !=='page'&& $q->type !=='separator'&& $q->type !=='paragraph' && $q->type !=='title')
+	if ($q->type !== 'string' && $q->type !== 'textarea' && $q->type !== 'date' && $q->type !== 'hour' && $q->type !== 'linearscale' && $q->type !== 'page' && $q->type !== 'separator' && $q->type !== 'paragraph' && $q->type !== 'title')
 	{
 		// Liste des choix (lignes)
 		$style_div_lines = ' width: 600px; ';
@@ -324,16 +326,20 @@ function draw_question_for_user(&$q)
 
 	if (empty($q->choices))
 		$q->loadChoices();
-	
-	if($q->type === 'separator' )$res.='<hr>';
-	
-	
-	if (!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale'|| $q->type === 'title'|| $q->type === 'paragraph'/* Pas de choix pour ces types là */)
+
+	if ($q->type === 'separator')
+		$res .= '<b><hr style="height:1px;border:none;color:#333;background-color:#333;" /></b>';
+
+
+	if (!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale' || $q->type === 'title' || $q->type === 'paragraph'/* Pas de choix pour ces types là */)
 	{
 		$res = '<div class="element'.$addClass.'" type="question" id="question'.$q->id.'">';
-		if($q->type=='title')$style = 'style="font-size:200%;"';
-		else $style='';
-		if($q->type=='paragraph')$style='style="font-size:120%;white-space: pre-wrap;"';
+		if ($q->type == 'title')
+			$style = 'style="font-size:200%;"';
+		else
+			$style = '';
+		if ($q->type == 'paragraph')
+			$style = 'style="font-size:120%;white-space: pre-wrap;"';
 		$res .= '<div class="refid" '.$style.'>'.$q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
 		//$res .= '<div class="refid">'.$q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
 
@@ -1681,14 +1687,17 @@ function draw_question_for_admin(&$q)
 
 	if (empty($q->choices))
 		$q->loadChoices();
-	if (!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale' || $q->type=='separator'||$q->type=='page'||$q->type=='paragraph'||$q->type=='title'/* Pas de choix pour ces types là */)
+	if (!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale' || $q->type == 'separator' || $q->type == 'page' || $q->type == 'paragraph' || $q->type == 'title'/* Pas de choix pour ces types là */)
 	{
 		//#4fa4ff
 		$res = drawMandatory($q);
-	
-		if($q->type=='title')$style = 'style="font-size:200%;"';
-		else $style='';
-		if($q->type=='paragraph')$style='style="font-size:120%;white-space: pre-wrap;"';
+
+		if ($q->type == 'title')
+			$style = 'style="font-size:200%;"';
+		else
+			$style = '';
+		if ($q->type == 'paragraph')
+			$style = 'style="font-size:120%;white-space: pre-wrap;"';
 		$res .= '<div class="refid" '.$style.'>'.$q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
 
 		switch ($q->type) {
@@ -1736,7 +1745,6 @@ function draw_question_for_admin(&$q)
 			case 'linearscale':
 				$res .= draw_linearscale_for_user($q);
 				break;
-				
 		}
 		$res .= '</div>';
 		$res .= draw_action_element($q);
@@ -1780,7 +1788,7 @@ function drawMandatory($q, $edit = 1)
 	$ql = new Questionlink($db);
 	$ret = $ql->loadLink($q->id);
 
-	if (!empty($edit) && $q->type!='page' && $q->type!='separator')
+	if (!empty($edit) && $q->type != 'page' && $q->type != 'separator')
 		$function = 'onclick="editQuestion('.$q->id.')"';
 	else
 		$function = "";
@@ -1788,12 +1796,15 @@ function drawMandatory($q, $edit = 1)
 	$addClass = '';
 	if ($ret > 0)
 		$addClass = ' el_linked"';
-	if(!($q->type=='separator'||$q->type=='page'||$q->type=='paragraph'||$q->type=='title') && empty($q->compulsory_answer)) $compuls = '<a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #cccccc; " aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></a>';
-	else if (!($q->type=='separator'||$q->type=='page'||$q->type=='paragraph'||$q->type=='title') && !empty($q->compulsory_answer))  $compuls='><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #4fa4ff; margin-left: auto;margin-right: auto;" aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></a>';
-	else $compuls='';
-	
+	if (!($q->type == 'separator' || $q->type == 'page' || $q->type == 'paragraph' || $q->type == 'title') && empty($q->compulsory_answer))
+		$compuls = '<a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #cccccc; " aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></a>';
+	else if (!($q->type == 'separator' || $q->type == 'page' || $q->type == 'paragraph' || $q->type == 'title') && !empty($q->compulsory_answer))
+		$compuls = '><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #4fa4ff; margin-left: auto;margin-right: auto;" aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></a>';
+	else
+		$compuls = '';
+
 	$res = '<tr rang="'.$q->rang.'"><td width=3% style="text-align: center;">'.$compuls.'</td>';
-	
+
 	$res .= '<td width=93%><div class="element'.$addClass.'" type="question" id="question'.$q->id.'"  style="cursor: pointer;" '.$function.'>';
 	return $res;
 }
@@ -1804,6 +1815,93 @@ function draw_action_element($q)
 	$res = '</td><td width="4%"><a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteQuestion')).'</a>&nbsp;<i   class="fa fa-th"></i>';
 	$res .= '</td></tr>';
 	return $res;
+}
+
+function draw_pagination($page, $object)
+{
+	global $action, $mode;
+
+
+	if (!empty($object->nbpages))
+	{
+		print '<div class="paginationquest">';
+
+
+
+		if ($object->nbpages < 5)
+		{
+			if ($action != 'answer')
+			{
+				if ($page > 1)
+					print ' <a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page - 1).$param.'"><i class="fa fa-angle-left" aria-hidden="true"></i></a>';
+				for ($i = 1; $i <= $object->nbpages + 1; $i++)
+				{
+					if ($i == $page)
+						$class = 'class="active"';
+					else
+						$class = "";
+					print'<a '.$class.' href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($i).$param.'">'.$i.'</a>';
+				}
+				if ($page < $object->nbpages + 1)
+					print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page + 1).$param.'"><i class="fa fa-angle-right" aria-hidden="true"></i></a>';
+			}else
+			{
+				if ($page > 1)
+					print ' <a href="#" page='.($page - 1).'><i class="fa fa-angle-left" aria-hidden="true"></i></a>';
+				for ($i = 1; $i <= $object->nbpages + 1; $i++)
+				{
+					if ($i == $page)
+						$class = 'class="active"';
+					else
+						$class = "";
+					print'<a '.$class.' page='.($i).' href="#">'.$i.'</a>';
+				}
+				if ($page < $object->nbpages + 1)
+					print '<a href="#"  page='.($page+1).'><i class="fa fa-angle-right" aria-hidden="true"></i></a>';
+			}
+		}else
+		{
+			/* if($page >1)print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.$param.'&page=1"><i class="fa fa-angle-double-left" aria-hidden="true"></i></a>'
+			  . '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page-1).$param.'"><i class="fa fa-angle-left" aria-hidden="true"></i></a>'
+			  . '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page-1).$param.'">'.($page-1).'</a>';
+
+			  print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page).$param.'" class="active">'.($page).'</a>';
+
+			  if($page <$object->nbpages+1)print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page+1).$param.'">'.($page+1).'</a>'
+			  . '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page+1).$param.'"><i class="fa fa-angle-right" aria-hidden="true"></i></a>'
+			  . '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($object->nbpages+1).$param.'"><i class="fa fa-angle-double-right" aria-hidden="true"></i></a>'; */
+
+			if ($action == 'answer')
+			{
+				if ($page > 1)
+					print '<a href="#" page=1><i class="fa fa-angle-double-left" aria-hidden="true"></i></a>'
+						.'<a href="#" page='.($page - 1).'><i class="fa fa-angle-left" aria-hidden="true"></i></a>'
+						.'<a href="#" page='.($page - 1).'>'.($page - 1).'</a>';
+
+				print '<a href="#" page='.($page - 1).' class="active">'.($page).'</a>';
+
+				if ($page < $object->nbpages + 1)
+					print '<a href="#" page='.($page + 1).'>'.($page + 1).'</a>'
+						.'<a href="#" page='.($page + 1).'><i class="fa fa-angle-right" aria-hidden="true"></i></a>'
+						.'<a href="#" page='.($object->nbpages + 1).'><i class="fa fa-angle-double-right" aria-hidden="true"></i></a>';
+			}else
+			{
+				if ($page > 1)
+					print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.$param.'&page=1"><i class="fa fa-angle-double-left" aria-hidden="true"></i></a>'
+						.'<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page - 1).$param.'"><i class="fa fa-angle-left" aria-hidden="true"></i></a>'
+						.'<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page - 1).$param.'">'.($page - 1).'</a>';
+
+				print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page).$param.'" class="active">'.($page).'</a>';
+
+				if ($page < $object->nbpages + 1)
+					print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page + 1).$param.'">'.($page + 1).'</a>'
+						.'<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page + 1).$param.'"><i class="fa fa-angle-right" aria-hidden="true"></i></a>'
+						.'<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($object->nbpages + 1).$param.'"><i class="fa fa-angle-double-right" aria-hidden="true"></i></a>';
+			}
+		}
+
+		print '</div>';
+	}
 }
 
 /*function add_js_element(){

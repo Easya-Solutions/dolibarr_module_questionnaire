@@ -22,9 +22,13 @@ $fk_invitation = GETPOST('fk_invitation');
 $title = GETPOST('title');
 $origin = GETPOST('origin');
 $originid = GETPOST('originid');
-
+$page=GETPOST('page');
 $invitation = new InvitationUser($db);
 $res = $invitation->load($fk_invitation);
+$gotopage = GETPOST('gotopage');
+if(empty($page))$page=1;
+
+
 
 if($action === 'answer' && empty($res) || $invitation->date_limite_reponse < strtotime(date('Y-m-d'))) accessforbidden();
 
@@ -96,7 +100,7 @@ if (empty($reshook))
 		case 'save_answer':
 			
 			// Suppression anciennes réponses
-			$object->deleteAllAnswersUser($fk_invitation);
+			$object->deleteAllAnswersUser($fk_invitation, $page);
 			
 			$TAnswer = GETPOST('TAnswer');
 			foreach($_REQUEST as $k=>&$v) {
@@ -175,7 +179,7 @@ if (empty($reshook))
 				$invitation->fk_statut=2;
 				$invitation->save();
 				setEventMessage($langs->trans('questionnaireSaved'));
-				header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=answer&fk_invitation='.$fk_invitation);
+				header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=answer&fk_invitation='.$fk_invitation.'&page='.$gotopage);
 			} else { // Validation finale
 				header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id.'&action=validate_answers&fk_invitation='.$fk_invitation);
 			}
@@ -325,7 +329,8 @@ else
 if ($action !== 'create')
 {
 	$shownav = $show_linkback = ($action === 'answer' ? false : true);
-	$object->loadQuestions();
+	if(!empty($object->fk_statut))$object->loadQuestions($page);
+	else $object->loadQuestions();
 	
 	if($action === 'answer' ) $questionnaire_status_forced_key = 'questionnaireStatusValidatedShort';
 	
@@ -402,7 +407,7 @@ if(empty($action) || $action === 'view' || $action === 'validate' || $action ===
 		$content.=draw_add_element_line();
 	}
 	$content .= '<div id="allQuestions">';
-	
+	if(!empty($object->fk_statut))draw_pagination($page,$object);
 	if(!empty($object->questions)) {
 		foreach($object->questions as &$q){
 			if(!empty($object->fk_statut)){
@@ -440,14 +445,17 @@ if(empty($action) || $action === 'view' || $action === 'validate' || $action ===
 } elseif($action === 'answer') {
 	print '<form name="answerQuestionnaire" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.$id.'">';
 	print '<input type="HIDDEN" name="fk_invitation" value="'.$fk_invitation.'"/>';
+	print '<input type="HIDDEN" name="page" value="'.$page.'"/>';
+	print '<input type="HIDDEN" name="gotopage" value="'.$page.'"/>';
 	print '<input type="HIDDEN" name="action" value="save_answer"/>';
-	if(empty($object->questions)) $object->loadQuestions();
+	if(empty($object->questions)) $object->loadQuestions($page);
 	print '<div id="allQuestions">';
+	draw_pagination($page,$object);
 	if(!empty($object->questions)) {
 		foreach($object->questions as &$q) {
 			if(empty($q->answers)) $q->loadAnswers($fk_invitation);
 			print draw_question_for_user($q).'<br />';
-			print '<br /><b><hr style="height:1px;border:none;color:#333;background-color:#333;" /></b><br />';
+			print '<br /><br />';
 		}
 	}
 	print '</div>';
@@ -979,6 +987,17 @@ if($action === 'apercu' || $action === 'answer') {
 		});
 		
 		$(".questions").hide();
+		
+		
+		
+		$(".paginationquest a").on('click', function(){
+			$("input[name='gotopage']").val($(this).attr('page'));
+		
+			$("input[name='subSave']").click();
+	
+		});
+
+
 
 	});
 	
@@ -1003,6 +1022,8 @@ function showQuestion(){
 	$(".elements").hide();
 	$(".questions").show();
 }
+
+
 </script>
 
 <?php

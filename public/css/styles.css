@@ -5276,5 +5276,44 @@ div.tabsElem a.tab {
 		min-width: auto;
 		font-size: 12px;
 	}
+    
 }
 
+/* Pagination links */
+div.paginationquest {
+	float: right;
+}
+.paginationquest a {
+    display:block;
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+  text-align: right;
+     border: 1px solid #ddd;
+     
+
+}
+.paginationquest a:first-child {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.paginationquest a:last-child {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+/* Style the active/current link */
+.paginationquest a.active {
+    background-color: #4FA4FF;
+    color: white;
+    
+   
+}
+
+/* Add a grey background color on mouse-over */
+.paginationquest a:hover:not(.active) {
+    background-color: #ddd;
+} 

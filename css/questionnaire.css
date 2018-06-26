@@ -14,11 +14,11 @@ span.elements, span.questions{
     text-align: center;
     cursor: pointer;
     border-radius:5px 5px 5px 5px; 
-    
+
 }
 span.questions{
     width:15%;
-     padding:5px;
+    padding:5px;
 }
 span.elements:hover,div.add-element-wrap.open .bt-close-element:hover, span.questions:hover{
     background-color: #4FA4FF;
@@ -26,19 +26,19 @@ span.elements:hover,div.add-element-wrap.open .bt-close-element:hover, span.ques
 
 span.qt-label, span.qt-icon{
     display:block;
-    
+
 }
 
- span.qt-icon{
-      
-      font:normal normal normal 14px/1 FontAwesome;
-      font-size:2em;
-      font-weight: bold;
- }
+span.qt-icon{
+
+    font:normal normal normal 14px/1 FontAwesome;
+    font-size:2em;
+    font-weight: bold;
+}
 div.add-element-wrap{
     height: 3px;
     position: relative;
-     border-top: 2px solid #fff;
+    border-top: 2px solid #fff;
     border-bottom: 2px solid #fff;
     text-align: center;
     border-radius:5px 5px 5px 5px; 
@@ -52,12 +52,12 @@ div.add-element-wrap.close:hover, div.add-element-wrap.open{
 }
 div.add-element-wrap.open{
     height: auto;
- }
+}
 
 div.add-element{
     color: #fff;
     background-color: #6c6c6d;
-     border-radius:5px 5px 5px 5px; 
+    border-radius:5px 5px 5px 5px; 
     text-align: left;
     display: block;
     padding:1em;
@@ -89,11 +89,11 @@ div.add-element-wrap.open .bt-close-element{
     width: auto;
     margin-left:-1em;
     padding: 5px 10px;
-    
+
 }
 
 .bt-add-element{
-    
+
     display:none;
 }
 
@@ -108,3 +108,42 @@ div.add-element-wrap.close .bt-add-element:hover{
 span.elements{
     padding:5px;
 }
+
+/* Pagination links */
+div.paginationquest {
+	float: right;
+}
+.paginationquest a {
+    display:block;
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+  text-align: right;
+     border: 1px solid #ddd;
+     
+
+}
+.paginationquest a:first-child {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.paginationquest a:last-child {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+/* Style the active/current link */
+.paginationquest a.active {
+    background-color: #4FA4FF;
+    color: white;
+    
+   
+}
+
+/* Add a grey background color on mouse-over */
+.paginationquest a:hover:not(.active) {
+    background-color: #ddd;
+} 
