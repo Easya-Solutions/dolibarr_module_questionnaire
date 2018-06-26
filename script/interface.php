@@ -184,9 +184,10 @@ function del_object($type_object, $fk_object) {
 function _getNextQuestions($fk_questionnaire, $fk_question, $fk_choix){
     
     global $db;
-    
+    $q = new Question($db);
+	$q->load($fk_question);
     $sql = 'SELECT t.rowid, t.label FROM '.MAIN_DB_PREFIX.'quest_question as t';
-    $sql.= ' WHERE t.fk_questionnaire = ' . $fk_questionnaire . ' AND t.rowid > '.$fk_question;
+    $sql.= ' WHERE t.fk_questionnaire = ' . $fk_questionnaire . ' AND t.rang > '.$q->rang .' AND t.type NOT LIKE "%separator%" AND t.type NOT LIKE "%page%"';
     $res = $db->query($sql);
     
     $ql = new Questionlink($db);

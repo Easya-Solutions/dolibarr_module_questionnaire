@@ -690,7 +690,7 @@ if((empty($action) || $action === 'view') && empty($object->fk_statut)) {
 
 }
 
-if($action === 'apercu' || $action === 'answer') {
+if($action === 'apercu' || $action === 'answer' || $mode=='view' && !empty($object->fk_statut)) {
     $ql = new Questionlink($db);
     $links = $ql->loadLinks($id);
     ?>

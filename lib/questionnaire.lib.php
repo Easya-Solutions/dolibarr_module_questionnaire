@@ -1820,16 +1820,18 @@ function draw_action_element($q)
 function draw_pagination($page, $object)
 {
 	global $action, $mode;
-
+	
 
 	if (!empty($object->nbpages))
 	{
 		print '<div class="paginationquest">';
-
+		
 
 
 		if ($object->nbpages < 5)
 		{
+			list($myNb,$totalNb)=$object->getNbQuestions();
+			print '<span id="sumup">'.$myNb.'/'.$totalNb.'</span>';
 			if ($action != 'answer')
 			{
 				if ($page > 1)

@@ -551,6 +551,23 @@ class Questionnaire extends SeedObject
 
 		return array($alreadyInvitedFkUsers, $alreadyInvitedEmails);
 	}
+	
+	function getNbQuestions()
+	{
+		global $db;
+		
+		$sql='SELECT COUNT(*) FROM '.MAIN_DB_PREFIX.'quest_question WHERE fk_questionnaire='.$this->id.' AND rang <= '.end($this->questions)->rang.' '
+			. 'AND type NOT LIKE "%page%"  AND type NOT LIKE "%separator%"  AND type NOT LIKE "%paragraph%" AND type NOT LIKE "%title%"';
+		$resql = $db->query($sql);
+		$myNb = $db->fetch_row($resql);
+		
+		$sql='SELECT COUNT(*) FROM '.MAIN_DB_PREFIX.'quest_question WHERE fk_questionnaire='.$this->id
+			. ' AND type NOT LIKE "%page%"  AND type NOT LIKE "%separator%"  AND type NOT LIKE "%paragraph%" AND type NOT LIKE "%title%"';
+		$resql = $db->query($sql);
+		$nbTotal = $db->fetch_row($resql);
+
+		return array($myNb[0], $nbTotal[0]);
+	}
 
 }
 
