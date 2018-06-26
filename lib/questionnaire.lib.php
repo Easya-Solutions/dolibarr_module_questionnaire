@@ -1797,9 +1797,9 @@ function drawMandatory($q, $edit = 1)
 	if ($ret > 0)
 		$addClass = ' el_linked"';
 	if (!($q->type == 'separator' || $q->type == 'page' || $q->type == 'paragraph' || $q->type == 'title') && empty($q->compulsory_answer))
-		$compuls = '<a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #cccccc; " aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></a>';
+		$compuls = '<a href="#question'.$q->id.'"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #cccccc; " aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></a>';
 	else if (!($q->type == 'separator' || $q->type == 'page' || $q->type == 'paragraph' || $q->type == 'title') && !empty($q->compulsory_answer))
-		$compuls = '><a href="#"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #4fa4ff; margin-left: auto;margin-right: auto;" aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></a>';
+		$compuls = '<a href="#question'.$q->id.'"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #4fa4ff; margin-left: auto;margin-right: auto;" aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></a>';
 	else
 		$compuls = '';
 
@@ -1812,7 +1812,7 @@ function drawMandatory($q, $edit = 1)
 function draw_action_element($q)
 {
 	global $langs;
-	$res = '</td><td width="4%"><a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteQuestion')).'</a>&nbsp;<i   class="fa fa-th"></i>';
+	$res = '</td><td width="4%"><a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#question'.$q->id.'" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteQuestion')).'</a>&nbsp;<i   class="fa fa-th"></i>';
 	$res .= '</td></tr>';
 	return $res;
 }
