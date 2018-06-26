@@ -1447,7 +1447,7 @@ function custom_select_date($set_time = '', $prefix = 're', $h = 0, $m = 0, $emp
 					{
 						$retstring .= "
 								showOn: 'button',
-								buttonImage: '".dol_buildpath("/questionnaire/img/object_calendarday.png", 1)."',
+								buttonImage: '".dol_buildpath("/questionnaire/public/img/object_calendarday.png", 1)."',
 								buttonImageOnly: true";
 					}
 					$retstring .= "
