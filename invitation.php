@@ -233,7 +233,7 @@ function _getListInvitations(&$object)
 	}
 
 //if($user->rights->societe->creer) $arrayofmassactions['createbills']=$langs->trans("CreateInvoiceForThisCustomer");
-
+	
 
 	$res = $r->renderArray($db, $TData, array(
 		'limit' => array(
@@ -279,6 +279,7 @@ function _getListInvitations(&$object)
 	$parameters = array('sql' => $sql);
 	$reshook = $hookmanager->executeHooks('printFieldListFooter', $parameters, $object);	// Note that $action and $object may have been modified by hook
 	$res .= $hookmanager->resPrint;
+	
 	$res .= $formcore->end_form();
 	return $res;
 }

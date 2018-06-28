@@ -11,9 +11,12 @@
 require 'config.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
+
 require_once DOL_DOCUMENT_ROOT.'/comm/mailing/class/advtargetemailing.class.php';
 require_once DOL_DOCUMENT_ROOT.'/comm/mailing/class/html.formadvtargetemailing.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/modules/mailings/advthirdparties.modules.php';
+
+
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formother.class.php';
 dol_include_once('/questionnaire/class/questionnaire.class.php');
@@ -76,11 +79,13 @@ if (empty($template_id))
 {
 	$advTarget->fk_element = $id;
 	$advTarget->type_element = 'questionnaire';
-	$result = $advTarget->fetch_by_element();
+	if((float) DOL_VERSION >= 8)$result = $advTarget->fetch_by_element(0,$advTarget->type_element);
+	else $result = $advTarget->fetch_by_mailing($id);
 	
 }
 else
 {
+	
 	$result = $advTarget->fetch($template_id);
 }
 
@@ -258,8 +263,8 @@ if ($action == 'add') {
 		$obj->fk_questionnaire = $id;
 		$obj->date_limite_reponse = strtotime($date_limite_reponseyear.'-'.$date_limite_reponsemonth.'-'.$date_limite_reponseday); 
 		$empty=array();
-		
 		$obj->addInvitationsUser($empty,$empty, $empty,$cibles);
+		
 		$result=1;
 	} else {
 		$result = 0;
@@ -270,6 +275,7 @@ if ($action == 'add') {
 		if (! empty($template_id)) {
 			$query_temlate_id = '&template_id=' . $template_id;
 		}
+		
 		header("Location: " .dol_buildpath('/questionnaire/invitation.php', 2) . "?id=" . $id);
 		exit();
 	}
@@ -455,3 +461,4 @@ if(!empty($date_limite_reponseday))$date=strtotime($date_limite_reponseyear.'-'.
 else $date='';
 $form->select_date($date, 'date_limite_reponse');
 	print '</div>';
+	llxFooter();

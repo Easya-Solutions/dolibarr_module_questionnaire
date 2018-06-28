@@ -440,9 +440,9 @@ class InvitationUser extends SeedObject
 		{
 			foreach ($selectedByTarget as $email => $selected)
 			{
-				if ($selected->source_type==['source_type'] && in_array($selected['source_id'], $alreadyInvitedFKElements['thirdparty']))
+				if ('thirdparty'==$selected['source_type'] && !empty($alreadyInvitedFKElements['thirdparty'])&& in_array($selected['source_id'], $alreadyInvitedFKElements['thirdparty']))
 					continue;
-				else if ($selected->source_type==['source_type'] && in_array($selected['source_id'], $alreadyInvitedFKElements['contact']))
+				else if ('contact'==$selected['source_type'] &&  !empty($alreadyInvitedFKElements['contact'])&& in_array($selected['source_id'], $alreadyInvitedFKElements['contact']))
 					continue;
 				else
 				{
@@ -455,6 +455,8 @@ class InvitationUser extends SeedObject
 					$invitation_user->type_element = $selected['source_type'];
 					$invitation_user->token = bin2hex(openssl_random_pseudo_bytes(16)); // When we'll pass to php7 use random_bytes
 					$invitation_user->save();
+					
+					
 				}
 			}
 		}
