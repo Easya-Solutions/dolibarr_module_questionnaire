@@ -8,6 +8,8 @@ dol_include_once('/questionnaire/class/questionnaire.class.php');
 dol_include_once('/questionnaire/class/question.class.php');
 dol_include_once('/questionnaire/lib/questionnaire.lib.php');
 dol_include_once('/user/class/usergroup.class.php');
+dol_include_once('/societe/class/societe.class.php');
+dol_include_once('/contact/class/contact.class.php');
 
 $langs->load('questionnaire@questionnaire');
 
@@ -325,8 +327,9 @@ function _getNomUrl($fk_element, $email,$type_element)
 
 	global $db;
 	$type_element= ucfirst($type_element);
+	if($type_element == 'Thirdparty')$type_element='Societe';
 	if(class_exists($type_element))$u = new $type_element($db);
-
+	
 	if (!empty($fk_element) && method_exists($u, 'getNomUrl')){
 		$u->fetch($fk_element);
 		$res = $u->getNomUrl(1);	

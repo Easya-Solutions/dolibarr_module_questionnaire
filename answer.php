@@ -7,6 +7,8 @@ require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
 dol_include_once('/questionnaire/class/invitation.class.php');
 dol_include_once('/questionnaire/class/questionnaire.class.php');
 dol_include_once('/questionnaire/lib/questionnaire.lib.php');
+dol_include_once('/societe/class/societe.class.php');
+dol_include_once('/contact/class/contact.class.php');
 
 $langs->load('questionnaire@questionnaire');
 
@@ -222,6 +224,8 @@ function _getNomUrl($fk_element, $email, $type_element)
 
 	global $db;
 	$type_element= ucfirst($type_element);
+	if($type_element == 'Thirdparty')$type_element='Societe';
+
 	if(class_exists($type_element))$u = new $type_element($db);
 
 	if (!empty($fk_element) && method_exists($u, 'getNomUrl')){
@@ -243,6 +247,10 @@ function _seeAnswersUser(&$object, $fk_invituser)
 	
 
 	$class = ucfirst($invUser->type_element);
+	if($invUser->type_element == 'thirdparty'){
+		$invUser->type_element='societe';
+		$class='Societe';
+	}
 	if (!empty($invUser->getFk_element()) && !empty($class))
 	{
 		require_once DOL_DOCUMENT_ROOT.'/'.$invUser->type_element.'/class/'.$invUser->type_element.'.class.php';
