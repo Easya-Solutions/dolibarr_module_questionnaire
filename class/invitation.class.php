@@ -102,7 +102,7 @@ if (!class_exists('TObjetStd'))
 
   $questionnaire = new Questionnaire($db);
   $questionnaire->load($this->fk_questionnaire);
-  list($alreadyInvitedFKUsers, $alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedUsers();
+  list($alreadyInvitedFKElements, $alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedUsers();
 
   $all_users = array();
   $user = new User($db);
@@ -124,7 +124,7 @@ if (!class_exists('TObjetStd'))
   if (!empty($group_users))
   {
   foreach ($group_users as &$usr)
-  if (!in_array($usr->id, $alreadyInvitedFKUsers))
+  if (!in_array($usr->id, $alreadyInvitedFKElements))
   $all_users[] = $usr->id;
   }
   }
@@ -134,7 +134,7 @@ if (!class_exists('TObjetStd'))
   {
 
   foreach ($users as $id_user)
-  if (!in_array($id_user, $alreadyInvitedFKUsers))
+  if (!in_array($id_user, $alreadyInvitedFKElements))
   $all_users[] = $id_user;
   }
 
@@ -347,7 +347,7 @@ class InvitationUser extends SeedObject
 
 		$questionnaire = new Questionnaire($db);
 		$questionnaire->load($this->fk_questionnaire);
-		list($alreadyInvitedFKUsers, $alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedUsers();
+		list($alreadyInvitedFKElements, $alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedElements();
 
 		$all_users = array();
 		$user = new User($db);
@@ -367,7 +367,7 @@ class InvitationUser extends SeedObject
 				{
 					foreach ($group_users as &$usr)
 					{
-						if (in_array($usr->id, $alreadyInvitedFKUsers['user']))
+						if (in_array($usr->id, $alreadyInvitedFKElements['user']))
 							continue;
 						else
 						{
@@ -385,13 +385,13 @@ class InvitationUser extends SeedObject
 				}
 			}
 		}
-		list($alreadyInvitedFKUsers, $alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedUsers();
+		list($alreadyInvitedFKElements, $alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedElements();
 
 		if (!empty($users))
 		{
 
 			foreach ($users as $id_user)
-				if (!in_array($id_user, $alreadyInvitedFKUsers['user']))
+				if (!in_array($id_user, $alreadyInvitedFKElements['user']))
 					$all_users[] = $id_user;
 		}
 

@@ -429,21 +429,21 @@ class Questionnaire extends SeedObject
 		
 	}
 	
-	function getAlreadyInvitedUsers()
+	function getAlreadyInvitedElements()
 	{
-		$alreadyInvitedFkUsers = array();
+		$alreadyInvitedFkElements = array();
 		$alreadyInvitedEmails = array();
 		$this->loadInvitations();
 		if (!empty($this->invitations))
 		{
 			foreach ($this->invitations as $invitation)
 			{
-				$alreadyInvitedFkUsers[$invitation->type_element] = $invitation->fk_element;
+				$alreadyInvitedFkElements[$invitation->type_element] = $invitation->fk_element;
 				$alreadyInvitedEmails[] = $invitation->email;
 			}
 		}
 
-		return array($alreadyInvitedFkUsers, $alreadyInvitedEmails);
+		return array($alreadyInvitedFkElements, $alreadyInvitedEmails);
 	}
 
 }

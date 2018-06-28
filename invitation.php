@@ -166,6 +166,10 @@ if ($mode == 'edit')
 $linkback = '<a href="'.dol_buildpath('/questionnaire/list.php', 1).'">'.$langs->trans("BackToList").'</a>';
 
 
+//if()
+
+
+
 print $TBS->render('tpl/invitation.tpl.php'
 		, array() // Block
 		, array(
@@ -175,6 +179,7 @@ print $TBS->render('tpl/invitation.tpl.php'
 			,'act'=>$action
 			, 'action' => 'save'
 			, 'urlinvitation' => dol_buildpath('/questionnaire/invitation.php', 1)
+			, 'urladvselecttarget' => dol_buildpath('/questionnaire/advselecttarget.php', 1)
 			, 'urllist' => dol_buildpath('/questionnaire/list.php', 1)
 			, 'showRef' => $form->showrefnav($object, 'ref', $linkback, 1, 'ref', 'ref', '')
 			, 'showTitle' => $object->title
@@ -210,11 +215,12 @@ function _getListInvitations(&$object)
 
 	$r = new TListviewTBS('invitation_list', dol_buildpath('/questionnaire/tpl/questionnaire_list.tpl.php'));
 
-	$sql = 'SELECT invu.fk_usergroup,invu.type_element, invu.fk_element, invu.email, invu.date_limite_reponse, invu.sent, invu.rowid as id_user, \'\' AS action';
+	$sql = 'SELECT invu.fk_usergroup,COALESCE(NULLIF(invu.type_element,""), "External") as type_element, invu.fk_element, invu.email, invu.date_limite_reponse, invu.sent, invu.rowid as id_user, \'\' AS action';
 	$sql .= ' FROM '.MAIN_DB_PREFIX.'quest_invitation_user invu ';
 	$sql .= ' WHERE fk_questionnaire = '.$object->id;
 	$sql .= ' AND (invu.fk_element > 0 OR invu.email != "") ';
 	$resql = $db->query($sql);
+	
 	$TData = array();
 	if (!empty($resql) && $db->num_rows($resql) > 0)
 	{
@@ -319,11 +325,12 @@ function _getNomUrl($fk_element, $email,$type_element)
 
 	global $db;
 	$type_element= ucfirst($type_element);
-	$u = new $type_element($db);
-	$u->fetch($fk_element);
-	if (!empty($fk_element) && method_exists($u, 'getNomUrl'))
+	if(class_exists($type_element))$u = new $type_element($db);
+
+	if (!empty($fk_element) && method_exists($u, 'getNomUrl')){
+		$u->fetch($fk_element);
 		$res = $u->getNomUrl(1);	
-	else
+	}else
 		$res = $email;
 	return $res;
 }
