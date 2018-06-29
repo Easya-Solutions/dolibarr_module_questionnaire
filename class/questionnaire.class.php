@@ -423,7 +423,7 @@ class Questionnaire extends SeedObject
 		}
 	}
 	
-	function deleteAllAnswersUser($fk_invitation_user,$page)
+	function deleteAllAnswersUser($fk_invitation_user,$page=0)
 	{
 		if (empty($this->questions))
 			$this->loadQuestions($page);
