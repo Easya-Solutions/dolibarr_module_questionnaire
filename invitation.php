@@ -346,7 +346,8 @@ function _getNomUrlGrp($fk_usergroup)
 	$u = new UserGroup($db);
 	$u->fetch($fk_usergroup);
 	if (!empty($fk_usergroup))
-		$res = $u->nom;
+		if(method_exists($u, 'getNomUrl')) $res = $u->getNomUrl();
+		else $res = $u->nom;
 	else
 		$res = 'Non';
 	return $res;
