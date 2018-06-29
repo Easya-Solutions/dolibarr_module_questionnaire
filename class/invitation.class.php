@@ -222,7 +222,7 @@ class InvitationUser extends SeedObject
 	/**
 	 * Closed status
 	 */
-	const STATUS_CLOSED = 2;
+	const STATUS_SAVED = 2;
 
 	public function __construct($db)
 	{
@@ -303,7 +303,6 @@ class InvitationUser extends SeedObject
 	public static function LibStatut($status, $mode)
 	{
 		global $langs, $questionnaire_status_forced_key;
-
 		$langs->load('questionnaire@questionnaire');
 
 		if ($status == self::STATUS_DRAFT)
@@ -318,6 +317,50 @@ class InvitationUser extends SeedObject
 			$keytrans = 'questionnaireStatusSent';
 			$shortkeytrans = 'Sent';
 		}
+
+
+		if ($mode == 0)
+			return img_picto($langs->trans($keytrans), $statustrans);
+		elseif ($mode == 1)
+			return img_picto($langs->trans($keytrans), $statustrans).' '.$langs->trans($keytrans);
+		elseif ($mode == 2)
+			return $langs->trans($keytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
+		elseif ($mode == 3)
+			return img_picto($langs->trans($keytrans), $statustrans).' '.$langs->trans($shortkeytrans);
+		elseif ($mode == 4)
+			return $langs->trans($shortkeytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
+		elseif ($mode == 5)
+			return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($this->labelstatut[$statut], $statuttrans);
+		// mode 6 used by dol_banner() function
+
+		elseif ($mode == 6)
+			return '<span class="hideonsmartphone">'.$langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key).' </span>'.img_picto($langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key), $statustrans);
+	}
+	
+	public function getLibStatut($mode)
+	{
+		global $langs, $questionnaire_status_forced_key;
+		$langs->load('questionnaire@questionnaire');
+
+		if ($this->fk_statut == self::STATUS_DRAFT)
+		{
+			$statustrans = 'statut0';
+			$keytrans = 'answerStatusDraft';
+			$shortkeytrans = 'Draft';
+		}
+		if ($this->fk_statut == self::STATUS_VALIDATED)
+		{
+			$statustrans = 'statut1';
+			$keytrans = 'answerStatusValidated';
+			$shortkeytrans = 'Validated';
+		}
+		if ($this->fk_statut == self::STATUS_SAVED)
+		{
+			$statustrans = 'statut6';
+			$keytrans = 'questionnaireStatusClosed';
+			$shortkeytrans = 'Saved';
+		}
+		
 
 
 		if ($mode == 0)

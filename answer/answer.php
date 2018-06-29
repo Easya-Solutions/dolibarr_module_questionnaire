@@ -1,6 +1,6 @@
 <?php
 
-require 'config.php';
+require '../config.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
 require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
@@ -77,7 +77,7 @@ elseif ($action == 'settitle')
 
 	$object->save();
 
-	header('Location: '.dol_buildpath('/questionnaire/answer.php', 1).'?id='.$object->id);
+	header('Location: '.dol_buildpath('/questionnaire/answer/answer.php', 1).'?id='.$object->id);
 	exit;
 }
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some
@@ -102,7 +102,7 @@ if ($mode == 'edit')
 	echo $formcore->begin_form($_SERVER['PHP_SELF'], 'form_questionnaire');
 
 $linkback = '<a href="'.dol_buildpath('/questionnaire/list.php', 1).'">'.$langs->trans("BackToList").'</a>';
-print $TBS->render('tpl/answer.tpl.php'
+print $TBS->render('../tpl/answer.tpl.php'
 		, array() // Block
 		, array(
 		'object' => $object
@@ -216,7 +216,7 @@ function _getLinkAnswersUser($fk_user)
 
 	$i_rep++;
 
-	return '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=view_answer&fk_invitation_user='.$fk_user.'">REP'.(str_pad($i_rep, 4, 0, STR_PAD_LEFT)).'</a>';
+	return '<a href="'.dol_buildpath('/questionnaire/answer/card.php',1).'?id='.$fk_user.'">REP'.(str_pad($i_rep, 4, 0, STR_PAD_LEFT)).'</a>';
 }
 
 function _getNomUrl($fk_element, $email, $type_element)
@@ -273,7 +273,7 @@ function _seeAnswersUser(&$object, $fk_invituser)
 		{
 			if (empty($q->answers))
 				$q->loadAnswers($fk_invituser);
-			$res .= draw_answer($q).'<br />';
+		//	$res .= draw_answer($q).'<br />';
 		}
 	}
 	$res .= '</div>';

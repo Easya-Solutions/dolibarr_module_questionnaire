@@ -79,7 +79,7 @@ function questionnaire_prepare_head(Questionnaire $object)
 		$head[$h][2] = 'invitation';
 		$h++;
 
-		$head[$h][0] = dol_buildpath('/questionnaire/answer.php', 1).'?id='.$object->id;
+		$head[$h][0] = dol_buildpath('/questionnaire/answer/answer.php', 1).'?id='.$object->id;
 		$head[$h][1] = $langs->trans("questionnaireAnswerCard");
 		$head[$h][2] = 'answer';
 		$h++;
@@ -765,14 +765,14 @@ function _getDateFr($date)
 
 	return date('d/m/Y', strtotime($date));
 }
-
+/*
 function draw_answer(&$q)
 {
 
 	if (empty($q->choices))
 		$q->loadChoices();
-	if (!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale'/* Pas de choix pour ces types là */)
-	{
+	//if (!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale'/* Pas de choix pour ces types là *///)
+	/*{
 		$res = '<div class="element" type="question" id="question'.$q->id.'">';
 		$res .= '<div class="refid">'.$q->label.'</div>';
 
@@ -999,16 +999,20 @@ function draw_linearscale_answer(&$q)
 {
 
 	return $q->answers[0]->value;
-}
+}*/
 
 function _getBanner(&$object, $action, $print_link_apercu = true, $shownav = true, $show_linkback = true)
 {
 
 	global $langs;
 
-	if ($show_linkback)
+	if ($show_linkback && $object->element == 'questionnaire'){
 		$linkback = '<a href="'.dol_buildpath('/questionnaire/list.php', 1).'">'.$langs->trans("BackToList").'</a>';
-	$morehtmlref = '<div class="refidno">'.getFieldVal($object, 'Title', 'title').'</div>';
+		$morehtmlref = '<div class="refidno">'.getFieldVal($object, 'Title', 'title').'</div>';
+	}else if($show_linkback && $object->element == 'invitation_user'){
+		$linkback = '<a href="'.dol_buildpath('/questionnaire/answer/answer.php?id='.$object->fk_questionnaire, 1).'">'.$langs->trans("BackToList").'</a>';
+	}
+	
 	//$morehtmlref.= '<div class="refidno">'.getFieldVal($object, 'LinkedObject', 'origin').'</div>';
 	if ($action !== 'create' && $action !== 'answer' && $print_link_apercu)
 		$morehtmlref .= '<div class="refidno">'.($action === 'apercu' ? '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'">Retour au mode édition</a>' : '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&action=apercu">Visualiser un aperçu</a>').'</div>';
@@ -1821,7 +1825,6 @@ function draw_pagination($page, $object)
 {
 	global $action, $mode;
 	
-
 	if (!empty($object->nbpages))
 	{
 		print '<div class="paginationquest">';
@@ -1835,17 +1838,17 @@ function draw_pagination($page, $object)
 			if ($action != 'answer')
 			{
 				if ($page > 1)
-					print ' <a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page - 1).$param.'"><i class="fa fa-angle-left" aria-hidden="true"></i></a>';
+					print ' <a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&page='.($page - 1).$param.'"><i class="fa fa-angle-left" aria-hidden="true"></i></a>';
 				for ($i = 1; $i <= $object->nbpages + 1; $i++)
 				{
 					if ($i == $page)
 						$class = 'class="active"';
 					else
 						$class = "";
-					print'<a '.$class.' href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($i).$param.'">'.$i.'</a>';
+					print'<a '.$class.' href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&page='.($i).$param.'">'.$i.'</a>';
 				}
 				if ($page < $object->nbpages + 1)
-					print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page + 1).$param.'"><i class="fa fa-angle-right" aria-hidden="true"></i></a>';
+					print '<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&page='.($page + 1).$param.'"><i class="fa fa-angle-right" aria-hidden="true"></i></a>';
 			}else
 			{
 				if ($page > 1)
@@ -1863,15 +1866,15 @@ function draw_pagination($page, $object)
 			}
 		}else
 		{
-			/* if($page >1)print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.$param.'&page=1"><i class="fa fa-angle-double-left" aria-hidden="true"></i></a>'
-			  . '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page-1).$param.'"><i class="fa fa-angle-left" aria-hidden="true"></i></a>'
-			  . '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page-1).$param.'">'.($page-1).'</a>';
+			/* if($page >1)print '<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').$param.'&page=1"><i class="fa fa-angle-double-left" aria-hidden="true"></i></a>'
+			  . '<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&page='.($page-1).$param.'"><i class="fa fa-angle-left" aria-hidden="true"></i></a>'
+			  . '<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&page='.($page-1).$param.'">'.($page-1).'</a>';
 
-			  print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page).$param.'" class="active">'.($page).'</a>';
+			  print '<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&page='.($page).$param.'" class="active">'.($page).'</a>';
 
-			  if($page <$object->nbpages+1)print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page+1).$param.'">'.($page+1).'</a>'
-			  . '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page+1).$param.'"><i class="fa fa-angle-right" aria-hidden="true"></i></a>'
-			  . '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($object->nbpages+1).$param.'"><i class="fa fa-angle-double-right" aria-hidden="true"></i></a>'; */
+			  if($page <$object->nbpages+1)print '<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&page='.($page+1).$param.'">'.($page+1).'</a>'
+			  . '<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&page='.($page+1).$param.'"><i class="fa fa-angle-right" aria-hidden="true"></i></a>'
+			  . '<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&page='.($object->nbpages+1).$param.'"><i class="fa fa-angle-double-right" aria-hidden="true"></i></a>'; */
 
 			if ($action == 'answer')
 			{
@@ -1889,16 +1892,16 @@ function draw_pagination($page, $object)
 			}else
 			{
 				if ($page > 1)
-					print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.$param.'&page=1"><i class="fa fa-angle-double-left" aria-hidden="true"></i></a>'
-						.'<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page - 1).$param.'"><i class="fa fa-angle-left" aria-hidden="true"></i></a>'
-						.'<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page - 1).$param.'">'.($page - 1).'</a>';
+					print '<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').$param.'&page=1"><i class="fa fa-angle-double-left" aria-hidden="true"></i></a>'
+						.'<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&page='.($page - 1).$param.'"><i class="fa fa-angle-left" aria-hidden="true"></i></a>'
+						.'<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&page='.($page - 1).$param.'">'.($page - 1).'</a>';
 
-				print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page).$param.'" class="active">'.($page).'</a>';
+				print '<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&page='.($page).$param.'" class="active">'.($page).'</a>';
 
 				if ($page < $object->nbpages + 1)
-					print '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page + 1).$param.'">'.($page + 1).'</a>'
-						.'<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($page + 1).$param.'"><i class="fa fa-angle-right" aria-hidden="true"></i></a>'
-						.'<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&page='.($object->nbpages + 1).$param.'"><i class="fa fa-angle-double-right" aria-hidden="true"></i></a>';
+					print '<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&page='.($page + 1).$param.'">'.($page + 1).'</a>'
+						.'<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&page='.($page + 1).$param.'"><i class="fa fa-angle-right" aria-hidden="true"></i></a>'
+						.'<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&page='.($object->nbpages + 1).$param.'"><i class="fa fa-angle-double-right" aria-hidden="true"></i></a>';
 			}
 		}
 
@@ -1962,3 +1965,44 @@ function draw_pagination($page, $object)
 		$(".questions").hide();'
 		. '</script>';
 }*/
+// Answer
+
+/**
+ * Return array of tabs to used on pages for third parties cards.
+ *
+ * @param 	Questionnaire	$object		Object company shown
+ * @return 	array				Array of tabs
+ */
+function answer_prepare_head(InvitationUser $object)
+{
+	global $db, $langs, $conf, $user;
+
+	$h = 0;
+	$head = array();
+	$head[$h][0] = dol_buildpath('/questionnaire/answer/card.php', 1).'?id='.$object->id;
+	$head[$h][1] = $langs->trans("answerCard");
+	$head[$h][2] = 'card';
+	$h++;
+
+	if ($object->fk_statut > 0)
+	{
+
+		$head[$h][0] = dol_buildpath('/questionnaire/answer/info.php', 1).'?id='.$object->id;
+		$head[$h][1] = $langs->trans("questionnaireAnswerMonitored");
+		$head[$h][2] = 'monitor';
+		$h++;
+
+		$head[$h][0] = dol_buildpath('/questionnaire/answer/linked_files.php', 1).'?id='.$object->id;
+		$head[$h][1] = $langs->trans("questionnaireAnswerLinkedFiles");
+		$head[$h][2] = 'linkedfiles';
+		$h++;
+	}
+
+	// Show more tabs from modules
+	// Entries must be declared in modules descriptor with line
+	// $this->tabs = array('entity:+tabname:Title:@questionnaire:/questionnaire/mypage.php?id=__ID__');   to add new tab
+	// $this->tabs = array('entity:-tabname:Title:@questionnaire:/questionnaire/mypage.php?id=__ID__');   to remove a tab
+	complete_head_from_modules($conf, $langs, $object, $head, $h, 'questionnaire');
+
+	return $head;
+}

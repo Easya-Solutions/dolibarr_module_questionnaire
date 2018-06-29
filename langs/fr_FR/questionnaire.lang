@@ -133,3 +133,8 @@ AnsweringColumnName=Colonne séléctionnée (réponse de type grille)
 #MAIL
 
 MailSubjQuest=Invitation à répondre au questionnaire %s
+
+#ANSWER
+answerCard=Réponse
+questionnaireAnswerMonitored=Suivi
+questionnaireAnswerLinkedFiles=Fichiers joints
