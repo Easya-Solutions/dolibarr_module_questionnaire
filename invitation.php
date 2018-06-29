@@ -133,7 +133,7 @@ if (empty($reshook))
 				if(!empty($emails))$invitation->email = $emails;
 				$invitation->save();
 			}else {
-				$invitation->addInvitationsUser($groups, $users, $emails,$object->id,strtotime($date_limite_year.'-'.$date_limite_month.'-'.$date_limite_day));
+				$invitation->addInvitationsUser($groups, $users, $emails);
 			}
 			
 			$mode = 'view';

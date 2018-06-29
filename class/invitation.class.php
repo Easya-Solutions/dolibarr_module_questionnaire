@@ -367,7 +367,7 @@ class InvitationUser extends SeedObject
 				{
 					foreach ($group_users as &$usr)
 					{
-						if (in_array($usr->id, $alreadyInvitedFKElements['user']))
+						if (!empty($alreadyInvitedFKElements['user']) && in_array($usr->id, $alreadyInvitedFKElements['user']))
 							continue;
 						else
 						{
@@ -391,7 +391,7 @@ class InvitationUser extends SeedObject
 		{
 
 			foreach ($users as $id_user)
-				if (!in_array($id_user, $alreadyInvitedFKElements['user']))
+				if (empty($alreadyInvitedFKElements['user']) || !in_array($id_user, $alreadyInvitedFKElements['user']))
 					$all_users[] = $id_user;
 		}
 
