@@ -30,6 +30,7 @@ class Question extends SeedObject {
 				,'originid'=>array('type'=>'integer')
 				,'origin'=>array('type'=>'string')
 				,'rang'=>array('type'=>'integer')
+
 		);
 		
 		$this->TTypes = array(
@@ -49,8 +50,6 @@ class Question extends SeedObject {
 				,'separator' => $langs->trans('questionnaireTypeSeparator')
 				,'paragraph' => $langs->trans('questionnaireTypeParagraph')
 		);
-		
-		
 		
 		$this->init();
 		

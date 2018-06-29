@@ -7,6 +7,8 @@ require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
 dol_include_once('/questionnaire/class/invitation.class.php');
 dol_include_once('/questionnaire/class/questionnaire.class.php');
 dol_include_once('/questionnaire/lib/questionnaire.lib.php');
+dol_include_once('/societe/class/societe.class.php');
+dol_include_once('/contact/class/contact.class.php');
 
 $langs->load('questionnaire@questionnaire');
 
@@ -132,7 +134,7 @@ print $TBS->render('tpl/answer.tpl.php'
 function _getListAnswers(&$object)
 {
 
-	global $db, $langs, $hookmanager, $user, $form;
+	global $db, $langs, $hookmanager, $user, $form, $conf;
 
 	$nbLine = !empty($user->conf->MAIN_SIZE_LISTE_LIMIT) ? $user->conf->MAIN_SIZE_LISTE_LIMIT : $conf->global->MAIN_SIZE_LISTE_LIMIT;
 
@@ -140,10 +142,10 @@ function _getListAnswers(&$object)
 
 	// On regarde s'il existe une réponse à au moins une question du questionnaire sur lequel on se trouve
 	// Subquery pour chercher s'il existe une réponse validée
-	$sql = 'SELECT DISTINCT iu.fk_user as id_user, iu.rowid as fk_invitation_user, "" as link_answer, iu.fk_user, iu.email, iu.fk_statut as fk_statut,  "" as action
+	$sql = 'SELECT DISTINCT iu.fk_element as id_element, iu.rowid as fk_invitation_user, "" as link_answer,COALESCE(NULLIF(iu.type_element,""), "External") as type_element, iu.fk_element,  iu.email, iu.fk_statut as fk_statut,  "" as action
 			FROM '.MAIN_DB_PREFIX.'quest_invitation_user iu  
 			WHERE iu.fk_questionnaire = '.$object->id.'
-			AND (fk_user > 0 OR email != "")';
+			AND (fk_element > 0 OR email != "")';
 
 	//echo $sql;exit;
 	$resql = $db->query($sql);
@@ -166,8 +168,9 @@ function _getListAnswers(&$object)
 		, 'link' => array(
 		)
 		, 'hide' => array(
-			'id_user',
-			'fk_invitation_user'
+			'id_element',
+			'fk_invitation_user',
+			'type_element'
 		)
 		, 'type' => array()
 		, 'liste' => array(
@@ -182,7 +185,8 @@ function _getListAnswers(&$object)
 			, 'picto_search' => img_picto('', 'search.png', '', 0)
 		)
 		, 'title' => array(
-			'fk_user' => $langs->trans('User')
+			'fk_element' => $langs->trans('Element')
+			,'type_element' => $langs->trans('Type')
 			, 'fk_statut' => $langs->trans('questionnaireAnswerStatus')
 			, 'link_answer' => $langs->trans('QuestionnaireSeeAnswerLink')
 			, 'email' => $langs->trans('Email')
@@ -191,7 +195,7 @@ function _getListAnswers(&$object)
 		, 'orderBy' => array('cn.rowid' => 'DESC')
 		, 'eval' => array(
 			'link_answer' => '_getLinkAnswersUser(@fk_invitation_user@)'
-			, 'fk_user' => '_getNomUrl(@fk_user@, Externe)'
+			, 'fk_element' => '_getNomUrl(@fk_element@, Externe, @type_element@)'
 			, 'fk_statut' => '_libStatut(@fk_statut@, 1)'
 			, 'action' => '_actionLink(@fk_invitation_user@)'
 		)
@@ -215,16 +219,19 @@ function _getLinkAnswersUser($fk_user)
 	return '<a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=view_answer&fk_invitation_user='.$fk_user.'">REP'.(str_pad($i_rep, 4, 0, STR_PAD_LEFT)).'</a>';
 }
 
-function _getNomUrl($fk_user, $email)
+function _getNomUrl($fk_element, $email, $type_element)
 {
 
 	global $db;
+	$type_element= ucfirst($type_element);
+	if($type_element == 'Thirdparty')$type_element='Societe';
 
-	$u = new User($db);
-	$u->fetch($fk_user);
-	if (!empty($fk_user))
-		$res = $u->getNomUrl(1);
-	else
+	if(class_exists($type_element))$u = new $type_element($db);
+
+	if (!empty($fk_element) && method_exists($u, 'getNomUrl')){
+		$u->fetch($fk_element);
+		$res = $u->getNomUrl(1);	
+	}else
 		$res = $email;
 	return $res;
 }
@@ -234,14 +241,23 @@ function _seeAnswersUser(&$object, $fk_invituser)
 
 	global $db, $langs;
 
-	require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
+	
 	$invUser = new InvitationUser($db);
 	$invUser->load($fk_invituser);
+	
 
-	$u = new User($db);
-	if (!empty($invUser->fk_user))
+	$class = ucfirst($invUser->type_element);
+	if($invUser->type_element == 'thirdparty'){
+		$invUser->type_element='societe';
+		$class='Societe';
+	}
+	if (!empty($invUser->getFk_element()) && !empty($class))
 	{
-		$u->fetch($invUser->fk_user);
+		require_once DOL_DOCUMENT_ROOT.'/'.$invUser->type_element.'/class/'.$invUser->type_element.'.class.php';
+		
+		$u = new $class($db);
+		$u->fetch($invUser->getFk_element());
+		
 		$res = $langs->trans('questionnaireUserAnswersOf', $u->getNomUrl(1));
 	}
 	else

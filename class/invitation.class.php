@@ -102,7 +102,7 @@ if (!class_exists('TObjetStd'))
 
   $questionnaire = new Questionnaire($db);
   $questionnaire->load($this->fk_questionnaire);
-  list($alreadyInvitedFKUsers, $alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedUsers();
+  list($alreadyInvitedFKElements, $alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedUsers();
 
   $all_users = array();
   $user = new User($db);
@@ -124,7 +124,7 @@ if (!class_exists('TObjetStd'))
   if (!empty($group_users))
   {
   foreach ($group_users as &$usr)
-  if (!in_array($usr->id, $alreadyInvitedFKUsers))
+  if (!in_array($usr->id, $alreadyInvitedFKElements))
   $all_users[] = $usr->id;
   }
   }
@@ -134,7 +134,7 @@ if (!class_exists('TObjetStd'))
   {
 
   foreach ($users as $id_user)
-  if (!in_array($id_user, $alreadyInvitedFKUsers))
+  if (!in_array($id_user, $alreadyInvitedFKElements))
   $all_users[] = $id_user;
   }
 
@@ -207,6 +207,7 @@ class InvitationUser extends SeedObject
 
 	public $table_element = 'quest_invitation_user';
 	public $element = 'invitation_user';
+	public $fk_element;
 
 	/**
 	 * Draft status
@@ -231,7 +232,8 @@ class InvitationUser extends SeedObject
 
 		$this->fields = array(
 			'fk_questionnaire' => array('type' => 'integer', 'index' => true)
-			, 'fk_user' => array('type' => 'integer', 'index' => true)
+			, 'fk_element' => array('type' => 'integer', 'index' => true)
+			, 'type_element' => array('type' => 'string')
 			, 'fk_usergroup' => array('type' => 'integer', 'index' => true)
 			, 'token' => array('type' => 'string')
 			, 'email' => array('type' => 'string')
@@ -336,7 +338,7 @@ class InvitationUser extends SeedObject
 			return '<span class="hideonsmartphone">'.$langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key).' </span>'.img_picto($langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key), $statustrans);
 	}
 
-	function addInvitationsUser(&$groups, &$users, $emails)
+	function addInvitationsUser(&$groups, &$users, $emails,$selectedByTarget=null)
 	{
 
 		require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
@@ -345,7 +347,7 @@ class InvitationUser extends SeedObject
 
 		$questionnaire = new Questionnaire($db);
 		$questionnaire->load($this->fk_questionnaire);
-		list($alreadyInvitedFKUsers, $alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedUsers();
+		list($alreadyInvitedFKElements, $alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedElements();
 
 		$all_users = array();
 		$user = new User($db);
@@ -365,7 +367,7 @@ class InvitationUser extends SeedObject
 				{
 					foreach ($group_users as &$usr)
 					{
-						if (in_array($usr->id, $alreadyInvitedFKUsers))
+						if (!empty($alreadyInvitedFKElements['user']) && in_array($usr->id, $alreadyInvitedFKElements['user']))
 							continue;
 						else
 						{
@@ -374,7 +376,8 @@ class InvitationUser extends SeedObject
 							$invitation_user->date_limite_reponse = $this->date_limite_reponse;
 							$invitation_user->fk_usergroup = $id_grp;
 							$invitation_user->email = $usr->email;
-							$invitation_user->fk_user = $usr->id;
+							$invitation_user->fk_element = $usr->id;
+							$invitation_user->type_element = 'user';
 							$invitation_user->token = bin2hex(openssl_random_pseudo_bytes(16)); // When we'll pass to php7 use random_bytes
 							$invitation_user->save();
 						}
@@ -382,13 +385,13 @@ class InvitationUser extends SeedObject
 				}
 			}
 		}
-		list($alreadyInvitedFKUsers, $alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedUsers();
+		list($alreadyInvitedFKElements, $alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedElements();
 
 		if (!empty($users))
 		{
 
 			foreach ($users as $id_user)
-				if (!in_array($id_user, $alreadyInvitedFKUsers))
+				if (empty($alreadyInvitedFKElements['user']) || !in_array($id_user, $alreadyInvitedFKElements['user']))
 					$all_users[] = $id_user;
 		}
 
@@ -411,7 +414,8 @@ class InvitationUser extends SeedObject
 				$invitation_user->date_limite_reponse = $this->date_limite_reponse;
 				$user->fetch($id_usr);
 				$invitation_user->email = $user->email;
-				$invitation_user->fk_user = $id_usr;
+				$invitation_user->fk_element = $id_usr;
+				$invitation_user->type_element = 'user';
 				$invitation_user->token = bin2hex(openssl_random_pseudo_bytes(16));
 				$invitation_user->save();
 			}
@@ -425,17 +429,197 @@ class InvitationUser extends SeedObject
 				$invitation_user = new InvitationUser($db);
 				$invitation_user->fk_questionnaire = $this->fk_questionnaire;
 				$invitation_user->date_limite_reponse = $this->date_limite_reponse;
-				$invitation_user->fk_user = 0;
+				$invitation_user->fk_element = 0;
 				$invitation_user->email = $email;
 				$invitation_user->token = bin2hex(openssl_random_pseudo_bytes(16));
 				$invitation_user->save();
 			}
 		}
+		
+		if (!empty($selectedByTarget))
+		{
+			foreach ($selectedByTarget as $email => $selected)
+			{
+				if ('thirdparty'==$selected['source_type'] && !empty($alreadyInvitedFKElements['thirdparty'])&& in_array($selected['source_id'], $alreadyInvitedFKElements['thirdparty']))
+					continue;
+				else if ('contact'==$selected['source_type'] &&  !empty($alreadyInvitedFKElements['contact'])&& in_array($selected['source_id'], $alreadyInvitedFKElements['contact']))
+					continue;
+				else
+				{
+					$invitation_user = new InvitationUser($db);
+					$invitation_user->fk_questionnaire = $this->fk_questionnaire;
+					$invitation_user->date_limite_reponse = $this->date_limite_reponse;
+					$invitation_user->fk_usergroup = 0;
+					$invitation_user->email = $email;
+					$invitation_user->fk_element = $selected['source_id'];
+					$invitation_user->type_element = $selected['source_type'];
+					$invitation_user->token = bin2hex(openssl_random_pseudo_bytes(16)); // When we'll pass to php7 use random_bytes
+					$invitation_user->save();
+					
+					
+				}
+			}
+		}
 	}
+
 	function reopen()
 	{
 		$this->fk_statut = 0;
 		$this->save();
+	}
+	
+	function getFk_element(){
+		
+		
+		return $this->fk_element;
+	}
+	
+	
+	/**
+	 *    This is the main function that returns the array of emails
+	 *
+	 *    @param	int		$mailing_id    	Id of mailing. No need to use it.
+	 *    @param	array	$socid  		Array of id soc to add
+	 *    @param	int		$type_of_target	Defined in advtargetemailing.class.php
+	 *    @param	array	$contactid 		Array of contact id to add
+	 *    @return   int 					<0 if error, number of emails added if ok
+	 */
+	function add_to_target_spec($mailing_id,$socid,$type_of_target, $contactid)
+	{
+		global $conf, $langs;
+
+		dol_syslog(get_class($this)."::add_to_target socid=".var_export($socid,true).' contactid='.var_export($contactid,true));
+
+		$cibles = array();
+
+		if (($type_of_target==1) || ($type_of_target==3)) {
+			// Select the third parties from category
+			if (count($socid)>0)
+			{
+				$sql= "SELECT s.rowid as id, s.email as email, s.nom as name, null as fk_contact";
+				$sql.= " FROM ".MAIN_DB_PREFIX."societe as s LEFT OUTER JOIN ".MAIN_DB_PREFIX."societe_extrafields se ON se.fk_object=s.rowid";
+				$sql.= " WHERE s.entity IN (".getEntity('societe').")";
+				$sql.= " AND s.rowid IN (".implode(',',$socid).")";
+				$sql.= " ORDER BY email";
+
+    			// Stock recipients emails into targets table
+    			$result=$this->db->query($sql);
+    			if ($result)
+    			{
+    				$num = $this->db->num_rows($result);
+    				$i = 0;
+
+    				dol_syslog(get_class($this)."::add_to_target mailing ".$num." targets found", LOG_DEBUG);
+
+    				$old = '';
+    				while ($i < $num)
+    				{
+    					$obj = $this->db->fetch_object($result);
+
+    					if (!empty($obj->email) && filter_var($obj->email, FILTER_VALIDATE_EMAIL)) {
+    						if (!array_key_exists($obj->email, $cibles)) {
+    							$cibles[$obj->email] = array(
+    								'email' => $obj->email,
+    								'fk_contact' => $obj->fk_contact,
+    								'name' => $obj->name,
+    								'firstname' => $obj->firstname,
+    								'other' => '',
+    								'source_url' => $this->url($obj->id,'thirdparty'),
+    								'source_id' => $obj->id,
+    								'source_type' => 'thirdparty'
+    							);
+    						}
+    					}
+
+    					$i++;
+    				}
+    			}
+    			else
+    			{
+    				dol_syslog($this->db->error());
+    				$this->error=$this->db->error();
+    				return -1;
+    			}
+			}
+		}
+
+		if  (($type_of_target==1) || ($type_of_target==2) || ($type_of_target==4)) {
+			// Select the third parties from category
+			if (count($socid)>0 || count($contactid)>0)
+			{
+				$sql= "SELECT socp.rowid as id, socp.email as email, socp.lastname as lastname, socp.firstname as firstname";
+				$sql.= " FROM ".MAIN_DB_PREFIX."socpeople as socp";
+				$sql.= " WHERE socp.entity IN (".getEntity('societe').")";
+				if (count($contactid)>0) {
+					$sql.= " AND socp.rowid IN (".implode(',',$contactid).")";
+				}
+				if (count($socid)>0) {
+					$sql.= " AND socp.fk_soc IN (".implode(',',$socid).")";
+				}
+				$sql.= " ORDER BY email";
+
+    			// Stock recipients emails into targets table
+    			$result=$this->db->query($sql);
+    			if ($result)
+    			{
+    				$num = $this->db->num_rows($result);
+    				$i = 0;
+
+    				dol_syslog(get_class($this)."::add_to_target mailing ".$num." targets found");
+
+    				$old = '';
+    				while ($i < $num)
+    				{
+    					$obj = $this->db->fetch_object($result);
+
+    					if (!empty($obj->email) && filter_var($obj->email, FILTER_VALIDATE_EMAIL)) {
+    						if (!array_key_exists($obj->email, $cibles)) {
+    							$cibles[$obj->email] = array(
+    								'email' => $obj->email,
+    								'fk_contact' =>$obj->id,
+    								'lastname' => $obj->lastname,
+    								'firstname' => $obj->firstname,
+    								'other' => '',
+    								'source_url' => $this->url($obj->id,'contact'),
+    								'source_id' => $obj->id,
+    								'source_type' => 'contact'
+    							);
+    						}
+    					}
+
+    					$i++;
+    				}
+    			}
+    			else
+    			{
+    				dol_syslog($this->db->error());
+    				$this->error=$this->db->error();
+    				return -1;
+    			}
+			}
+		}
+
+		return $cibles;
+	}
+	
+	/**
+	 *  Can include an URL link on each record provided by selector shown on target page.
+	 *
+	 *  @param	int		$id		ID
+	 *  @param	string		$type	type
+	 *  @return string      	Url link
+	 */
+	function url($id,$type)
+	{
+		if ($type=='thirdparty') {
+			$companystatic=new Societe($this->db);
+			$companystatic->fetch($id);
+			return $companystatic->getNomUrl(0, '', 0, 1);
+		} elseif ($type=='contact') {
+			$contactstatic=new Contact($this->db);
+			$contactstatic->fetch($id);
+			return $contactstatic->getNomUrl(0, '', 0, '', -1, 0);
+		}
 	}
 	
 

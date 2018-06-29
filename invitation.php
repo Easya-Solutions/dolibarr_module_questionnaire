@@ -8,6 +8,8 @@ dol_include_once('/questionnaire/class/questionnaire.class.php');
 dol_include_once('/questionnaire/class/question.class.php');
 dol_include_once('/questionnaire/lib/questionnaire.lib.php');
 dol_include_once('/user/class/usergroup.class.php');
+dol_include_once('/societe/class/societe.class.php');
+dol_include_once('/contact/class/contact.class.php');
 
 $langs->load('questionnaire@questionnaire');
 
@@ -131,7 +133,7 @@ if (empty($reshook))
 				if(!empty($emails))$invitation->email = $emails;
 				$invitation->save();
 			}else {
-				$invitation->addInvitationsUser($groups, $users, $emails,$object->id,strtotime($date_limite_year.'-'.$date_limite_month.'-'.$date_limite_day));
+				$invitation->addInvitationsUser($groups, $users, $emails);
 			}
 			
 			$mode = 'view';
@@ -166,6 +168,10 @@ if ($mode == 'edit')
 $linkback = '<a href="'.dol_buildpath('/questionnaire/list.php', 1).'">'.$langs->trans("BackToList").'</a>';
 
 
+//if()
+
+
+
 print $TBS->render('tpl/invitation.tpl.php'
 		, array() // Block
 		, array(
@@ -175,13 +181,14 @@ print $TBS->render('tpl/invitation.tpl.php'
 			,'act'=>$action
 			, 'action' => 'save'
 			, 'urlinvitation' => dol_buildpath('/questionnaire/invitation.php', 1)
+			, 'urladvselecttarget' => dol_buildpath('/questionnaire/advselecttarget.php', 1)
 			, 'urllist' => dol_buildpath('/questionnaire/list.php', 1)
 			, 'showRef' => $form->showrefnav($object, 'ref', $linkback, 1, 'ref', 'ref', '')
 			, 'showTitle' => $object->title
 			, 'showStatus' => $object->getLibStatut(1)
 			, 'list_invitations' => _getListInvitations($object)
 			, 'massaction' => printMassActionButton()
-			,'fk_user' => $invitation->fk_user
+			,'fk_user' => $invitation->fk_element
 		)
 		, 'langs' => $langs
 		, 'user' => $user
@@ -210,11 +217,12 @@ function _getListInvitations(&$object)
 
 	$r = new TListviewTBS('invitation_list', dol_buildpath('/questionnaire/tpl/questionnaire_list.tpl.php'));
 
-	$sql = 'SELECT invu.fk_usergroup, invu.fk_user, invu.email, invu.date_limite_reponse, invu.sent, invu.rowid as id_user, \'\' AS action';
+	$sql = 'SELECT invu.fk_usergroup,COALESCE(NULLIF(invu.type_element,""), "External") as type_element, invu.fk_element, invu.email, invu.date_limite_reponse, invu.sent, invu.rowid as id_user, \'\' AS action';
 	$sql .= ' FROM '.MAIN_DB_PREFIX.'quest_invitation_user invu ';
 	$sql .= ' WHERE fk_questionnaire = '.$object->id;
-	$sql .= ' AND (invu.fk_user > 0 OR invu.email != "") ';
+	$sql .= ' AND (invu.fk_element > 0 OR invu.email != "") ';
 	$resql = $db->query($sql);
+	
 	$TData = array();
 	if (!empty($resql) && $db->num_rows($resql) > 0)
 	{
@@ -225,7 +233,7 @@ function _getListInvitations(&$object)
 	}
 
 //if($user->rights->societe->creer) $arrayofmassactions['createbills']=$langs->trans("CreateInvoiceForThisCustomer");
-
+	
 
 	$res = $r->renderArray($db, $TData, array(
 		'limit' => array(
@@ -236,7 +244,7 @@ function _getListInvitations(&$object)
 		)
 		, 'link' => array(
 		)
-		, 'hide' => array('id_user')
+		, 'hide' => array('id_user','type_element')
 		, 'type' => array()
 		, 'liste' => array(
 			'titre' => $langs->trans('TitleConformiteNormeList')
@@ -253,14 +261,14 @@ function _getListInvitations(&$object)
 			 'date_limite_reponse' => $langs->trans('questionnaire_date_limite_reponse')
 			, 'sent' => $langs->trans('Status')
 			, 'email' => $langs->trans('Email')
-			, 'fk_user' => $langs->trans('User')
+			, 'fk_element' => $langs->trans('Element')
 			, 'action' => $langs->trans('Action').'&nbsp;&nbsp;&nbsp;'.$form->showCheckAddButtons('checkforselect', 1)
 			, 'fk_usergroup' => $langs->trans('Group')
 		)
 		, 'orderBy' => array('cn.rowid' => 'DESC')
 		, 'eval' => array(
 			'date_limite_reponse' => '_getDateFr("@date_limite_reponse@")'
-			, 'fk_user' => '_getNomUrl(@fk_user@,Externe)'
+			, 'fk_element' => '_getNomUrl(@fk_element@,Externe,@type_element@)'
 			, 'sent' => '_libStatut(@sent@)'
 			, 'action' => '_actionLink(@id_user@)'
 			, 'fk_usergroup' => '_getNomUrlGrp(@fk_usergroup@)'
@@ -271,6 +279,7 @@ function _getListInvitations(&$object)
 	$parameters = array('sql' => $sql);
 	$reshook = $hookmanager->executeHooks('printFieldListFooter', $parameters, $object);	// Note that $action and $object may have been modified by hook
 	$res .= $hookmanager->resPrint;
+	
 	$res .= $formcore->end_form();
 	return $res;
 }
@@ -314,16 +323,18 @@ function _getUserGroups()
 	return $TRes;
 }
 
-function _getNomUrl($fk_user, $email)
+function _getNomUrl($fk_element, $email,$type_element)
 {
 
 	global $db;
-
-	$u = new User($db);
-	$u->fetch($fk_user);
-	if (!empty($fk_user))
-		$res = $u->getNomUrl(1);
-	else
+	$type_element= ucfirst($type_element);
+	if($type_element == 'Thirdparty')$type_element='Societe';
+	if(class_exists($type_element))$u = new $type_element($db);
+	
+	if (!empty($fk_element) && method_exists($u, 'getNomUrl')){
+		$u->fetch($fk_element);
+		$res = $u->getNomUrl(1);	
+	}else
 		$res = $email;
 	return $res;
 }
@@ -335,7 +346,8 @@ function _getNomUrlGrp($fk_usergroup)
 	$u = new UserGroup($db);
 	$u->fetch($fk_usergroup);
 	if (!empty($fk_usergroup))
-		$res = $u->nom;
+		if(method_exists($u, 'getNomUrl')) $res = $u->getNomUrl();
+		else $res = $u->nom;
 	else
 		$res = 'Non';
 	return $res;
