@@ -67,10 +67,10 @@ class Question extends SeedObject {
 		return $res;
 	}
 	
-	public function save() {
+	public function save($dontdelete=0) {
 		
 		global $user;
-		$this->deleteLinkedAnswers($user);
+		if(empty($dontdelete))$this->deleteLinkedAnswers($user);
 		return $this->id>0 ? $this->updateCommon($user) : $this->createCommon($user);
 		
 	}

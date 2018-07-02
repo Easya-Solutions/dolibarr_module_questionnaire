@@ -142,7 +142,7 @@ function _getListAnswers(&$object)
 
 	// On regarde s'il existe une réponse à au moins une question du questionnaire sur lequel on se trouve
 	// Subquery pour chercher s'il existe une réponse validée
-	$sql = 'SELECT DISTINCT iu.fk_element as id_element, iu.rowid as fk_invitation_user, "" as link_answer,COALESCE(NULLIF(iu.type_element,""), "External") as type_element, iu.fk_element,  iu.email, iu.fk_statut as fk_statut,  "" as action
+	$sql = 'SELECT DISTINCT iu.fk_element as id_element,iu.ref, iu.rowid as fk_invitation_user, "" as link_answer,COALESCE(NULLIF(iu.type_element,""), "External") as type_element, iu.fk_element,  iu.email, iu.fk_statut as fk_statut,  "" as action
 			FROM '.MAIN_DB_PREFIX.'quest_invitation_user iu  
 			WHERE iu.fk_questionnaire = '.$object->id.'
 			AND (fk_element > 0 OR email != "")';
@@ -170,7 +170,8 @@ function _getListAnswers(&$object)
 		, 'hide' => array(
 			'id_element',
 			'fk_invitation_user',
-			'type_element'
+			'type_element',
+			'ref'
 		)
 		, 'type' => array()
 		, 'liste' => array(
@@ -185,7 +186,7 @@ function _getListAnswers(&$object)
 			, 'picto_search' => img_picto('', 'search.png', '', 0)
 		)
 		, 'title' => array(
-			'fk_element' => $langs->trans('Element')
+			'fk_element' => $langs->trans('Recipient')
 			,'type_element' => $langs->trans('Type')
 			, 'fk_statut' => $langs->trans('questionnaireAnswerStatus')
 			, 'link_answer' => $langs->trans('QuestionnaireSeeAnswerLink')
@@ -194,8 +195,8 @@ function _getListAnswers(&$object)
 		)
 		, 'orderBy' => array('cn.rowid' => 'DESC')
 		, 'eval' => array(
-			'link_answer' => '_getLinkAnswersUser(@fk_invitation_user@)'
-			, 'fk_element' => '_getNomUrl(@fk_element@, Externe, @type_element@)'
+			'link_answer' => '_getLinkAnswersUser(@fk_invitation_user@,"@ref@")'
+			, 'fk_element' => '_getGlobalNomUrl(@fk_element@, Externe, @type_element@)'
 			, 'fk_statut' => '_libStatut(@fk_statut@, 1)'
 			, 'action' => '_actionLink(@fk_invitation_user@)'
 		)
@@ -209,32 +210,17 @@ function _getListAnswers(&$object)
 	return $res;
 }
 
-function _getLinkAnswersUser($fk_user)
+function _getLinkAnswersUser($fk_user,$ref)
 {
 
 	global $id, $i_rep;
 
 	$i_rep++;
 
-	return '<a href="'.dol_buildpath('/questionnaire/answer/card.php',1).'?id='.$fk_user.'">REP'.(str_pad($i_rep, 4, 0, STR_PAD_LEFT)).'</a>';
+	return '<a href="'.dol_buildpath('/questionnaire/answer/card.php',1).'?id='.$fk_user.'">'.$ref.'</a>';
 }
 
-function _getNomUrl($fk_element, $email, $type_element)
-{
 
-	global $db;
-	$type_element= ucfirst($type_element);
-	if($type_element == 'Thirdparty')$type_element='Societe';
-
-	if(class_exists($type_element))$u = new $type_element($db);
-
-	if (!empty($fk_element) && method_exists($u, 'getNomUrl')){
-		$u->fetch($fk_element);
-		$res = $u->getNomUrl(1);	
-	}else
-		$res = $email;
-	return $res;
-}
 
 function _seeAnswersUser(&$object, $fk_invituser)
 {

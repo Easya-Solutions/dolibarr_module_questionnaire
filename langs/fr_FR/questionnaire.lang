@@ -29,6 +29,7 @@ questionnaireAnswerStatus=Statut questionnaire
 questionnaireStatusNotSent=Non envoyé
 questionnaireStatusSent=Envoyé
 questionnaireStatusClosed=Sauvegardé
+answerStatusDraft=En attente de réponse
 
 answerValidate=Validé
 
@@ -106,6 +107,7 @@ QuestionnaireSeeAnswerLink=Visualisation réponses
 
 # ADMIN
 questionnaireSimpleNumRefModelDesc=Renvoie le numéro sous la forme QUyymm-nnnn où yy est l'année, mm le mois et nnnn un compteur séquentiel sans rupture et sans remise à 0
+answerSimpleNumRefModelDesc=Renvoie le numéro sous la forme ANSyymm-nnnn où yy est l'année, mm le mois et nnnn un compteur séquentiel sans rupture et sans remise à 0
 
 # RIGHTS
 questionnaire_right_read=Créer / visualiser ses questionnaires
@@ -138,3 +140,4 @@ MailSubjQuest=Invitation à répondre au questionnaire %s
 answerCard=Réponse
 questionnaireAnswerMonitored=Suivi
 questionnaireAnswerLinkedFiles=Fichiers joints
+Recipient=Destinataire

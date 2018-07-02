@@ -117,7 +117,7 @@ class modquestionnaire extends DolibarrModules
 		$this->const[] = array (
 				'QUESTIONNAIRE_ADDON',
 				'chaine',
-				'mod_referenceletters_simple',
+				'mod_questionnaire_simple',
 				'Use simple mask for reference letters ref',
 				1,
 				'current',
@@ -125,6 +125,24 @@ class modquestionnaire extends DolibarrModules
 		);
 		$this->const[] = array (
 				'QUESTIONNAIRE_UNIVERSAL_MASK',
+				'chaine',
+				'',
+				'Mask of reference letters reference',
+				0,
+				'current',
+				1
+		);
+		$this->const[] = array (
+				'QUESTIONNAIRE_ANSWER_ADDON',
+				'chaine',
+				'mod_answer_simple',
+				'Use simple mask for reference letters ref',
+				1,
+				'current',
+				1
+		);
+		$this->const[] = array (
+				'QUESTIONNAIRE_ANSWER_UNIVERSAL_MASK',
 				'chaine',
 				'',
 				'Mask of reference letters reference',

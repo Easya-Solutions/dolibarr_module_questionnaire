@@ -231,7 +231,8 @@ class InvitationUser extends SeedObject
 		$this->db = $db;
 
 		$this->fields = array(
-			'fk_questionnaire' => array('type' => 'integer', 'index' => true)
+			'ref'=>array('type'=>'string','length'=>50,'index'=>true)
+			,'fk_questionnaire' => array('type' => 'integer', 'index' => true)
 			, 'fk_element' => array('type' => 'integer', 'index' => true)
 			, 'type_element' => array('type' => 'string')
 			, 'fk_usergroup' => array('type' => 'integer', 'index' => true)
@@ -290,6 +291,8 @@ class InvitationUser extends SeedObject
 	{
 
 		global $user;
+		
+		$this->ref=$this->getNumero();
 
 		return $this->id > 0 ? $this->updateCommon($user) : $this->createCommon($user);
 	}
@@ -663,6 +666,49 @@ class InvitationUser extends SeedObject
 			$contactstatic->fetch($id);
 			return $contactstatic->getNomUrl(0, '', 0, '', -1, 0);
 		}
+	}
+	
+	public function getNumero()
+	{
+		if (preg_match('/^[\(]?PROV/i', $this->ref) || empty($this->ref))
+		{
+			return $this->getNextNumero();
+		}
+		
+		return $this->ref;
+	}
+	private function getNextNumero()
+	{
+		global $db,$conf;
+		
+		require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
+		/*echo '<pre>';
+		print_r($conf->global);exit;*/
+		if($conf->global->QUESTIONNAIRE_ANSWER_ADDON === 'mod_answer_universal') $mask = $conf->global->QUESTIONNAIRE_ANSWER_UNIVERSAL_MASK;
+		else $mask = 'ANS{yy}{mm}-{00000}';
+		
+		$numero = get_next_value($db, $mask, 'quest_invitation_user', 'ref','','','','next', false);
+		
+		return $numero;
+	}
+	/**
+	 * Initialise object with example values
+	 * Id must be 0 if object instance is a specimen
+	 *
+	 * @return void
+	 */
+	function initAsSpecimen() {
+		$this->id = 0;
+		
+		$this->entity = '';
+		$this->title = '';
+		$this->element_type = '';
+		$this->fk_statut = '';
+		$this->import_key = '';
+		$this->fk_user_author = '';
+		$this->datec = '';
+		$this->fk_user_mod = '';
+		$this->tms = '';
 	}
 	
 

@@ -17,9 +17,9 @@
  */
 
 /**
- * \file questionnaire/core/modules/questionnaire/modules_questionnaire.php
- * \ingroup questionnaire
- * \brief questionnaire for numbering questionnaire
+ * \file answer/core/modules/answer/modules_answer.php
+ * \ingroup answer
+ * \brief answer for numbering answer
  */
 
 /**
@@ -29,7 +29,7 @@
 
 dol_include_once('/questionnaire/class/commondocgeneratorquestionnaire.class.php');
 
-abstract class ModelePDFQuestionnaire extends CommonDocGeneratorQuestionnaire
+abstract class ModelePDFQuestionnaireAnswer extends CommonDocGeneratorQuestionnaire
 {
 	public $error = '';
 	public $pdf;
@@ -46,10 +46,10 @@ abstract class ModelePDFQuestionnaire extends CommonDocGeneratorQuestionnaire
 	static function liste_modeles($db, $maxfilenamelength = 0) {
 		global $conf;
 
-		$type = 'questionnaire';
+		$type = 'answer';
 		$liste = array();
 
-		$liste[] = 'questionnaire';
+		$liste[] = 'answer';
 
 		return $liste;
 	}
@@ -59,7 +59,7 @@ abstract class ModelePDFQuestionnaire extends CommonDocGeneratorQuestionnaire
 /**
  * Classe mere des modeles de numerotation des references de lead
  */
-abstract class ModeleNumRefQuestionnaire
+abstract class ModeleNumRefQuestionnaireAnswer
 {
 	var $error = '';
 

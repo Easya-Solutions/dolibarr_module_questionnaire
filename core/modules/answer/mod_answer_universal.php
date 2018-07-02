@@ -17,16 +17,16 @@
  */
 
 /**
- * \file questionnaire/core/modules/questionnaire/mod_questionnaire_universal.php
+ * \file answer/core/modules/answer/mod_answer_universal.php
  * \ingroup referenceletters
  * \brief Fichier contenant la classe du modele de numerotation de reference de referenceletters Universal
  */
-dol_include_once('/questionnaire/core/modules/questionnaire/modules_questionnaire.php');
+dol_include_once('/questionnaire/core/modules/answer/modules_answer.php');
 
 /**
  * Classe du modele de numerotation de reference de projet Universal
  */
-class mod_questionnaire_universal extends ModeleNumRefQuestionnaire
+class mod_answer_universal extends ModeleNumRefQuestionnaireAnswer
 {
 
 	var $version = 'dolibarr'; // 'development', 'experimental', 'dolibarr'
@@ -52,7 +52,7 @@ class mod_questionnaire_universal extends ModeleNumRefQuestionnaire
 		$texte .= '<form action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
 		$texte .= '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 		$texte .= '<input type="hidden" name="action" value="updateMask">';
-		$texte .= '<input type="hidden" name="maskconstrefletter" value="QUESTIONNAIRE_UNIVERSAL_MASK">';
+		$texte .= '<input type="hidden" name="maskconstrefletter" value="QUESTIONNAIRE_ANSWER_UNIVERSAL_MASK">';
 		$texte .= '<table class="nobordernopadding" width="100%">';
 		
 		$tooltip = $langs->trans("GenericMaskCodes", $langs->transnoentities("Module103258Name"), $langs->transnoentities("Module103258Name"));
@@ -63,7 +63,7 @@ class mod_questionnaire_universal extends ModeleNumRefQuestionnaire
 		
 		// Parametrage du prefix
 		$texte .= '<tr><td>' . $langs->trans("Mask") . ':</td>';
-		$texte .= '<td align="right">' . $form->textwithpicto('<input type="text" class="flat" size="24" name="maskrefletter" value="' . $conf->global->QUESTIONNAIRE_UNIVERSAL_MASK . '">', $tooltip, 1, 1) . '</td>';
+		$texte .= '<td align="right">' . $form->textwithpicto('<input type="text" class="flat" size="24" name="maskrefletter" value="' . $conf->global->QUESTIONNAIRE_ANSWER_UNIVERSAL_MASK . '">', $tooltip, 1, 1) . '</td>';
 		
 		$texte .= '<td align="left" rowspan="2">&nbsp; <input type="submit" class="button" value="' . $langs->trans("Modify") . '" name="Button"></td>';
 		
@@ -112,14 +112,14 @@ class mod_questionnaire_universal extends ModeleNumRefQuestionnaire
 		require_once DOL_DOCUMENT_ROOT . "/core/lib/functions2.lib.php";
 		
 		// On defini critere recherche compteur
-		$mask = $conf->global->QUESTIONNAIRE_UNIVERSAL_MASK;
+		$mask = $conf->global->QUESTIONNAIRE_ANSWER_UNIVERSAL_MASK;
 		
 		if (! $mask) {
 			$this->error = 'NotConfigured';
 			return 0;
 		}
 		
-		$numFinal = get_next_value($db, $mask, 'quest_questionnaire', 'ref');
+		$numFinal = get_next_value($db, $mask, 'quest_invitation_user', 'ref','','','','next', false);
 		
 		return $numFinal;
 	}

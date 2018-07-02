@@ -21,16 +21,16 @@
  * \ingroup lead
  * \brief File with class to manage the numbering module Simple for lead references
  */
-dol_include_once('/questionnaire/core/modules/questionnaire/modules_questionnaire.php');
+dol_include_once('/questionnaire/core/modules/answer/modules_answer.php');
 
 /**
  * Class to manage the numbering module Simple for lead references
  */
-class mod_questionnaire_simple extends ModeleNumRefQuestionnaire
+class mod_answer_simple extends ModeleNumRefQuestionnaireAnswer
 {
 
 	var $version = 'dolibarr'; // 'development', 'experimental', 'dolibarr'
-	var $prefix = 'QU';
+	var $prefix = 'ANS';
 
 	var $error = '';
 
@@ -44,7 +44,7 @@ class mod_questionnaire_simple extends ModeleNumRefQuestionnaire
 	function info()
 	{
 		global $langs;
-		return $langs->trans("questionnaireSimpleNumRefModelDesc", $this->prefix);
+		return $langs->trans("answerSimpleNumRefModelDesc", $this->prefix);
 	}
 
 	/**
@@ -54,7 +54,7 @@ class mod_questionnaire_simple extends ModeleNumRefQuestionnaire
 	 */
 	function getExample()
 	{
-		return $this->prefix . "1402-0001";
+		return $this->prefix . "1402-00001";
 	}
 
 	/**
@@ -72,9 +72,9 @@ class mod_questionnaire_simple extends ModeleNumRefQuestionnaire
 		
 		$posindice = 8;
 		$sql = "SELECT MAX(SUBSTRING(ref FROM " . $posindice . ")) as max";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "questionnaire_elements";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "answer_elements";
 		$sql .= " WHERE ref LIKE '" . $this->prefix . "____-%'";
-		$sql.= " AND entity = ".$conf->entity;
+	//	$sql.= " AND entity = ".$conf->entity;
 		$resql = $db->query($sql);
 		if ($resql) {
 			$row = $db->fetch_row($resql);
@@ -109,9 +109,9 @@ class mod_questionnaire_simple extends ModeleNumRefQuestionnaire
 		// D'abord on recupere la valeur max
 		
 		$sql = "SELECT MAX(SUBSTRING(ref FROM 8)) as max";
-		$sql.= " FROM " . MAIN_DB_PREFIX . "quest_questionnaire";
+		$sql.= " FROM " . MAIN_DB_PREFIX . "quest_invitation_user";
 		$sql.= " WHERE ref like '" . $this->prefix . "____-%'";
-		$sql.= " AND entity = ".$conf->entity;
+		//$sql.= " AND entity = ".$conf->entity;
 		
 		dol_syslog(get_class($this).'::getNextValue sql='.$sql,LOG_DEBUG);
 		$resql = $db->query($sql);
@@ -120,7 +120,7 @@ class mod_questionnaire_simple extends ModeleNumRefQuestionnaire
 			if ($obj) $max = intval($obj->max);
 			else $max = 0;
 		} else {
-			dol_syslog("mod_questionnaire_simple::getNextValue sql=" . $sql);
+			dol_syslog("mod_answer_simple::getNextValue sql=" . $sql);
 			return - 1;
 		}
 		
@@ -130,7 +130,7 @@ class mod_questionnaire_simple extends ModeleNumRefQuestionnaire
 		$yymm = strftime("%y%m", $date);
 		$num = sprintf("%04s", $max + 1);
 		
-		dol_syslog("mod_questionnaire_simple::getNextValue return " . $this->prefix . $yymm . "-" . $num);
+		dol_syslog("mod_answer_simple::getNextValue return " . $this->prefix . $yymm . "-" . $num);
 		return $this->prefix . $yymm . "-" . $num;
 	}
 }

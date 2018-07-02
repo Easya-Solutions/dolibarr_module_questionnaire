@@ -22,12 +22,17 @@ $langs->load('questionnaire@questionnaire');
 
 $action = GETPOST('action');
 $id = GETPOST('id', 'int');
+$ref = GETPOST('ref');
+
 $page=GETPOST('page');
 if(empty($page))$page=1;
 
 
 $object = new InvitationUser($db);
-$object->load($id);
+if (!empty($id))
+	$object->load($id);
+elseif (!empty($ref))
+	$object->load('', $ref);
 $title = $langs->trans("Module104961Name");
 
 $TArrayOfCss = array('/questionnaire/css/questionnaire.css');
@@ -43,9 +48,9 @@ $head = answer_prepare_head($object);
 $picto = dol_buildpath('/questionnaire/img/object_questionnaire.png', 1);
 dol_fiche_head($head, 'card', $langs->trans("answer"), 0, $picto, 1);
 $object->picto = 'questionnaire@questionnaire';
-_getBanner($object, $action, false, false, true);
+_getBanner($object, $action, false, true, true);
 
-
+print '<hr>';
 
 $questionnaire = new Questionnaire($db);
 $questionnaire->load($object->fk_questionnaire);

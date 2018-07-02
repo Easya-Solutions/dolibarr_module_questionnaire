@@ -102,7 +102,7 @@ print_fiche_titre($langs->trans($page_name), $linkback);
 $head = questionnaireAdminPrepareHead();
 dol_fiche_head(
     $head,
-    'settings',
+    'answer',
     $langs->trans("Module104961Name"),
     0,
     "questionnaire@questionnaire"
@@ -112,7 +112,7 @@ dol_fiche_head(
 $dirmodels = array_merge(array (
 		'/'
 ), ( array ) $conf->modules_parts['models']);
-
+/*
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
 print '<td>' . $langs->trans("Name") . "</td>\n";
@@ -203,7 +203,7 @@ foreach ( $dirmodels as $reldir ) {
 			closedir($handle);
 		}
 	}
-}/*
+}*/
 print "</table><br>\n";
 
 
@@ -298,7 +298,7 @@ foreach ( $dirmodels as $reldir ) {
 		}
 	}
 }
-print "</table><br>\n";*/
+print "</table><br>\n";
 
 /*
 $form=new Form($db);
