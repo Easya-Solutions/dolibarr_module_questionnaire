@@ -29,7 +29,7 @@
 
 dol_include_once('/questionnaire/class/commondocgeneratorquestionnaire.class.php');
 
-abstract class ModelePDFQuestionnaire extends CommonDocGeneratorQuestionnaire
+abstract class ModeleQuestionnaire extends CommonDocGeneratorQuestionnaire
 {
 	public $error = '';
 	public $pdf;
@@ -49,7 +49,8 @@ abstract class ModelePDFQuestionnaire extends CommonDocGeneratorQuestionnaire
 		$type = 'questionnaire';
 		$liste = array();
 
-		$liste[] = 'questionnaire';
+		include_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
+		$liste=getListOfModels($db,$type,$maxfilenamelength);
 
 		return $liste;
 	}

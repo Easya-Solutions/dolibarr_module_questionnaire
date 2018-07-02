@@ -9,6 +9,7 @@
 require '../config.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
+require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 dol_include_once('/questionnaire/class/question.class.php');
 dol_include_once('/questionnaire/class/question_link.class.php');
 dol_include_once('/questionnaire/class/answer.class.php');
@@ -33,6 +34,17 @@ if (!empty($id))
 	$object->load($id);
 elseif (!empty($ref))
 	$object->load('', $ref);
+
+
+$formfile = new FormFile($db);
+$upload_dir=DOL_DATA_ROOT.'/questionnaire';
+if(!is_dir($upload_dir))mkdir($upload_dir);
+	
+$permissioncreate=1;
+include DOL_DOCUMENT_ROOT.'/core/actions_builddoc.inc.php';
+
+
+
 $title = $langs->trans("Module104961Name");
 
 $TArrayOfCss = array('/questionnaire/css/questionnaire.css');
@@ -66,9 +78,24 @@ if (!empty($questionnaire->questions))
 		print draw_question_for_user($q);
 	}
 	print '</div>';
+	print '</div>';
 }
+print '<br/>';
+print '<div class="fichecenter"><div class="fichehalfleft">';
+print '<a name="builddoc"></a>'; // ancre
+/*
+ * Documents generes
+ */
+$filename = dol_sanitizeFileName($object->ref);
+$filedir = $upload_dir."/".dol_sanitizeFileName($object->ref);
+$urlsource = $_SERVER["PHP_SELF"]."?id=".$object->id."&page=".GETPOST('page');
+$genallowed = 1;
+$delallowed = 1;
 
+print $formfile->showdocuments('questionnaire', $filename, $filedir, $urlsource, $genallowed, $delallowed, $object->modelpdf, 1, 0, 0, 28, 0, '', 0, '', $soc->default_lang, '', $object);
 
+print '</div>';
+print '</div>';
 
 llxFooter();
 

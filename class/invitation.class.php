@@ -238,6 +238,7 @@ class InvitationUser extends SeedObject
 			, 'fk_usergroup' => array('type' => 'integer', 'index' => true)
 			, 'token' => array('type' => 'string')
 			, 'email' => array('type' => 'string')
+			, 'model_pdf' => array('type' => 'string')
 			, 'fk_statut' => array('type' => 'integer', 'index' => true) // Indique si l'utilisateur a enregistré ses données pour terminer plus tard, ou s'il a terminé et validé son questionnaire
 			, 'sent' => array('type' => 'integer', 'index' => true) // Indique si l'utilisateur a enregistré ses données pour terminer plus tard, ou s'il a terminé et validé son questionnaire
 			, 'date_limite_reponse' => array('type' => 'date')
@@ -709,6 +710,40 @@ class InvitationUser extends SeedObject
 		$this->datec = '';
 		$this->fk_user_mod = '';
 		$this->tms = '';
+	}
+	
+	/**
+	 *  Create a document onto disk according to template module.
+	 *
+	 * 	@param	    string		$modele			Force model to use ('' to not force)
+	 * 	@param		Translate	$outputlangs	Object langs to use for output
+	 *  @param      int			$hidedetails    Hide details of lines
+	 *  @param      int			$hidedesc       Hide description
+	 *  @param      int			$hideref        Hide ref
+	 * 	@return     int         				0 if KO, 1 if OK
+	 */
+	public function generateDocument($modele, $outputlangs, $hidedetails=0, $hidedesc=0, $hideref=0)
+	{
+		global $conf,$user,$langs;
+
+		$langs->load("questionnaire@questionnaire");
+
+		// Positionne le modele sur le nom du modele a utiliser
+		if (! dol_strlen($modele))
+		{
+			if (! empty($conf->global->QUESTIONNAIRE_ADDON_PDF))
+			{
+				$modele = $conf->global->QUESTIONNAIRE_ADDON_PDF;
+			}
+			else
+			{
+				$modele = 'answer';
+			}
+		}
+
+		$modelpath = "core/modules/questionnaire/doc/";
+
+		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref);
 	}
 	
 

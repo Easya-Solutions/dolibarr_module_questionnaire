@@ -141,3 +141,6 @@ answerCard=Réponse
 questionnaireAnswerMonitored=Suivi
 questionnaireAnswerLinkedFiles=Fichiers joints
 Recipient=Destinataire
+
+AnswerDocumentTemplates=Modèle de document pour la fiche réponse
+DocumentModelAnswer= Modèle de document PDF pour les réponses
