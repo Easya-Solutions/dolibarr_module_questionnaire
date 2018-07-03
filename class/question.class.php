@@ -94,6 +94,8 @@ class Question extends SeedObject {
 				$choice = new Choice($db);
 				$choice->load($res->rowid);
 				$this->choices[] = $choice;
+				if($choice->type == 'line')$this->choices_line[]=$choice;
+				if($choice->type == 'column')$this->choices_column[]=$choice;
 			}
 			
 		} else return 0;

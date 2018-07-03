@@ -30,7 +30,7 @@ questionnaireStatusNotSent=Non envoyé
 questionnaireStatusSent=Envoyé
 questionnaireStatusClosed=Sauvegardé
 answerStatusDraft=En attente de réponse
-
+answerStatusValidated=Validé
 answerValidate=Validé
 
 Draft=Brouillon

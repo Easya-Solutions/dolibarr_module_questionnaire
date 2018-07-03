@@ -104,14 +104,14 @@ class pdf_answer extends ModelePDFProduct
 		$this->marge_haute = isset($conf->global->MAIN_PDF_MARGIN_TOP) ? $conf->global->MAIN_PDF_MARGIN_TOP : 10;
 		$this->marge_basse = isset($conf->global->MAIN_PDF_MARGIN_BOTTOM) ? $conf->global->MAIN_PDF_MARGIN_BOTTOM : 10;
 
-		$this->option_logo = 1;					// Affiche logo
-		$this->option_codeproduitservice = 0;	  // Affiche code produit-service
-		$this->option_multilang = 1;			   // Dispo en plusieurs langues
-		$this->option_freetext = 0;	   // Support add of a personalised text
+		$this->option_logo = 1;  // Affiche logo
+		$this->option_codeproduitservice = 0;   // Affiche code produit-service
+		$this->option_multilang = 1;   // Dispo en plusieurs langues
+		$this->option_freetext = 0; // Support add of a personalised text
 		// Recupere emetteur
 		$this->emetteur = $mysoc;
 		if (!$this->emetteur->country_code)
-			$this->emetteur->country_code = substr($langs->defaultlang, -2);	// By default if not defined
+			$this->emetteur->country_code = substr($langs->defaultlang, -2); // By default if not defined
 	}
 
 	/**
@@ -184,7 +184,7 @@ class pdf_answer extends ModelePDFProduct
 				$hookmanager->initHooks(array('pdfgeneration'));
 				$parameters = array('file' => $file, 'object' => $object, 'outputlangs' => $outputlangs);
 				global $action;
-				$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action);	// Note that $action and $object may have been modified by some hooks
+				$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 				// Create pdf instance
 				$pdf = pdf_getInstance($this->format);
 				$default_font_size = pdf_getPDFFontSize($outputlangs); // Must be after pdf_getInstance
@@ -235,8 +235,8 @@ class pdf_answer extends ModelePDFProduct
 				$tab_top_newpage = (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD) ? 42 : 10);
 				$tab_height = 130;
 				$tab_height_newpage = 150;
-
-
+				$nexY = $tab_top;
+				$pageposbefore = $pdf->getPage();
 				$questionnaire = new Questionnaire($db);
 				$questionnaire->load($object->fk_questionnaire);
 				if (empty($object->questions))
@@ -244,7 +244,7 @@ class pdf_answer extends ModelePDFProduct
 
 				if (!empty($questionnaire->questions))
 				{
-					for ($i=0;$i<count($questionnaire->questions);$i++)
+					for ($i = 0; $i < count($questionnaire->questions); $i++)
 					{
 						$curY = $nexY;
 						$pdf->SetFont('', '', $default_font_size - 1);   // Into loop to work with multipage
@@ -252,110 +252,503 @@ class pdf_answer extends ModelePDFProduct
 
 						$pdf->setTopMargin($tab_top_newpage);
 						$pdf->setPageOrientation('', 1, $heightforfooter + $heightforfreetext + $heightforinfotot); // The only function to edit the bottom margin of current page to set it.
-						$pageposbefore = $pdf->getPage();
+						//	$showpricebeforepagebreak = 1;
+//
+//						$pdf->startTransaction();
+//						$pageposafter = $pdf->getPage();
+//						if ($pageposafter > $pageposbefore) // There is a pagebreak
+//						{
+//							$pdf->rollbackTransaction(true);
+//							$pageposafter = $pageposbefore;
+//							//print $pageposafter.'-'.$pageposbefore;exit;
+//							$pdf->setPageOrientation('', 1, $heightforfooter); // The only function to edit the bottom margin of current page to set it.
+//							$pageposafter = $pdf->getPage();
+//							$posyafter = $pdf->GetY();
+//							if ($posyafter > ($this->page_hauteur - ($heightforfooter + $heightforfreetext + $heightforinfotot))) // There is no space left for total+free text
+//							{
+//								if ($i == ($nblignes - 1)) // No more lines, and no space left to show total, so we create a new page
+//								{
+//									$pdf->AddPage('', '', true);
+//									if (!empty($tplidx))
+//										$pdf->useTemplate($tplidx);
+//									if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
+//										$this->_pagehead($pdf, $object, 0, $outputlangs);
+//									$pdf->setPage($pageposafter + 1);
+//								}
+//							}
+//							else
+//							{
+//								// We found a page break
+//								$showpricebeforepagebreak = 0;
+//							}
+//						}
+//						else // No pagebreak
+//						{
+//							$pdf->commitTransaction();
+//						}
+						//$nexY = $pdf->GetY();
 
-						// Description of product line
-						$curX = $this->posxdesc - 1;
-
-						$showpricebeforepagebreak = 1;
-
-						$pdf->startTransaction();
 						$pageposafter = $pdf->getPage();
-						if ($pageposafter > $pageposbefore) // There is a pagebreak
-						{
-							$pdf->rollbackTransaction(true);
-							$pageposafter = $pageposbefore;
-							//print $pageposafter.'-'.$pageposbefore;exit;
-							$pdf->setPageOrientation('', 1, $heightforfooter); // The only function to edit the bottom margin of current page to set it.
-							$pageposafter = $pdf->getPage();
-							$posyafter = $pdf->GetY();
-							if ($posyafter > ($this->page_hauteur - ($heightforfooter + $heightforfreetext + $heightforinfotot))) // There is no space left for total+free text
-							{
-								if ($i == ($nblignes - 1)) // No more lines, and no space left to show total, so we create a new page
-								{
-									$pdf->AddPage('', '', true);
-									if (!empty($tplidx))
-										$pdf->useTemplate($tplidx);
-									if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
-										$this->_pagehead($pdf, $object, 0, $outputlangs);
-									$pdf->setPage($pageposafter + 1);
-								}
-							}
-							else
-							{
-								// We found a page break
-								$showpricebeforepagebreak = 0;
-							}
-						}
-						else // No pagebreak
-						{
-							$pdf->commitTransaction();
-						}
-
-						$nexY = $pdf->GetY();
-						$pageposafter = $pdf->getPage();
-						$pdf->setPage($pageposbefore);
+						//	var_dump($pageposbefore,$pageposafter,$nexY,$curY);
+						/* 	if($pageposafter>$pageposbefore){
+						  $curY =$nexY = $tab_top_newpage;
+						  $pdf->setPage($pageposafter);
+						  }else{
+						  $pdf->setPage($pageposbefore);
+						  } */
 						$pdf->setTopMargin($this->marge_haute);
+
 						$pdf->setPageOrientation('', 1, 0); // The only function to edit the bottom margin of current page to set it.
 						// We suppose that a too long description is moved completely on next page
-						if ($pageposafter > $pageposbefore && empty($showpricebeforepagebreak))
+
+						$pageposbefore = $pdf->getPage();
+						if ($nexY > $this->page_hauteur - $heightforfooter)
 						{
-							$pdf->setPage($pageposafter);
-							$curY = $tab_top_newpage;
+							$this->_pagefoot($pdf, $object, $outputlangs, 1);
+
+							// New page
+							$pdf->AddPage();
+							if (!empty($tplidx))
+								$pdf->useTemplate($tplidx);
+							$pagenb++;
+
+							if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
+								$this->_pagehead($pdf, $object, 0, $outputlangs);
+							$curY = $nexY = $tab_top_newpage;
+							$nexY += 3;
+							$pdf->setPage($pdf->getPage());
 						}
 
 						$pdf->SetFont('', '', $default_font_size - 1);   // On repositionne la police par defaut
 						// VAT Rate
-						
-
 						// Total HT line
-						if (empty($questionnaire->questions[$i]->answers))
-							$questionnaire->questions[$i]->loadAnswers($object->id);
-						
-						$pdf->SetXY($this->marge_gauche, $i*5);
-						$pdf->SetFont('', 'B', $default_font_size);
-						$pdf->MultiCell($this->page_largeur - ($this->marge_droite+$this->marge_gauche), 3, dol_htmlentities($questionnaire->questions[$i]->label), 0, 'L', 0);
-						
-						
-					
-						
-						
-						
-						switch ($questionnaire->questions[$i]->type) {
-							case 'string':
-
-								break;
-						}
-						
-						
-
-
-						// Add line
-						if (!empty($conf->global->MAIN_PDF_DASH_BETWEEN_LINES) && $i < ($nblignes - 1))
+						if ($questionnaire->questions[$i]->type != 'page' && $questionnaire->questions[$i]->type != 'separator')
 						{
-							$pdf->setPage($pageposafter);
-							$pdf->SetLineStyle(array('dash' => '1,1', 'color' => array(80, 80, 80)));
-							//$pdf->SetDrawColor(190,190,200);
-							$pdf->line($this->marge_gauche, $nexY + 1, $this->page_largeur - $this->marge_droite, $nexY + 1);
-							$pdf->SetLineStyle(array('dash' => 0));
+							if (empty($questionnaire->questions[$i]->answers))
+								$questionnaire->questions[$i]->loadAnswers($object->id);
+
+						
+							if ($questionnaire->questions[$i]->type == 'title')
+							{
+								$pdf->SetFont('', 'B', 15);
+								$nexY += 8;
+							}
+							else if ($questionnaire->questions[$i]->type == 'paragraph')
+							{
+								$pdf->SetFont('', 'I', $default_font_size);
+								$nblignes = (substr_count($questionnaire->questions[$i]->label, "\n") + 1);
+
+								$myStrings = explode("\n", $questionnaire->questions[$i]->label);
+								if (!empty($myStrings))
+								{
+									foreach ($myStrings as $string)
+									{
+										$nexY += pdfGetHeightForHtmlContent($pdf, $string);
+									}
+								}
+								else
+								{
+									$nexY += pdfGetHeightForHtmlContent($pdf, $questionnaire->questions[$i]->answers[0]->value) * $nblignes;
+								}
+							}
+							else
+							{
+								$pdf->SetFont('', 'B', $default_font_size);
+								$nexY += 4;
+							}
+							$pdf->SetXY($this->marge_gauche, $curY);
+
+							$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $questionnaire->questions[$i]->label, 0, 'L', 0);
+
+
+							$curY = $nexY;
+							switch ($questionnaire->questions[$i]->type) {
+								case 'string':
+
+
+									$nexY += 4;
+									if ($nexY > $this->page_hauteur - $heightforfooter)
+									{
+										$this->_pagefoot($pdf, $object, $outputlangs, 1);
+
+										// New page
+										$pdf->AddPage();
+										if (!empty($tplidx))
+											$pdf->useTemplate($tplidx);
+										$pagenb++;
+
+										if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
+											$this->_pagehead($pdf, $object, 0, $outputlangs);
+										$curY = $nexY = $tab_top_newpage;
+										$nexY += 3;
+										$pdf->setPage($pdf->getPage());
+									}
+									$pdf->SetXY($this->marge_gauche, $curY);
+									$pdf->SetFont('', '', $default_font_size);
+									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $questionnaire->questions[$i]->answers[0]->value, 0, 'L', 0);
+
+									break;
+								case 'textarea':
+
+
+									$nblignes = (substr_count($questionnaire->questions[$i]->answers[0]->value, "\n") + 1);
+									$myStrings = explode("\n", $questionnaire->questions[$i]->answers[0]->value);
+									if (!empty($myStrings))
+									{
+										foreach ($myStrings as $string)
+										{
+											$nexY += pdfGetHeightForHtmlContent($pdf, $string);
+										}
+									}
+									else
+									{
+										$nexY += pdfGetHeightForHtmlContent($pdf, $questionnaire->questions[$i]->answers[0]->value) * $nblignes;
+									}
+
+									if ($nexY > $this->page_hauteur - $heightforfooter)
+									{
+										$this->_pagefoot($pdf, $object, $outputlangs, 1);
+
+										// New page
+										$pdf->AddPage();
+										if (!empty($tplidx))
+											$pdf->useTemplate($tplidx);
+										$pagenb++;
+
+										if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
+											$this->_pagehead($pdf, $object, 0, $outputlangs);
+										$curY = $nexY = $tab_top_newpage;
+										if (!empty($myStrings))
+										{
+											foreach ($myStrings as $string)
+											{
+												$nexY += pdfGetHeightForHtmlContent($pdf, $string)+1;
+											}
+										}
+										else
+										{
+											$nexY += pdfGetHeightForHtmlContent($pdf, $questionnaire->questions[$i]->answers[0]->value) * $nblignes;
+										}
+										$pdf->setPage($pdf->getPage());
+									}
+									$pdf->SetXY($this->marge_gauche, $curY);
+									$pdf->SetFont('', '', $default_font_size);
+									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $questionnaire->questions[$i]->answers[0]->value, 0, 'L', 0);
+
+									break;
+								case 'select':
+									$choice = new Choice($db);
+									$choice->load($questionnaire->questions[$i]->answers[0]->fk_choix);
+
+
+									$nexY += 4;
+									if ($nexY > $this->page_hauteur - $heightforfooter)
+									{
+										$this->_pagefoot($pdf, $object, $outputlangs, 1);
+
+										// New page
+										$pdf->AddPage();
+										if (!empty($tplidx))
+											$pdf->useTemplate($tplidx);
+										$pagenb++;
+
+										if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
+											$this->_pagehead($pdf, $object, 0, $outputlangs);
+										$curY = $nexY = $tab_top_newpage;
+										$nexY += 3;
+										$pdf->setPage($pdf->getPage());
+									}
+									$pdf->SetXY($this->marge_gauche, $curY);
+									$pdf->SetFont('', '', $default_font_size);
+									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $choice->label, 0, 'L', 0);
+
+									break;
+								case 'listradio':
+									$choice = new Choice($db);
+									$choice->load($questionnaire->questions[$i]->answers[0]->fk_choix);
+
+
+									$nexY += 4;
+									if ($nexY > $this->page_hauteur - $heightforfooter)
+									{
+										$this->_pagefoot($pdf, $object, $outputlangs, 1);
+
+										// New page
+										$pdf->AddPage();
+										if (!empty($tplidx))
+											$pdf->useTemplate($tplidx);
+										$pagenb++;
+
+										if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
+											$this->_pagehead($pdf, $object, 0, $outputlangs);
+										$curY = $nexY = $tab_top_newpage;
+										$nexY += 3;
+										$pdf->setPage($pdf->getPage());
+									}
+									$pdf->SetXY($this->marge_gauche, $curY);
+									$pdf->SetFont('', '', $default_font_size);
+									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $choice->label, 0, 'L', 0);
+
+									break;
+								case 'listcheckbox':
+									for ($w = 0; $w < count($questionnaire->questions[$i]->answers); $w++)
+									{
+										$curY = $nexY;
+										$choice = new Choice($db);
+										$choice->load($questionnaire->questions[$i]->answers[$w]->fk_choix);
+
+
+										$nexY += 4;
+										if ($nexY > $this->page_hauteur - $heightforfooter)
+										{
+											$this->_pagefoot($pdf, $object, $outputlangs, 1);
+
+											// New page
+											$pdf->AddPage();
+											if (!empty($tplidx))
+												$pdf->useTemplate($tplidx);
+											$pagenb++;
+
+											if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
+												$this->_pagehead($pdf, $object, 0, $outputlangs);
+											$curY = $nexY = $tab_top_newpage;
+											$nexY += 3;
+											$pdf->setPage($pdf->getPage());
+										}
+										$pdf->SetXY($this->marge_gauche, $curY);
+										$pdf->SetFont('', '', $default_font_size);
+										$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $choice->label, 0, 'L', 0);
+									}
+									break;
+								case 'grilleradio':
+									for ($w = 0; $w < count($questionnaire->questions[$i]->answers); $w++)
+									{
+										$curY = $nexY;
+										$choix = new Choice($db);
+										$choix->fetch($questionnaire->questions[$i]->answers[$w]->fk_choix);
+										$res = $choix->label;
+										$choix->fetch($questionnaire->questions[$i]->answers[$w]->fk_choix_col);
+										$res .= ' : '.$choix->label;
+
+
+										$nexY += 4;
+										if ($nexY > $this->page_hauteur - $heightforfooter)
+										{
+											$this->_pagefoot($pdf, $object, $outputlangs, 1);
+
+											// New page
+											$pdf->AddPage();
+											if (!empty($tplidx))
+												$pdf->useTemplate($tplidx);
+											$pagenb++;
+
+											if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
+												$this->_pagehead($pdf, $object, 0, $outputlangs);
+											$curY = $nexY = $tab_top_newpage;
+											$nexY += 3;
+											$pdf->setPage($pdf->getPage());
+										}
+										$pdf->SetXY($this->marge_gauche, $curY);
+										$pdf->SetFont('', '', $default_font_size);
+										$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $res, 0, 'L', 0);
+									}
+									break;
+								case 'grillecheckbox':
+									$questionnaire->questions[$i]->loadChoices();
+
+									foreach ($questionnaire->questions[$i]->choices_line as $choice_line)
+									{
+										foreach ($questionnaire->questions[$i]->choices_column as $choice_column)
+										{
+											$res = $choice_line->label.'  '.$choice_column->label;
+											foreach ($questionnaire->questions[$i]->answers as $answer)
+											{
+												if ($answer->fk_choix == $choice_line->id && $answer->fk_choix_col == $choice_column->id)
+													$res .= '  => Oui';
+											}
+											if (strpos($res, '=>') === false)
+												$res .= '  => Non';
+											$curY = $nexY;
+
+											$nexY += 4;
+											if ($nexY > $this->page_hauteur - $heightforfooter)
+											{
+												$this->_pagefoot($pdf, $object, $outputlangs, 1);
+
+												// New page
+												$pdf->AddPage();
+												if (!empty($tplidx))
+													$pdf->useTemplate($tplidx);
+												$pagenb++;
+
+												if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
+													$this->_pagehead($pdf, $object, 0, $outputlangs);
+												$curY = $nexY = $tab_top_newpage;
+												$nexY += 3;
+												$pdf->setPage($pdf->getPage());
+											}
+											$pdf->SetXY($this->marge_gauche, $curY);
+											$pdf->SetFont('', '', $default_font_size);
+											$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $res, 0, 'L', 0);
+										}
+									}
+									break;
+								case 'grillestring':
+									$questionnaire->questions[$i]->loadChoices();
+
+									foreach ($questionnaire->questions[$i]->choices_line as $choice_line)
+									{
+										foreach ($questionnaire->questions[$i]->choices_column as $choice_column)
+										{
+											$res = $choice_line->label.'  '.$choice_column->label;
+											foreach ($questionnaire->questions[$i]->answers as $answer)
+											{
+												if ($answer->fk_choix == $choice_line->id && $answer->fk_choix_col == $choice_column->id)
+													$res .= '  => '.$answer->value;
+											}
+											if (strpos($res, '=>') === false)
+												$res .= '  => ';
+											$curY = $nexY;
+
+											$nexY += 4;
+											if ($nexY > $this->page_hauteur - $heightforfooter)
+											{
+												$this->_pagefoot($pdf, $object, $outputlangs, 1);
+
+												// New page
+												$pdf->AddPage();
+												if (!empty($tplidx))
+													$pdf->useTemplate($tplidx);
+												$pagenb++;
+
+												if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
+													$this->_pagehead($pdf, $object, 0, $outputlangs);
+												$curY = $nexY = $tab_top_newpage;
+												$nexY += 3;
+												$pdf->setPage($pdf->getPage());
+											}
+											$pdf->SetXY($this->marge_gauche, $curY);
+											$pdf->SetFont('', '', $default_font_size);
+											$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $res, 0, 'L', 0);
+										}
+									}
+									break;
+
+								case 'date':
+
+
+									if (!empty($questionnaire->questions[$i]->answers[0]->value))
+										$date = date('d/m/Y', $questionnaire->questions[$i]->answers[0]->value);
+									else
+										$date = '';
+									$nexY += 4;
+									if ($nexY > $this->page_hauteur - $heightforfooter)
+									{
+										$this->_pagefoot($pdf, $object, $outputlangs, 1);
+
+										// New page
+										$pdf->AddPage();
+										if (!empty($tplidx))
+											$pdf->useTemplate($tplidx);
+										$pagenb++;
+
+										if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
+											$this->_pagehead($pdf, $object, 0, $outputlangs);
+										$curY = $nexY = $tab_top_newpage;
+										$nexY += 3;
+										$pdf->setPage($pdf->getPage());
+									}
+									$pdf->SetXY($this->marge_gauche, $curY);
+									$pdf->SetFont('', '', $default_font_size);
+									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $date, 0, 'L', 0);
+
+									break;
+
+								case 'hour':
+
+
+									if (!empty($questionnaire->questions[$i]->answers[0]->value))
+										$hour = gmdate("H:i", $questionnaire->questions[$i]->answers[0]->value);
+									else
+										$hour = '';
+									$nexY += 4;
+									if ($nexY > $this->page_hauteur - $heightforfooter)
+									{
+										$this->_pagefoot($pdf, $object, $outputlangs, 1);
+
+										// New page
+										$pdf->AddPage();
+										if (!empty($tplidx))
+											$pdf->useTemplate($tplidx);
+										$pagenb++;
+
+										if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
+											$this->_pagehead($pdf, $object, 0, $outputlangs);
+										$curY = $nexY = $tab_top_newpage;
+										$nexY += 3;
+										$pdf->setPage($pdf->getPage());
+									}
+									$pdf->SetXY($this->marge_gauche, $curY);
+									$pdf->SetFont('', '', $default_font_size);
+									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $hour, 0, 'L', 0);
+
+									break;
+
+								case 'linearscale':
+
+
+									$nexY += 4;
+									if ($nexY > $this->page_hauteur - $heightforfooter)
+									{
+										$this->_pagefoot($pdf, $object, $outputlangs, 1);
+
+										// New page
+										$pdf->AddPage();
+										if (!empty($tplidx))
+											$pdf->useTemplate($tplidx);
+										$pagenb++;
+
+										if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
+											$this->_pagehead($pdf, $object, 0, $outputlangs);
+										$curY = $nexY = $tab_top_newpage;
+										$nexY += 3;
+										$pdf->setPage($pdf->getPage());
+									}
+									$pdf->SetXY($this->marge_gauche, $curY);
+									$pdf->SetFont('', '', $default_font_size);
+									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $questionnaire->questions[$i]->answers[0]->value, 0, 'L', 0);
+
+									break;
+							}
+
+
+							$nexY += 2;
 						}
 
-						$nexY += 2;	// Passe espace entre les lignes
+
+
+
+
+
+
+
+
+						// Passe espace entre les lignes
 						// Detect if some page were added automatically and output _tableau for past pages
-						while ($pagenb < $pageposafter)
-						{
-							$pdf->setPage($pagenb);
-							
-							$this->_pagefoot($pdf, $object, $outputlangs, 1);
-							$pagenb++;
-							$pdf->setPage($pagenb);
-							$pdf->setPageOrientation('', 1, 0); // The only function to edit the bottom margin of current page to set it.
-							if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
-								$this->_pagehead($pdf, $object, 0, $outputlangs);
-						}
+//						while ($pagenb < $pageposafter)
+//						{
+//							$pdf->setPage($pagenb);
+//
+//							$this->_pagefoot($pdf, $object, $outputlangs, 1);
+//							$pagenb++;
+//							$pdf->setPage($pagenb);
+//							$pdf->setPageOrientation('', 1, 0); // The only function to edit the bottom margin of current page to set it.
+//							if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
+//								$this->_pagehead($pdf, $object, 0, $outputlangs);
+//						}
 						if (isset($object->lines[$i + 1]->pagebreak) && $object->lines[$i + 1]->pagebreak)
 						{
-							
+
 							$this->_pagefoot($pdf, $object, $outputlangs, 1);
 							// New page
 							$pdf->AddPage();
@@ -365,8 +758,7 @@ class pdf_answer extends ModelePDFProduct
 							if (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD))
 								$this->_pagehead($pdf, $object, 0, $outputlangs);
 						}
-
-						
+						//var_dump($nexY);
 					}
 				}
 
@@ -595,7 +987,7 @@ class pdf_answer extends ModelePDFProduct
 				$hookmanager->initHooks(array('pdfgeneration'));
 				$parameters = array('file' => $file, 'object' => $object, 'outputlangs' => $outputlangs);
 				global $action;
-				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action);	// Note that $action and $object may have been modified by some hooks
+				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
 				if (!empty($conf->global->MAIN_UMASK))
 					@chmod($file, octdec($conf->global->MAIN_UMASK));
