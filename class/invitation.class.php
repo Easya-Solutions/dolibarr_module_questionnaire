@@ -283,6 +283,8 @@ class InvitationUser extends SeedObject
 
 	function setValid()
 	{
+		global $langs;
+		$this->generateDocument('', $langs, '', '', '');
 
 		$this->fk_statut = 1;
 		$this->save();

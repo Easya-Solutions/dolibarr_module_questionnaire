@@ -2007,7 +2007,8 @@ function draw_pagination($page, $object)
 function answer_prepare_head(InvitationUser $object)
 {
 	global $db, $langs, $conf, $user;
-
+	dol_include_once('/core/class/link.class.php');
+	dol_include_once('/core/lib/files.lib.php');
 	$h = 0;
 	$head = array();
 	$head[$h][0] = dol_buildpath('/questionnaire/answer/card.php', 1).'?id='.$object->id;
@@ -2022,10 +2023,15 @@ function answer_prepare_head(InvitationUser $object)
 		$head[$h][1] = $langs->trans("questionnaireAnswerMonitored");
 		$head[$h][2] = 'monitor';
 		$h++;
-
-		$head[$h][0] = dol_buildpath('/questionnaire/answer/linked_files.php', 1).'?id='.$object->id;
+		
+		$upload_dir = DOL_DATA_ROOT . "/questionnaire/" . dol_sanitizeFileName($object->ref);
+		$nbFiles = count(dol_dir_list($upload_dir,'files',0,'','(\.meta|_preview.*\.png)$'));
+		$nbLinks=Link::count($db, $object->element, $object->id);
+	
+		$head[$h][0] = dol_buildpath('/questionnaire/answer/document.php', 1).'?id='.$object->id;
 		$head[$h][1] = $langs->trans("questionnaireAnswerLinkedFiles");
-		$head[$h][2] = 'linkedfiles';
+		if (($nbFiles+$nbLinks) > 0) $head[$h][1].= ' <span class="badge">'.($nbFiles+$nbLinks).'</span>';
+		$head[$h][2] = 'document';
 		$h++;
 	}
 

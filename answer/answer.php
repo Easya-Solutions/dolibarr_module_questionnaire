@@ -3,6 +3,7 @@
 require '../config.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
+require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 require_once DOL_DOCUMENT_ROOT.'/user/class/user.class.php';
 dol_include_once('/questionnaire/class/invitation.class.php');
 dol_include_once('/questionnaire/class/questionnaire.class.php');
@@ -20,6 +21,7 @@ $title = GETPOST('title');
 $massaction = GETPOST('massaction', 'alpha');
 $toselect = GETPOST('toselect', 'array');
 
+$formfile = new FormFile($db);
 
 
 $mode = 'view';
@@ -213,11 +215,15 @@ function _getListAnswers(&$object)
 function _getLinkAnswersUser($fk_user,$ref)
 {
 
-	global $id, $i_rep;
+	global $id, $i_rep, $formfile;
 
 	$i_rep++;
+	
+	$filename=dol_sanitizeFileName($ref);
+	$filedir=DOL_DATA_ROOT.'/questionnaire/' . dol_sanitizeFileName($ref);
+ 
 
-	return '<a href="'.dol_buildpath('/questionnaire/answer/card.php',1).'?id='.$fk_user.'">'.$ref.'</a>';
+	return '<a href="'.dol_buildpath('/questionnaire/answer/card.php',1).'?id='.$fk_user.'">'.$ref.'</a>'.$formfile->getDocumentsLink('questionnaire', $filename, $filedir);
 }
 
 
