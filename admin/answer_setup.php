@@ -368,6 +368,8 @@ else
 
 print '<br>';
 
+// PDF DOCUMENT MODELS
+
 print load_fiche_titre($langs->trans("AnswerDocumentTemplates"), '', '');
 
 print '<table class="noborder" width="100%">';

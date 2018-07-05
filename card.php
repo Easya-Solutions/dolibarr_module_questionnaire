@@ -565,189 +565,189 @@ if ((empty($action) || $action === 'view') && empty($object->fk_statut))
 
 	<script type="text/javascript">
 
-		$(document).ready(function () {
+	    $(document).ready(function () {
 
-			$("#butAddQuestion").click(function () {
+	        $("#butAddQuestion").click(function () {
 
-				var select_choice = $(this).prev('[name*=select_choice]');
+	            var select_choice = $(this).prev('[name*=select_choice]');
 
-				$.ajax({
-					dataType: 'json'
-					, url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
-					, data: {
-						fk_questionnaire:<?php echo (int) $object->id ?>
-						, type_question: select_choice.val()
-						, put: "add-question"
-					}
+	            $.ajax({
+	                dataType: 'json'
+	                , url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
+	                , data: {
+	                    fk_questionnaire:<?php echo (int) $object->id ?>
+	                    , type_question: select_choice.val()
+	                    , put: "add-question"
+	                }
 
-				}).done(function (res) {
+	            }).done(function (res) {
 
-					$('#allQuestions').append(res);
-					setQuestionDivCSS();
+	                $('#allQuestions').append(res);
+	                setQuestionDivCSS();
 
-				});
-			});
+	            });
+	        });
 
-			$(document).on('click', '[name*=butAddChoice]', function () {
+	        $(document).on('click', '[name*=butAddChoice]', function () {
 
-				$btnAddChoice = $(this);
-				var $div_question = $btnAddChoice.closest('div[type=question]');
-				var id_question = $div_question.attr('id');
-				id_question = id_question.replace('question', '');
+	            $btnAddChoice = $(this);
+	            var $div_question = $btnAddChoice.closest('div[type=question]');
+	            var id_question = $div_question.attr('id');
+	            id_question = id_question.replace('question', '');
 
-				var choice_type = '';
-				if ($btnAddChoice.attr('name').indexOf('Line') > 0)
-					choice_type = 'line';
-				else
-					choice_type = 'column';
+	            var choice_type = '';
+	            if ($btnAddChoice.attr('name').indexOf('Line') > 0)
+	                choice_type = 'line';
+	            else
+	                choice_type = 'column';
 
-				$.ajax({
-					dataType: 'json'
-					, url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
-					, data: {
-						fk_question: id_question
-						, put: "add-choice"
-						, type_choice: choice_type
-					}
+	            $.ajax({
+	                dataType: 'json'
+	                , url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
+	                , data: {
+	                    fk_question: id_question
+	                    , put: "add-choice"
+	                    , type_choice: choice_type
+	                }
 
-				}).done(function (res) {
+	            }).done(function (res) {
 
-					$btnAddChoice.before(res);
+	                $btnAddChoice.before(res);
 
-				});
+	            });
 
-			});
+	        });
 
-			$(document).on('click', '[name*=del_element_]', function () {
+	        $(document).on('click', '[name*=del_element_]', function () {
 
-				var $div = $(this).closest('div[class*=element]');
-				var type_object = $div.attr('type');
-				if (type_object == undefined) {
+	            var $div = $(this).closest('div[class*=element]');
+	            var type_object = $div.attr('type');
+	            if (type_object == undefined) {
 
-					var $div = $(this).parent().parent().find('div[class*=element]');
-					var type_object = $div.attr('type');
-				}
-				var id_obj = $div.attr('id');
-				id_obj = id_obj.replace('choice', '');
-				id_obj = id_obj.replace('question', '');
+	                var $div = $(this).parent().parent().find('div[class*=element]');
+	                var type_object = $div.attr('type');
+	            }
+	            var id_obj = $div.attr('id');
+	            id_obj = id_obj.replace('choice', '');
+	            id_obj = id_obj.replace('question', '');
 
-				$.ajax({
-					dataType: 'json'
-					, url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
-					, data: {
-						fk_object: id_obj
-						, type_object: type_object
-						, put: "del-object"
-					}
+	            $.ajax({
+	                dataType: 'json'
+	                , url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
+	                , data: {
+	                    fk_object: id_obj
+	                    , type_object: type_object
+	                    , put: "del-object"
+	                }
 
-				}).done(function (res) {
+	            }).done(function (res) {
 
-					if (type_object == 'question') {
-						$div.closest('tr').next('tr').remove();//delete add element
-						$div.closest('tr').remove();
-					}
-					$div.remove();
-					setQuestionDivCSS();
+	                if (type_object == 'question') {
+	                    $div.closest('tr').next('tr').remove();//delete add element
+	                    $div.closest('tr').remove();
+	                }
+	                $div.remove();
+	                setQuestionDivCSS();
 
-				});
+	            });
 
-			});
+	        });
 
-			$(document).on('change', '[class=field]', function () {
+	        $(document).on('change', '[class=field]', function () {
 
-				var $div = $(this).closest('div[class*=element]');
-				var type_object = $div.attr('type');
-				var id_obj = $div.attr('id');
-				id_obj = id_obj.replace('choice', '');
-				id_obj = id_obj.replace('question', '');
-				var field = $(this).attr('name');
+	            var $div = $(this).closest('div[class*=element]');
+	            var type_object = $div.attr('type');
+	            var id_obj = $div.attr('id');
+	            id_obj = id_obj.replace('choice', '');
+	            id_obj = id_obj.replace('question', '');
+	            var field = $(this).attr('name');
 
-				var value = $(this).val();
-				if ($(this).is(":checkbox") === true) {
+	            var value = $(this).val();
+	            if ($(this).is(":checkbox") === true) {
 
-					if ($(this).prop('checked') === true)
-						value = 1;
-					else
-						value = 0;
+	                if ($(this).prop('checked') === true)
+	                    value = 1;
+	                else
+	                    value = 0;
 
-				}
+	            }
 
-				$input = $(this);
+	            $input = $(this);
 
-				$input.css('background-color', 'grey');
+	            $input.css('background-color', 'grey');
 
-				$.ajax({
-					dataType: 'json'
-					, url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
-					, data: {
-						fk_object: id_obj
-						, type_object: type_object
-						, put: "set-field"
-						, field: field
-						, value: value
-					}
+	            $.ajax({
+	                dataType: 'json'
+	                , url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
+	                , data: {
+	                    fk_object: id_obj
+	                    , type_object: type_object
+	                    , put: "set-field"
+	                    , field: field
+	                    , value: value
+	                }
 
-				}).done(function (res) {
+	            }).done(function (res) {
 
-					$input.css('background-color', '');
+	                $input.css('background-color', '');
 
-				});
+	            });
 
-			});
+	        });
 
-			$(document).on('click', '[name*=link_element_]', function () {
-				var $btn = $(this);
-				var choice = $btn.data('choice');
-				var $div_question = $btn.closest('div[type=question]');
-				var id_question = $div_question.attr('id');
-				id_question = id_question.replace('question', '');
-				console.log(choice);
-				$.ajax({
-					dataType: 'json'
-					, url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
-					, data: {
-						fk_questionnaire:<?php echo $id; ?>
-						, fk_question: id_question
-						, fk_choix: choice
-						, get: "next-questions"
-					}
+	        $(document).on('click', '[name*=link_element_]', function () {
+	            var $btn = $(this);
+	            var choice = $btn.data('choice');
+	            var $div_question = $btn.closest('div[type=question]');
+	            var id_question = $div_question.attr('id');
+	            id_question = id_question.replace('question', '');
+	            console.log(choice);
+	            $.ajax({
+	                dataType: 'json'
+	                , url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
+	                , data: {
+	                    fk_questionnaire:<?php echo $id; ?>
+	                    , fk_question: id_question
+	                    , fk_choix: choice
+	                    , get: "next-questions"
+	                }
 
-				}).done(function (result) {
-					//console.log(result);
-					$('#sel_' + choice).html(result);
-				});
+	            }).done(function (result) {
+	                //console.log(result);
+	                $('#sel_' + choice).html(result);
+	            });
 
-			});
+	        });
 
-			$(document).on('change', '.select_question', function () {
-				var $select = $(this);
-				var choice = $select.parent().prev().data('choice');
-				var id_question = $select.val();
-				var questionnaire = $select.data('questionnaire');
+	        $(document).on('change', '.select_question', function () {
+	            var $select = $(this);
+	            var choice = $select.parent().prev().data('choice');
+	            var id_question = $select.val();
+	            var questionnaire = $select.data('questionnaire');
 
-				$.ajax({
-					dataType: 'json'
-					, url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
-					, data: {
-						put: "link-question"
-						, fk_questionnaire: questionnaire
-						, fk_question: id_question
-						, fk_choix: choice
-					}
+	            $.ajax({
+	                dataType: 'json'
+	                , url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
+	                , data: {
+	                    put: "link-question"
+	                    , fk_questionnaire: questionnaire
+	                    , fk_question: id_question
+	                    , fk_choix: choice
+	                }
 
-				}).done(function (result) {
-					//console.log(result);
-					//console.log('#sel_'+choice);
-					if (id_question == 0)
-						$('#sel_' + choice).html('');
-					else
-						$('#sel_' + choice).html('Lié à : ' + result.label);
+	            }).done(function (result) {
+	                //console.log(result);
+	                //console.log('#sel_'+choice);
+	                if (id_question == 0)
+	                    $('#sel_' + choice).html('');
+	                else
+	                    $('#sel_' + choice).html('Lié à : ' + result.label);
 
-				});
+	            });
 
-			});
+	        });
 
-		});
+	    });
 
 	</script>
 
@@ -760,7 +760,7 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
 	$links = $ql->loadLinks($id);
 	?>
 	<script type="text/javascript">
-		$(document).ready(function () {
+	    $(document).ready(function () {
 	//         $('.el_linked').each(function(){
 	// 			$(this).hide();
 	//         });
@@ -768,100 +768,100 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
 	foreach ($links as $qId => $cId)
 	{
 		?>
-				var choix = $('[value=' +<?php echo $cId; ?> + ']');
-				var question = $('#question' +<?php echo $qId; ?>);
-				var type = choix.attr('type');
+		        var choix = $('[value=' +<?php echo $cId; ?> + ']');
+		        var question = $('#question' +<?php echo $qId; ?>);
+		        var type = choix.attr('type');
 
-				if (choix.data('done') !== true)
-				{
-					if (type == 'checkbox')
-					{
-						choix.click(function (e) {
-							question = $('#question' + $(this).data('enable'));
-							//console.log($(this).data('enable'));
-							question.toggle(); // on fait apparaitre la question liée suivant la valeur de la checkbox
-							pos = question.css('position');
-							if (pos == 'absolute')
-								question.css('position', 'static');
-							else
-								question.css('position', 'absolute');
-						});
-						choix.attr('data-done', true);
+		        if (choix.data('done') !== true)
+		        {
+		            if (type == 'checkbox')
+		            {
+		                choix.click(function (e) {
+		                    question = $('#question' + $(this).data('enable'));
+		                    //console.log($(this).data('enable'));
+		                    question.toggle(); // on fait apparaitre la question liée suivant la valeur de la checkbox
+		                    pos = question.css('position');
+		                    if (pos == 'absolute')
+		                        question.css('position', 'static');
+		                    else
+		                        question.css('position', 'absolute');
+		                });
+		                choix.attr('data-done', true);
 
-					} else if (type == 'radio') {
-						var name = choix.attr('name');
+		            } else if (type == 'radio') {
+		                var name = choix.attr('name');
 
-						$('[name="' + name + '"').each(function () { // on récupère tous les radio du groupe pour apliquer un comportement hide/show en fonction des paramètres
-							$(this).click(function (e) {
-								if ($(this).data('enable') !== undefined)
-									$('#question' + $(this).data('enable')).show().css('position', 'static'); // s'il y a une question liée, on l'affiche
-								if (typeof $(this).data('disable') == 'string') { // s'il y a plusieurs question à cacher
+		                $('[name="' + name + '"').each(function () { // on récupère tous les radio du groupe pour apliquer un comportement hide/show en fonction des paramètres
+		                    $(this).click(function (e) {
+		                        if ($(this).data('enable') !== undefined)
+		                            $('#question' + $(this).data('enable')).show().css('position', 'static'); // s'il y a une question liée, on l'affiche
+		                        if (typeof $(this).data('disable') == 'string') { // s'il y a plusieurs question à cacher
 
-									hideIt = $(this).data('disable').split('|');
-									hideIt.forEach(function (element) {
-										$('#question' + element).hide().css('position', 'absolute');
-									});
+		                            hideIt = $(this).data('disable').split('|');
+		                            hideIt.forEach(function (element) {
+		                                $('#question' + element).hide().css('position', 'absolute');
+		                            });
 
-								} else if (typeof $(this).data('disable') == 'number') { // s'il n'y a qu'une autre question liée dans ce group de radio
-									$('#question' + $(this).data('disable')).hide().css('position', 'absolute');
-								}
-							});
+		                        } else if (typeof $(this).data('disable') == 'number') { // s'il n'y a qu'une autre question liée dans ce group de radio
+		                            $('#question' + $(this).data('disable')).hide().css('position', 'absolute');
+		                        }
+		                    });
 
-							$(this).attr('data-done', true);
-						});
+		                    $(this).attr('data-done', true);
+		                });
 
-					} else if (choix.parent().find('option') !== undefined) { // cas du select
-						options = choix.parent().find('option');
-						params = choix.parent().data('params')
+		            } else if (choix.parent().find('option') !== undefined) { // cas du select
+		                options = choix.parent().find('option');
+		                params = choix.parent().data('params')
 
-						array_val = [];
-						options.each(function () {
-							if (params[$(this).val()]['enable'].length > 0)
-								$(this).attr('data-enable', params[$(this).val()]['enable']);//console.log($(this).val());
-							if (params[$(this).val()]['disable'].length > 0) {
-								$(this).attr('data-disable', params[$(this).val()]['disable'].join('|'));
-							}
-							$(this).attr('data-done', true);
-						});
+		                array_val = [];
+		                options.each(function () {
+		                    if (params[$(this).val()]['enable'].length > 0)
+		                        $(this).attr('data-enable', params[$(this).val()]['enable']);//console.log($(this).val());
+		                    if (params[$(this).val()]['disable'].length > 0) {
+		                        $(this).attr('data-disable', params[$(this).val()]['disable'].join('|'));
+		                    }
+		                    $(this).attr('data-done', true);
+		                });
 
-						choix.parent().attr('data-params', '');
+		                choix.parent().attr('data-params', '');
 
-						choix.parent().change(function (e) {
-							opt = $(this).find('option[value="' + $(this).val() + '"]');
-							if (opt.data('enable') !== undefined)
-								$('#question' + opt.data('enable')).show().css('position', 'static');
-							if (typeof opt.data('disable') == 'string') { // s'il y a plusieurs question à cacher
+		                choix.parent().change(function (e) {
+		                    opt = $(this).find('option[value="' + $(this).val() + '"]');
+		                    if (opt.data('enable') !== undefined)
+		                        $('#question' + opt.data('enable')).show().css('position', 'static');
+		                    if (typeof opt.data('disable') == 'string') { // s'il y a plusieurs question à cacher
 
-								hideIt = opt.data('disable').split('|');
-								hideIt.forEach(function (element) {
-									$('#question' + element).hide().css('position', 'absolute');
-								});
+		                        hideIt = opt.data('disable').split('|');
+		                        hideIt.forEach(function (element) {
+		                            $('#question' + element).hide().css('position', 'absolute');
+		                        });
 
-							} else if (typeof opt.data('disable') == 'number') { // s'il n'y a qu'une autre question liée dans ce group d'option
-								$('#question' + opt.data('disable')).hide().css('position', 'absolute');
-							}
-						});
+		                    } else if (typeof opt.data('disable') == 'number') { // s'il n'y a qu'une autre question liée dans ce group d'option
+		                        $('#question' + opt.data('disable')).hide().css('position', 'absolute');
+		                    }
+		                });
 
-					}
-				}
+		            }
+		        }
 
 
 		<?php
 	}
 	?>
-			$('[data-enable]').each(function (e) {
-				console.log($(this));
-				if ($(this).attr('checked') !== undefined) {
-					$('#question' + $(this).data('enable')).removeClass('el_linked');
-				} else if ($(this).attr('selected') !== undefined)
-					$('#question' + $(this).data('enable')).removeClass('el_linked');
-			});
+	        $('[data-enable]').each(function (e) {
+	            console.log($(this));
+	            if ($(this).attr('checked') !== undefined) {
+	                $('#question' + $(this).data('enable')).removeClass('el_linked');
+	            } else if ($(this).attr('selected') !== undefined)
+	                $('#question' + $(this).data('enable')).removeClass('el_linked');
+	        });
 
-			$('.el_linked').each(function () {
-				$(this).hide().css('position', 'absolute');
-			});
+	        $('.el_linked').each(function () {
+	            $(this).hide().css('position', 'absolute');
+	        });
 
-		});
+	    });
 	</script>
 	<?php
 }
@@ -922,7 +922,7 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
 
         }).done(function (res) {
             //$div_origin.closest('tr').next('tr').remove();//delete add element
-           hideQuestion();
+            hideQuestion();
             $div_origin.after(res);
             $div_origin.remove();
             setQuestionDivCSS();
@@ -1031,7 +1031,7 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
                 $('.bt-close-element').parent().find('.add-element').slideUp();
                 $('.bt-close-element').parent().removeClass('open');
                 $('.bt-close-element').parent().addClass('close');
-               hideQuestion();
+                hideQuestion();
 
 
                 setQuestionDivCSS();
