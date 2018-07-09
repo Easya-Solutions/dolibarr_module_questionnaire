@@ -186,7 +186,7 @@ function draw_question(&$q, $fk_statut_questionnaire = 0)
 	  } elseif(!empty($q->compulsory_answer)) $res.= ' <STRONG>(réponse obligatoire)</STRONG>'; */
 	//if(empty($fk_statut_questionnaire)) $res.= '&nbsp;<a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteQuestion')).'</a>';
 	if (empty($fk_statut_questionnaire))
-		$res .= '&nbsp;<a id="back" name="back" href="'.dol_buildpath('questionnaire/card.php', 2).'?id='.$q->fk_questionnaire.'&fk_question='.$q->id.'"><i class="fa fa-eye" style="font-size:2em;" aria-hidden="true"></i></a>';
+		$res .= '&nbsp;<a title="Afficher la question en mode vue" id="back" name="back" href="'.dol_buildpath('questionnaire/card.php', 2).'?id='.$q->fk_questionnaire.'&fk_question='.$q->id.'"><i class="fa fa-eye" style="font-size:2em;" aria-hidden="true"></i></a>';
 
 	$res .= '<br /><br />';
 
@@ -287,7 +287,7 @@ function draw_standard_choice(&$choice, $fk_statut_questionnaire = 0)
 		$res .= '<a id="del_element_'.$choice->id.'" name="del_element_'.$choice->id.'" href="#" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteChoice')).'</a>';
 		if ($is_choix)
 		{
-			$res .= '&nbsp;<a href="#" name="link_element_'.$choice->id.'" class="linkquestion" onclick="return false;" data-choice="'.$choice->id.'"><img src="img/link-question.png"/></a>';
+			$res .= '&nbsp;<a href="#" name="link_element_'.$choice->id.'" class="linkquestion" title="Lier une question" onclick="return false;" data-choice="'.$choice->id.'"><img src="img/link-question.png"/></a>';
 			$res .= '<span id="sel_'.$choice->id.'">';
 			if ($r > 0)
 				$res .= 'Lié à : '.$ql->question_label;
@@ -1829,13 +1829,13 @@ function drawMandatory($q, $edit = 1)
 	if ($ret > 0)
 		$addClass = ' el_linked"';
 	if (!($q->type == 'separator' || $q->type == 'page' || $q->type == 'paragraph' || $q->type == 'title') && empty($q->compulsory_answer))
-		$compuls = '<a href="#question'.$q->id.'"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #cccccc; " aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></a>';
+		$compuls = '<a href="#question'.$q->id.'" title="Obligatoire"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #cccccc; " aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></a>';
 	else if (!($q->type == 'separator' || $q->type == 'page' || $q->type == 'paragraph' || $q->type == 'title') && !empty($q->compulsory_answer))
-		$compuls = '<a href="#question'.$q->id.'"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #4fa4ff; margin-left: auto;margin-right: auto;" aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></a>';
+		$compuls = '<a href="#question'.$q->id.'" title="Obligatoire"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #4fa4ff; margin-left: auto;margin-right: auto;" aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></a>';
 	else
 		$compuls = '';
 
-	$res = '<tr rang="'.$q->rang.'"><td width=3% style="text-align: center;">'.$compuls.'</td>';
+	$res = '<tr rang="'.$q->rang.'"><td width=3% style="text-align: center;" >'.$compuls.'</td>';
 
 	$res .= '<td width=93%><div class="element'.$addClass.'" type="question" id="question'.$q->id.'"  style="cursor: pointer;" '.$function.'>';
 	return $res;

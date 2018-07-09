@@ -439,7 +439,7 @@ if (empty($action) || $action === 'view' || $action === 'validate' || $action ==
 		$object->loadQuestions();
 	if (empty($object->fk_statut))
 	{
-		$content = '<table style="width: 100%;border-collapse: collapse;">';
+		$content = '<table id="allElements" style="width: 100%;border-collapse: collapse;">';
 		$content .= draw_add_element_line();
 	}
 	$content .= '<div id="allQuestions">';
@@ -566,6 +566,8 @@ if ((empty($action) || $action === 'view') && empty($object->fk_statut))
 	<script type="text/javascript">
 
 	    $(document).ready(function () {
+			
+			
 
 	        $("#butAddQuestion").click(function () {
 
@@ -886,6 +888,9 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
                 $(item).closest('tr').addClass('impair');
 
         });
+		$( "i[id^=compulsory]" ).closest('a').tooltip();
+		$( "a[id=back]" ).tooltip();
+		$( "a[class=linkquestion]" ).tooltip();
 
     }
 
@@ -1070,7 +1075,10 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
         });
 
 
-
+if($("#allElements tr").length === 1){
+				console.log($('.bt-add-element'));
+				$('.bt-add-element').click();
+			}
     });
 
 
