@@ -65,9 +65,12 @@ $invitation_user = new InvitationUser($db);
 $res=$invitation_user->loadBy(array( 'rowid' => $fk_invitation, 'token' => "'$token'"));
 
 
-if($action === 'answer' && empty($res) ||  empty($invitation_user->id) || $invitation_user->fk_statut==1 || $invitation_user->date_limite_reponse < strtotime(date('Y-m-d')) ){
+if($action === 'answer' && empty($res) ||  empty($invitation_user->id) ||  $invitation_user->date_limite_reponse < strtotime(date('Y-m-d')) ){
 	
-	print('Date limite de réponse atteinte, token invalide, ou questionnaire déjà complété.');
+	print('Date limite de réponse atteinte, ou token invalide.');
+	exit;
+} else if($invitation_user->fk_statut==1 ){
+	print('Questionnaire validé.');
 	exit;
 }
 
@@ -198,6 +201,8 @@ else if ($action == 'validate_answers')
 	{
 
 		$invitation_user->setValid();
+		$object->checkAllAnswer();
+
 		setEventMessage($langs->trans('questionnaireValidated'));
 		header('Location: '.dol_buildpath('/questionnaire/public/toAnswer.php', 1).'?id='.$id.'&action=answer&fk_invitation='.$fk_invitation."&token=".$token);
 	}

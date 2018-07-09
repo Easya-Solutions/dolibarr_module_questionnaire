@@ -244,6 +244,8 @@ if (empty($reshook))
 			{
 
 				$invitation_user->setValid();
+				$object->checkAllAnswer();
+				//$object->checkAllAnswer();
 				setEventMessage($langs->trans('questionnaireValidated'));
 				header('Location: '.dol_buildpath('/questionnaire/list.php', 1).'?action=to_answer');
 			}
@@ -439,7 +441,7 @@ if (empty($action) || $action === 'view' || $action === 'validate' || $action ==
 		$object->loadQuestions();
 	if (empty($object->fk_statut))
 	{
-		$content = '<table id="allElements" style="width: 100%;border-collapse: collapse;">';
+		$content = '<table id="allElements" >';
 		$content .= draw_add_element_line();
 	}
 	$content .= '<div id="allQuestions">';
@@ -947,7 +949,10 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
 
         }).done(function (res) {
             $to_hide.closest('tr').next('tr').remove();//delete add element
-            $to_hide.closest('tr').after(res);
+			$to_hide.closest('tr').after(res);
+			if(res.indexOf('<div class="refid" style="font-size:200%;">') !== -1 && res.substr(res.indexOf('<div class="refid" style="font-size:200%;">')+43,1) == ('<')){
+				$to_hide.closest('tr').next('tr').find('a[id^=del_element]').click();
+			}
             $to_hide.closest('tr').remove();
 
             setQuestionDivCSS();
@@ -1054,8 +1059,13 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
 
             }).done(function (res) {
                 $to_hide.closest('tr').next('tr').remove();//delete add element
-                $to_hide.closest('tr').after(res);
+				$to_hide.closest('tr').after(res);
+				//IF TITLE IS EMPTY WE SIMULATE DELETE
+				if(res.indexOf('<div class="refid" style="font-size:200%;">') !== -1 && res.substr(res.indexOf('<div class="refid" style="font-size:200%;">')+43,1) == ('<')){
+					$to_hide.closest('tr').next('tr').find('a[id^=del_element]').click();
+				}
                 $to_hide.closest('tr').remove();
+				
 
                 setQuestionDivCSS();
             });
@@ -1075,11 +1085,10 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
         });
 
 
-if($("#allElements tr").length === 1){
-				console.log($('.bt-add-element'));
+			if($("#allElements tr").length === 1){
 				$('.bt-add-element').click();
 			}
-    });
+	  });
 
 
     var getUrlParameter = function getUrlParameter(sParam) {

@@ -157,3 +157,24 @@ div.paginationquest {
 .paginationquest a:hover:not(.active) {
     background-color: #ddd;
 } 
+
+
+table#allElements{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.not_compulsory{
+    font-size:2em;
+    color: #cccccc;
+}
+.compulsory{
+    font-size:2em;
+    color: #4fa4ff; 
+    margin-left: auto;
+    margin-right: auto;
+}
+.el_paragraph{
+    font-size:120%;
+    white-space: pre-wrap;
+}

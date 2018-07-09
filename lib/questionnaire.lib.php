@@ -170,11 +170,15 @@ function draw_question(&$q, $fk_statut_questionnaire = 0)
 	$form = new Form($db);
 	//$res = '<div style="background-color:'.$bgcol_questionnaire[$bg_color].';" class="element" type="question" id="question'.$q->id.'">';
 	$res = '<div class="element edit" type="question" id="question'.$q->id.' ">';
-	$res .= '<div class="refid">Question : '.$q->TTypes[$q->type].'<br /></div>';
+	if($q->type == 'title')$res .= '<div class="refid">Titre<br /></div>';
+	else $res .= '<div class="refid">Question : '.$q->TTypes[$q->type].'<br /></div>';
+	
 	if (empty($fk_statut_questionnaire))
 		if ($q->type == 'paragraph')
-			$res .= '<textarea size="100" placeholder="Question" type="text" name="label" rows="7"  cols="50" class="field" id="label" name="label" >'.$q->label.'</textarea>';
-		else
+			$res .= '<textarea size="100" placeholder="Paragraphe" type="text" name="label" rows="7"  cols="50" class="field" id="label" name="label" >'.$q->label.'</textarea>';
+		else if($q->type == 'title')
+			$res .= '<input size="100" placeholder="Titre" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
+		else 
 			$res .= '<input size="100" placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
 	else
 		$res .= '<STRONG>'.$q->label.'</STRONG>&nbsp;';
@@ -199,11 +203,12 @@ function draw_question(&$q, $fk_statut_questionnaire = 0)
 		if ($question_est_une_grille)
 			$style_div_lines .= ' float: left; ';
 		$res .= '<div style="'.$style_div_lines.'" id="allChoicesLeft_q'.$q->id.'" name="allChoicesLeft_q'.$q->id.'">';
-		$res .= '<div class="refid">Lignes<br /><br /></div>';
-		$q->loadChoices();
 		if ($question_est_une_grille)
 			$res .= '<div class="element" type="choice-title-line" id="question'.$q->id.'"><input id="title-line'.$q->id.'" type="text" class="field" name="label"  placeholder="Titre Lignes" value="'.$q->getGrilleTitle().'"></input><br /><br /> </div>';
 
+		$res .= '<div class="refid">Lignes<br /><br /></div>';
+		$q->loadChoices();
+		
 
 		if (!empty($q->choices))
 		{
@@ -221,6 +226,7 @@ function draw_question(&$q, $fk_statut_questionnaire = 0)
 		if ($question_est_une_grille)
 		{
 			$res .= '<div style="float: left;" id="allChoicesRight_q'.$q->id.'">';
+			$res .= '<div class="refid"><br /><br /></div>';
 			$res .= '<div class="refid">Colonnes<br /><br /></div>';
 
 			if (!empty($q->choices))
@@ -1829,9 +1835,9 @@ function drawMandatory($q, $edit = 1)
 	if ($ret > 0)
 		$addClass = ' el_linked"';
 	if (!($q->type == 'separator' || $q->type == 'page' || $q->type == 'paragraph' || $q->type == 'title') && empty($q->compulsory_answer))
-		$compuls = '<a href="#question'.$q->id.'" title="Obligatoire"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #cccccc; " aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></a>';
+		$compuls = '<a href="#question'.$q->id.'" title="Obligatoire"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk not_compulsory"  aria-hidden="true" onclick="setCompulsory('.$q->id.');"></i></a>';
 	else if (!($q->type == 'separator' || $q->type == 'page' || $q->type == 'paragraph' || $q->type == 'title') && !empty($q->compulsory_answer))
-		$compuls = '<a href="#question'.$q->id.'" title="Obligatoire"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk" style="font-size:2em;color: #4fa4ff; margin-left: auto;margin-right: auto;" aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></a>';
+		$compuls = '<a href="#question'.$q->id.'" title="Obligatoire"><i id="compulsory'.$q->id.'"" class="fa fa-asterisk compulsory"  aria-hidden="true"  onclick="setCompulsory('.$q->id.');"></i></a>';
 	else
 		$compuls = '';
 

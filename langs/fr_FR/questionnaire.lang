@@ -32,6 +32,7 @@ questionnaireStatusClosed=Sauvegardé
 answerStatusDraft=En attente de réponse
 answerStatusValidated=Validé
 answerValidate=Validé
+questionnaireStatusAnswered=Validé - Répondu
 
 Draft=Brouillon
 Validate=Validé

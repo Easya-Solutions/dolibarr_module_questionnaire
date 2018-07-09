@@ -242,6 +242,9 @@ class InvitationUser extends SeedObject
 			, 'fk_statut' => array('type' => 'integer', 'index' => true) // Indique si l'utilisateur a enregistré ses données pour terminer plus tard, ou s'il a terminé et validé son questionnaire
 			, 'sent' => array('type' => 'integer', 'index' => true) // Indique si l'utilisateur a enregistré ses données pour terminer plus tard, ou s'il a terminé et validé son questionnaire
 			, 'date_limite_reponse' => array('type' => 'date')
+			, 'date_validation' => array('type' => 'date')
+			, 'date_modification' => array('type' => 'date')
+			, 'date_envoi' => array('type' => 'date')
 		);
 
 		$this->init();
@@ -285,7 +288,7 @@ class InvitationUser extends SeedObject
 	{
 		global $langs;
 		$this->generateDocument('', $langs, '', '', '');
-
+		$this->date_validation = dol_now();
 		$this->fk_statut = 1;
 		$this->save();
 	}
@@ -295,6 +298,7 @@ class InvitationUser extends SeedObject
 
 		global $user;
 		
+		$this->date_modification = dol_now();
 		$this->ref=$this->getNumero();
 
 		return $this->id > 0 ? $this->updateCommon($user) : $this->createCommon($user);
@@ -396,6 +400,8 @@ class InvitationUser extends SeedObject
 
 		$questionnaire = new Questionnaire($db);
 		$questionnaire->load($this->fk_questionnaire);
+		$questionnaire->setValid();
+		
 		list($alreadyInvitedFKElements, $alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedElements();
 
 		$all_users = array();

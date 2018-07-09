@@ -91,6 +91,7 @@ if (!empty($massaction) && $massaction == 'send' && !empty($arrayofselected))
 		else
 		{
 			$invuser->sent = 1;
+			$invuser->date_envoi = dol_now();
 			$invuser->update($user);
 			setEventMessages($langs->trans("MailSuccessfulySent", $conf->email_from,  $invuser->email), null, 'mesgs');
 		}
