@@ -78,7 +78,7 @@ if (!empty($massaction) && $massaction == 'send' && !empty($arrayofselected))
 		
 		$invuser->load($inv_selected);
 		
-		$subject = $langs->transnoentitiesnoconv('MailSubjQuest',$object->ref);
+		$subject = $langs->transnoentitiesnoconv('MailSubjQuest',$object->title);
 		
 		$content = prepareMailContent($invuser,$id);
 		include_once DOL_DOCUMENT_ROOT.'/core/class/CMailFile.class.php';

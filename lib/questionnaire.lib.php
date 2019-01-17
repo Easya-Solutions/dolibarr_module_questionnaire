@@ -1283,7 +1283,19 @@ function _getLibStatus($fk_questionnaire, $fk_statut)
 
 function prepareMailContent($invuser, $fk_questionnaire)
 {
-	$content = "Bonjour, \nNous vous invitons à répondre au questionnaire suivant : ";
+	global $db, $langs;
+	dol_include_once('/contact/class/contact.class.php');
+	if($invuser->type_element == 'contact'){
+		$contact = new Contact($db);
+		$contact->fetch($invuser->fk_element);
+		$civilite = $contact->getCivilityLabel();
+		if(!empty($civilite)) $name = $civilite.' '.ucfirst($contact->lastname);
+		else $name = ucfirst($contact->lastname);
+	}else {
+		$name = '';
+	}
+	
+	$content = "Bonjour $name, \nNous vous invitons à répondre au questionnaire suivant : ";
 
 	if (!empty($invuser->fk_user))
 		$content .= dol_buildpath('/questionnaire/card.php?id='.$fk_questionnaire.'&action=answer&fk_invitation='.$invuser->id.'&token='.$invuser->token, 2);

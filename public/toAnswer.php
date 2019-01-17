@@ -67,10 +67,10 @@ $res=$invitation_user->loadBy(array( 'rowid' => $fk_invitation, 'token' => "'$to
 
 if($action === 'answer' && empty($res) ||  empty($invitation_user->id) ||  $invitation_user->date_limite_reponse < strtotime(date('Y-m-d')) ){
 	
-	print('Date limite de réponse atteinte, ou token invalide.');
+	print('Date limite de reponse atteinte, ou token invalide.');
 	exit;
 } else if($invitation_user->fk_statut==1 ){
-	print('Questionnaire validé.');
+	print('Merci pour votre participation.');
 	exit;
 }
 
