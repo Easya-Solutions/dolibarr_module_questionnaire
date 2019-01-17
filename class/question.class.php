@@ -22,7 +22,7 @@ class Question extends SeedObject {
 		$this->db = $db;
 		
 		$this->fields=array(
-				'label'=>array('type'=>'string')
+				'label'=>array('type'=>'text')
 				,'type'=>array('type'=>'string')
 				,'is_section'=>array('type'=>'integer') // groupement de questions (titre), pas de choix donc pas de réponse
 				,'fk_questionnaire'=>array('type'=>'integer','index'=>true)
