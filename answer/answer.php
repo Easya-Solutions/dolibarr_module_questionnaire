@@ -243,12 +243,14 @@ function _seeAnswersUser(&$object, $fk_invituser)
 		$invUser->type_element='societe';
 		$class='Societe';
 	}
-	if (!empty($invUser->getFk_element()) && !empty($class))
+
+	$fk_element = $invUser->getFk_element();
+	if (!empty($fk_element) && !empty($class))
 	{
 		require_once DOL_DOCUMENT_ROOT.'/'.$invUser->type_element.'/class/'.$invUser->type_element.'.class.php';
 		
 		$u = new $class($db);
-		$u->fetch($invUser->getFk_element());
+		$u->fetch($fk_element);
 		
 		$res = $langs->trans('questionnaireUserAnswersOf', $u->getNomUrl(1));
 	}
