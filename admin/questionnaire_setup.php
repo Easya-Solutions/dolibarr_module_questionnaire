@@ -33,6 +33,12 @@ require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once '../lib/questionnaire.lib.php';
 dol_include_once('/questionnaire/class/questionnaire.class.php');
 dol_include_once('/questionnaire/class/invitation.class.php');
+require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 
 // Translations
 $langs->load("questionnaire@questionnaire");
@@ -49,6 +55,87 @@ $value = GETPOST('value', 'alpha');
 /*
  * Actions
  */
+$dirforimage=dol_buildpath('/questionnaire/public/img/');
+if($action == 'updatelogo'){
+    $varforimage='logo';
+
+    if ($_FILES[$varforimage]["tmp_name"])
+    {
+        if (preg_match('/([^\\/:]+)$/i',$_FILES[$varforimage]["name"],$reg))
+        {
+            $original_file=$reg[1];
+
+            $isimage=image_format_supported($original_file);
+            if ($isimage >= 0)
+            {
+                dol_syslog("Move file ".$_FILES[$varforimage]["tmp_name"]." to ".$dirforimage.$original_file);
+
+                if (! is_dir($dirforimage))
+                {
+                    dol_mkdir($dirforimage);
+                }
+                $result=dol_move_uploaded_file($_FILES[$varforimage]["tmp_name"],$dirforimage.$original_file,1,0,$_FILES[$varforimage]['error']);
+
+                if ($result > 0)
+                {
+                    dolibarr_set_const($db, "QUESTIONNAIRE_COMPANY_LOGO",$original_file,'chaine',0,'',$conf->entity);
+
+                    // Create thumbs of logo (Note that PDF use original file and not thumbs)
+                    if ($isimage > 0)
+                    {
+                        // Create thumbs
+                        //$object->addThumbs($newfile);    // We can't use addThumbs here yet because we need name of generated thumbs to add them into constants. TODO Check if need such constants. We should be able to retreive value with get...
+
+                        // Create small thumb, Used on logon for example
+                        $imgThumbSmall = vignette($dirforimage.$original_file, $maxwidthsmall, $maxheightsmall, '_small', $quality);
+                        if (image_format_supported($imgThumbSmall) >= 0 && preg_match('/([^\\/:]+)$/i',$imgThumbSmall,$reg))
+                        {
+                            $imgThumbSmall = $reg[1];    // Save only basename
+                            dolibarr_set_const($db, "QUESTIONNAIRE_COMPANY_LOGO_SMALL",$imgThumbSmall,'chaine',0,'',$conf->entity);
+                        }
+                        else dol_syslog($imgThumbSmall);
+
+
+                    }
+                    else dol_syslog("ErrorImageFormatNotSupported",LOG_WARNING);
+                }
+                else if (preg_match('/^ErrorFileIsInfectedWithAVirus/',$result))
+                {
+                    $error++;
+                    $langs->load("errors");
+                    $tmparray=explode(':',$result);
+                    setEventMessages($langs->trans('ErrorFileIsInfectedWithAVirus',$tmparray[1]), null, 'errors');
+                }
+                else
+                {
+                    $error++;
+                    setEventMessages($langs->trans("ErrorFailedToSaveFile"), null, 'errors');
+                }
+            }
+            else
+            {
+                $error++;
+                $langs->load("errors");
+                setEventMessages($langs->trans("ErrorBadImageFormat"), null, 'errors');
+            }
+        }
+    }
+}
+if ($action == 'removelogo')
+{
+    require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+
+    $logofile=$dirforimage.$conf->global->QUESTIONNAIRE_COMPANY_LOGO;
+    if(!empty($conf->global->QUESTIONNAIRE_COMPANY_LOGO))dol_delete_file($logofile);
+
+    $logosmallfile=$dirforimage.'/thumbs/'.$conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL;
+    if(!empty($conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL))dol_delete_file($logosmallfile);
+
+    dolibarr_del_const($db, "QUESTIONNAIRE_COMPANY_LOGO",$conf->entity);
+    dolibarr_del_const($db, "QUESTIONNAIRE_COMPANY_LOGO_SMALL",$conf->entity);
+
+}
+
 if ($action == 'updateMask') {
 	
 	$maskconstrefleter = GETPOST('maskconstrefletter', 'alpha');
@@ -203,7 +290,29 @@ foreach ( $dirmodels as $reldir ) {
 			closedir($handle);
 		}
 	}
-}/*
+}
+
+print '<tr class="oddeven"><td><label for="logo">'.$langs->trans("Logo").' (png,jpg)</label></td>';
+print '<td valign="middle" colspan="" class="nocellnopadd">';
+print '<form enctype="multipart/form-data" method="POST" action="'.$_SERVER["PHP_SELF"].'" name="form_index">';
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="action" value="updatelogo">';
+print '<input type="file" class="flat class=minwidth200" name="logo" id="logo">';
+print '<input class="button" type="submit" name="btUpdateLogo" value="'.$langs->trans('Modify').'"/>';
+print '</form>';
+print '</td></td><td></td>';
+if (! empty($conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL)) {
+    print '<td><a href="'.$_SERVER["PHP_SELF"].'?action=removelogo">'.img_delete($langs->trans("Delete")).'</a></td>';
+    if (file_exists(dol_buildpath('/questionnaire/public/img/thumbs/'.$conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL))) {
+        print ' &nbsp; ';
+        print '<td class="nocellnopadd" valign="middle" align="right"><img src="'.dol_buildpath('/questionnaire/public/img/thumbs/'.$conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL,2).'"></td>';
+    }
+} else {
+    print '<td></td><td><img height="30" src="'.DOL_URL_ROOT.'/public/theme/common/nophoto.png"></td>';
+}
+print '';
+print '</tr>';
+/*
 print "</table><br>\n";
 
 

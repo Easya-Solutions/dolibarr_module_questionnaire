@@ -1055,6 +1055,7 @@ function _getBanner(&$object, $action, $print_link_apercu = true, $shownav = tru
 
 function _getBannerToAnswer(&$object, $action, $print_link_apercu = true, $shownav = true, $show_linkback = true)
 {
+    global $conf;
 	/**
 	  global $langs, $form;
 
@@ -1118,7 +1119,12 @@ function _getBannerToAnswer(&$object, $action, $print_link_apercu = true, $shown
 	  print '<div class="'.($onlybanner ? 'arearefnobottom ' : 'arearef ').'heightref valignmiddle" width="100%">';
 
 	  print '</div>'; */
-	print '<div class="inline-block floatleft valignmiddle refid">';
+	if(!empty($conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL)) {
+        print '<span >';
+        print "<img src='" . dol_buildpath('/questionnaire/public/img/thumbs/' . $conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL, 2) . "'></img></span>";
+        print '&nbsp; &nbsp;';
+    }
+	print '<div style="display:inline-block;font-size:200%;"  class="inline refid">';
 	print "$object->title</div>";
 	print ' <div class="underrefbanner clearboth"></div>';
 }
