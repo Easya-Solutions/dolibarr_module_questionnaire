@@ -1289,7 +1289,7 @@ function _getLibStatus($fk_questionnaire, $fk_statut)
 
 function prepareMailContent($invuser, $fk_questionnaire)
 {
-	global $db, $langs;
+	global $db, $langs, $conf;
 	dol_include_once('/contact/class/contact.class.php');
 	if($invuser->type_element == 'contact'){
 		$contact = new Contact($db);
@@ -1305,9 +1305,12 @@ function prepareMailContent($invuser, $fk_questionnaire)
 
 	if (!empty($invuser->fk_user))
 		$content .= dol_buildpath('/questionnaire/card.php?id='.$fk_questionnaire.'&action=answer&fk_invitation='.$invuser->id.'&token='.$invuser->token, 2);
-	else
-		$content .= dol_buildpath('/questionnaire/public/toAnswer.php?id='.$fk_questionnaire.'&action=answer&fk_invitation='.$invuser->id.'&token='.$invuser->token, 2);
-	$content .= " \nVous avez jusqu'au ".date('d/m/Y', $invuser->date_limite_reponse).' pour y répondre.';
+	else if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN))
+        $content .= $conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN.'toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $invuser->id . '&token=' . $invuser->token;
+    else
+        $content .= dol_buildpath('/questionnaire/public/toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $invuser->id . '&token=' . $invuser->token, 2);
+
+    $content .= " \nVous avez jusqu'au ".date('d/m/Y', $invuser->date_limite_reponse).' pour y répondre.';
 
 
 

@@ -218,7 +218,7 @@ function _getListInvitations(&$object)
 
 	$r = new TListviewTBS('invitation_list', dol_buildpath('/questionnaire/tpl/questionnaire_list.tpl.php'));
 
-	$sql = 'SELECT invu.fk_usergroup,COALESCE(NULLIF(invu.type_element,""), "External") as type_element, invu.fk_element, invu.email, invu.date_limite_reponse, invu.sent, invu.rowid as id_user, \'\' AS action';
+	$sql = 'SELECT invu.fk_usergroup,COALESCE(NULLIF(invu.type_element,""), "External") as type_element,  invu.fk_questionnaire as fk_questionnaire, invu.token as token, invu.fk_element, invu.email, invu.date_limite_reponse, invu.sent, invu.rowid as id_user,\'\' AS link_invit, \'\' AS action';
 	$sql .= ' FROM '.MAIN_DB_PREFIX.'quest_invitation_user invu ';
 	$sql .= ' WHERE fk_questionnaire = '.$object->id;
 	$sql .= ' AND (invu.fk_element > 0 OR invu.email != "") ';
@@ -245,7 +245,7 @@ function _getListInvitations(&$object)
 		)
 		, 'link' => array(
 		)
-		, 'hide' => array('id_user','type_element')
+		, 'hide' => array('id_user','type_element','fk_questionnaire','token')
 		, 'type' => array()
 		, 'liste' => array(
 			'titre' => $langs->trans('TitleConformiteNormeList')
@@ -265,6 +265,7 @@ function _getListInvitations(&$object)
 			, 'fk_element' => $langs->trans('Element')
 			, 'action' => $langs->trans('Action').'&nbsp;&nbsp;&nbsp;'.$form->showCheckAddButtons('checkforselect', 1)
 			, 'fk_usergroup' => $langs->trans('Group')
+             , 'link_invit' => $langs->trans('LinkInvit')
 		)
 		, 'orderBy' => array('cn.rowid' => 'DESC')
 		, 'eval' => array(
@@ -273,6 +274,7 @@ function _getListInvitations(&$object)
 			, 'sent' => '_libStatut(@sent@)'
 			, 'action' => '_actionLink(@id_user@)'
 			, 'fk_usergroup' => '_getNomUrlGrp(@fk_usergroup@)'
+            , 'link_invit' => '_getLinkUrl(@type_element@,@fk_element@,@fk_questionnaire@,@id_user@,"@token@")'
 		)
 	));
 
@@ -280,9 +282,31 @@ function _getListInvitations(&$object)
 	$parameters = array('sql' => $sql);
 	$reshook = $hookmanager->executeHooks('printFieldListFooter', $parameters, $object);	// Note that $action and $object may have been modified by hook
 	$res .= $hookmanager->resPrint;
-	
+
+    $res.= '<script type="text/javascript">
+            function copyLink(e){
+                /* Get the text field */
+               var copyText = e.closest("tr").getElementsByClassName("copyToClipboard");
+                /* Select the text field */
+                copyText[0].select();
+                /* Copy the text inside the text field */
+                document.execCommand("copy");
+            }
+    </script>';
+
 	$res .= $formcore->end_form();
 	return $res;
+}
+
+function _getLinkUrl($type_element, $fk_element,$fk_questionnaire,$fk_invit,$token){
+
+    global $conf, $langs;
+    if ($type_element == 'user' && $fk_element > 0)
+        return  ' <input style="opacity:0;width:1px;" type="text"  value="'.dol_buildpath('/questionnaire/card.php?id='.$fk_questionnaire.'&action=answer&fk_invitation='.$fk_invit.'&token='.$token, 2).'" class="copyToClipboard"><input style="width:100px;" class="button" type="text" value="'.$langs->trans('CopyLink').'" onclick="copyLink(this);"/>';
+    else if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN))
+        return ' <input type="text"  value="'.$conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN.'toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $fk_invit. '&token=' . $token.'" class="copyToClipboard"><input style="width:100px;" class="button" type="text" value="'.$langs->trans('CopyLink').'" onclick="copyLink(this);"/>';
+    else
+        return ' <input type="text"  value="'.dol_buildpath('/questionnaire/public/toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $fk_invit . '&token=' . $token, 2).'" class="copyToClipboard"><input style="width:100px;" class="button" type="text" value="'.$langs->trans('CopyLink').'" onclick="copyLink(this);"/>';
 }
 
 function _getUsers()

@@ -151,3 +151,9 @@ DocumentModelAnswer= Modèle de document PDF pour les réponses
 Publish=Publier
 PreviousPage=Page Précédente
 NextPage=Page Suivante
+
+
+UseCustomDomain=Utilisation d'un sous-domaine (facultatif)
+CustomDomainHelp=A utiliser au niveau du répertoire "public" du module (exemple : http://mysite.com/custom/questionnaire/public/toAnswer.php deviendra https://mysitequestionnaire.com/toAnswer.php si 'https://mysitequestionnaire.com/' est saisi)
+LinkInvit=Lien d'invitation
+CopyLink = Copier le lien

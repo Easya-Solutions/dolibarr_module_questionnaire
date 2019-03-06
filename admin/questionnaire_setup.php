@@ -149,8 +149,9 @@ if ($action == 'updateMask') {
 } elseif($action === 'setmod') dolibarr_set_const($db, "QUESTIONNAIRE_ADDON", $value, 'chaine', 0, '', $conf->entity);
 elseif($action === 'setmodanswer') dolibarr_set_const($db, "QUESTIONNAIRE_ANSWER_ADDON", $value, 'chaine', 0, '', $conf->entity);
 else if (preg_match('/set_(.*)/',$action,$reg)) {
-	
+
 	$code=$reg[1];
+
 	if (dolibarr_set_const($db, $code, GETPOST($code), 'chaine', 0, '', $conf->entity) > 0)
 	{
 		header("Location: ".$_SERVER["PHP_SELF"]);
@@ -291,27 +292,60 @@ foreach ( $dirmodels as $reldir ) {
 		}
 	}
 }
+print '</table>';
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre">';
+print '<td>' . $langs->trans("Parameters") . '</td>';
+print '<td align="center" width="200">&nbsp;</td>';
+print '<td align="center" width="150">' . $langs->trans("Value") . '</td>';
 
-print '<tr class="oddeven"><td><label for="logo">'.$langs->trans("Logo").' (png,jpg)</label></td>';
-print '<td valign="middle" colspan="" class="nocellnopadd">';
+
+print '<tr class="oddeven"><td><div class="inline-block"><label for="logo">'.$langs->trans("Logo").' (png,jpg)</label></div></td>';
+
+if (! empty($conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL)) {
+    print '<td class="nocellnopadd" valign="middle" text-align="right"><a href="'.$_SERVER["PHP_SELF"].'?action=removelogo">'.img_delete($langs->trans("Delete")).'</a>';
+    if (file_exists(dol_buildpath('/questionnaire/public/img/thumbs/'.$conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL))) {
+        print ' &nbsp; ';
+        print '<img src="'.dol_buildpath('/questionnaire/public/img/thumbs/'.$conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL,2).'"></td>';
+    }
+} else {
+    print '<img height="30" src="'.DOL_URL_ROOT.'/public/theme/common/nophoto.png"></td>';
+}
+
+print '<td valign="right" text-align="right" colspan="" class="nocellnopadd">';
 print '<form enctype="multipart/form-data" method="POST" action="'.$_SERVER["PHP_SELF"].'" name="form_index">';
+print '<span style="display:inline-block;text-align:right;width:100%" >';
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 print '<input type="hidden" name="action" value="updatelogo">';
 print '<input type="file" class="flat class=minwidth200" name="logo" id="logo">';
 print '<input class="button" type="submit" name="btUpdateLogo" value="'.$langs->trans('Modify').'"/>';
+print '</span>';
 print '</form>';
-print '</td></td><td></td>';
-if (! empty($conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL)) {
-    print '<td><a href="'.$_SERVER["PHP_SELF"].'?action=removelogo">'.img_delete($langs->trans("Delete")).'</a></td>';
-    if (file_exists(dol_buildpath('/questionnaire/public/img/thumbs/'.$conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL))) {
-        print ' &nbsp; ';
-        print '<td class="nocellnopadd" valign="middle" align="right"><img src="'.dol_buildpath('/questionnaire/public/img/thumbs/'.$conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL,2).'"></td>';
-    }
-} else {
-    print '<td></td><td><img height="30" src="'.DOL_URL_ROOT.'/public/theme/common/nophoto.png"></td>';
-}
-print '';
+print '</td>';
 print '</tr>';
+
+//Domain
+$var = !$var;
+print '<tr ' . $bc[$var] . '>';
+print '<td>';
+print $form->textwithpicto(
+    '<label for="QUESTIONNAIRE_CUSTOM_DOMAIN">' . $langs->trans("UseCustomDomain") . '</label>',
+    $langs->trans("CustomDomainHelp")
+);
+print '</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="right" width="500">';
+print '<form method="POST" action="' . $_SERVER['PHP_SELF'] . '">';
+print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+print '<input type="hidden" name="action" value="set_QUESTIONNAIRE_CUSTOM_DOMAIN">';
+print '<input type="text" id="QUESTIONNAIRE_CUSTOM_DOMAIN" name="QUESTIONNAIRE_CUSTOM_DOMAIN" value="' . $conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN . '"  />';
+print '&nbsp;<input type="submit" class="button" value="' . $langs->trans("Modify") . '">';
+
+print '</form>';
+print '</td></tr>';
+print '</table>';
+
 /*
 print "</table><br>\n";
 
