@@ -601,11 +601,12 @@ class pdf_answer extends ModelePDFProduct
 										foreach ($questionnaire->questions[$i]->choices_column as $choice_column)
 										{
 											$res = $choice_line->label.'  '.$choice_column->label;
-											foreach ($questionnaire->questions[$i]->answers as $answer)
-											{
-												if ($answer->fk_choix == $choice_line->id && $answer->fk_choix_col == $choice_column->id)
-													$res .= '  => '.$answer->value;
-											}
+											if(!empty($questionnaire->questions[$i]->answers)) {
+                                                foreach($questionnaire->questions[$i]->answers as $answer) {
+                                                    if($answer->fk_choix == $choice_line->id && $answer->fk_choix_col == $choice_column->id)
+                                                        $res .= '  => ' . $answer->value;
+                                                }
+                                            }
 											if (strpos($res, '=>') === false)
 												$res .= '  => ';
 											$curY = $nexY;
