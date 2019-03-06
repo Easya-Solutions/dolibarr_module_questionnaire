@@ -147,3 +147,7 @@ Recipient=Destinataire
 
 AnswerDocumentTemplates=Modèle de document pour la fiche réponse
 DocumentModelAnswer= Modèle de document PDF pour les réponses
+
+Publish=Publier
+PreviousPage=Page Précédente
+NextPage=Page Suivante

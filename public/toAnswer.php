@@ -413,7 +413,12 @@ elseif ($action === 'answer')
 		}
 	}
 	print '</div>';
-	print '<div class="center"><input class="butAction" name="subSave" type="SUBMIT" value="'.$langs->trans('SaveAnswer').'"/><input name="subValid" type="SUBMIT" class="butAction"  value="'.$langs->trans('Validate').'"/>';
+    print '<div class="center">';
+    if ($page > 1) print '<span class="paginationbt" ><a  href="#" page='.($page - 1).'><input class="butAction" name="previousPage" type="button" value="'.$langs->trans('PreviousPage').'"/></a></span>';
+	print '<input class="butAction" name="subSave" type="SUBMIT" value="'.$langs->trans('SaveAnswer').'"/>';
+    if ($page < $object->nbpages + 1) print '<span class="paginationbt" ><a  href="#" page='.($page + 1).'><input class="butAction" name="nextPage" type="button" value="'.$langs->trans('NextPage').'"/></a></span>';
+	if($page == $object->nbpages + 1 || $object->nbpages ==1) print '<input name="subValid" type="SUBMIT" class="butAction"  value="'.$langs->trans('Publish').'"/>';
+	print '</div>';
 	print '</form>';
 }
 
@@ -754,6 +759,12 @@ if($action === 'apercu' || $action === 'answer') {
                        $("input[name='subSave']").click();
        
                });
+        $(".paginationbt a").on('click', function(){
+            $("input[name='gotopage']").val($(this).attr('page'));
+
+            $("input[name='subSave']").click();
+
+        });
 
     });
 
