@@ -347,6 +347,7 @@ print '</form>';
 print '</td></tr>';
 print '</table>';
 
+print '<div class="warning">'.$langs->trans("warningHtAccess").'</div>';
 /*
 print "</table><br>\n";
 
