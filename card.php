@@ -29,8 +29,7 @@ if (empty($page))
 	$page = 1;
 
 
-
-if ($action === 'answer' && empty($res) || $invitation->date_limite_reponse < strtotime(date('Y-m-d')))
+if ($action === 'answer' && empty($res) || $invitation->date_limite_reponse < strtotime(date('Y-m-d')) || ($invitation->type_element=='user' && $invitation->fk_element != $user->id))
 	accessforbidden();
 if($invitation->fk_statut==1 ) accessforbidden('Merci pour votre participation.');
 
