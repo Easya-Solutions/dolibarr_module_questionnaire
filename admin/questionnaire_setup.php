@@ -309,7 +309,7 @@ if (! empty($conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL)) {
         print '<img src="'.dol_buildpath('/questionnaire/public/img/thumbs/'.$conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL,2).'"></td>';
     }
 } else {
-    print '<img height="30" src="'.DOL_URL_ROOT.'/public/theme/common/nophoto.png"></td>';
+    print '<td><div class="warning">'.$langs->trans("warningImgDirWritable").'</div></td>';
 }
 
 print '<td valign="right" text-align="right" colspan="" class="nocellnopadd">';
@@ -327,6 +327,7 @@ print '</tr>';
 //Domain
 $var = !$var;
 print '<tr ' . $bc[$var] . '>';
+
 print '<td>';
 print $form->textwithpicto(
     '<label for="QUESTIONNAIRE_CUSTOM_DOMAIN">' . $langs->trans("UseCustomDomain") . '</label>',
