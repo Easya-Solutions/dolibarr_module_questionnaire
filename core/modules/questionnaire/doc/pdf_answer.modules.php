@@ -356,7 +356,8 @@ class pdf_answer extends ModelePDFProduct
 								$pdf->SetFont('', 'B', $default_font_size);
 								$nexY += 4;
 							}
-							$pdf->SetXY($this->marge_gauche, $curY);
+
+							$pdf->SetXY($this->marge_gauche, $pdf->GetY());
 
 							$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $questionnaire->questions[$i]->label, 0, 'L', 0);
 
@@ -383,7 +384,7 @@ class pdf_answer extends ModelePDFProduct
 										$nexY += 3;
 										$pdf->setPage($pdf->getPage());
 									}
-									$pdf->SetXY($this->marge_gauche, $curY);
+									$pdf->SetXY($this->marge_gauche, $pdf->GetY());
 									$pdf->SetFont('', '', $default_font_size);
 									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $questionnaire->questions[$i]->answers[0]->value, 0, 'L', 0);
 
@@ -431,7 +432,7 @@ class pdf_answer extends ModelePDFProduct
 										}
 										$pdf->setPage($pdf->getPage());
 									}
-									$pdf->SetXY($this->marge_gauche, $curY);
+									$pdf->SetXY($this->marge_gauche, $pdf->GetY());
 									$pdf->SetFont('', '', $default_font_size);
 									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $questionnaire->questions[$i]->answers[0]->value, 0, 'L', 0);
 
@@ -458,7 +459,7 @@ class pdf_answer extends ModelePDFProduct
 										$nexY += 3;
 										$pdf->setPage($pdf->getPage());
 									}
-									$pdf->SetXY($this->marge_gauche, $curY);
+									$pdf->SetXY($this->marge_gauche, $pdf->GetY());
 									$pdf->SetFont('', '', $default_font_size);
 									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $choice->label, 0, 'L', 0);
 
@@ -485,7 +486,7 @@ class pdf_answer extends ModelePDFProduct
 										$nexY += 3;
 										$pdf->setPage($pdf->getPage());
 									}
-									$pdf->SetXY($this->marge_gauche, $curY);
+									$pdf->SetXY($this->marge_gauche, $pdf->GetY());
 									$pdf->SetFont('', '', $default_font_size);
 									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $choice->label, 0, 'L', 0);
 
@@ -515,7 +516,7 @@ class pdf_answer extends ModelePDFProduct
 											$nexY += 3;
 											$pdf->setPage($pdf->getPage());
 										}
-										$pdf->SetXY($this->marge_gauche, $curY);
+										$pdf->SetXY($this->marge_gauche, $pdf->GetY());
 										$pdf->SetFont('', '', $default_font_size);
 										$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $choice->label, 0, 'L', 0);
 									}
@@ -548,7 +549,7 @@ class pdf_answer extends ModelePDFProduct
 											$nexY += 3;
 											$pdf->setPage($pdf->getPage());
 										}
-										$pdf->SetXY($this->marge_gauche, $curY);
+										$pdf->SetXY($this->marge_gauche, $pdf->GetY());
 										$pdf->SetFont('', '', $default_font_size);
 										$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $res, 0, 'L', 0);
 									}
@@ -587,7 +588,7 @@ class pdf_answer extends ModelePDFProduct
 												$nexY += 3;
 												$pdf->setPage($pdf->getPage());
 											}
-											$pdf->SetXY($this->marge_gauche, $curY);
+											$pdf->SetXY($this->marge_gauche, $pdf->GetY());
 											$pdf->SetFont('', '', $default_font_size);
 											$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $res, 0, 'L', 0);
 										}
@@ -628,7 +629,7 @@ class pdf_answer extends ModelePDFProduct
 												$nexY += 3;
 												$pdf->setPage($pdf->getPage());
 											}
-											$pdf->SetXY($this->marge_gauche, $curY);
+											$pdf->SetXY($this->marge_gauche, $pdf->GetY());
 											$pdf->SetFont('', '', $default_font_size);
 											$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $res, 0, 'L', 0);
 										}
@@ -659,7 +660,7 @@ class pdf_answer extends ModelePDFProduct
 										$nexY += 3;
 										$pdf->setPage($pdf->getPage());
 									}
-									$pdf->SetXY($this->marge_gauche, $curY);
+									$pdf->SetXY($this->marge_gauche, $pdf->GetY());
 									$pdf->SetFont('', '', $default_font_size);
 									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $date, 0, 'L', 0);
 
@@ -689,7 +690,7 @@ class pdf_answer extends ModelePDFProduct
 										$nexY += 3;
 										$pdf->setPage($pdf->getPage());
 									}
-									$pdf->SetXY($this->marge_gauche, $curY);
+									$pdf->SetXY($this->marge_gauche, $pdf->GetY());
 									$pdf->SetFont('', '', $default_font_size);
 									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $hour, 0, 'L', 0);
 
@@ -715,7 +716,7 @@ class pdf_answer extends ModelePDFProduct
 										$nexY += 3;
 										$pdf->setPage($pdf->getPage());
 									}
-									$pdf->SetXY($this->marge_gauche, $curY);
+									$pdf->SetXY($this->marge_gauche, $pdf->GetY());
 									$pdf->SetFont('', '', $default_font_size);
 									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $questionnaire->questions[$i]->answers[0]->value, 0, 'L', 0);
 
