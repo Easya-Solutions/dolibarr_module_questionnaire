@@ -71,20 +71,25 @@ function questionnaire_prepare_head(Questionnaire $object)
 	$h = 0;
 	$head = array();
 	$head[$h][0] = dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id;
-	$head[$h][1] = $langs->trans("questionnaireCard");
+	$head[$h][1] = '<i class="fa fa-check-square-o" aria-hidden="true"></i> '.$langs->trans("questionnaireCard");
 	$head[$h][2] = 'card';
+	$h++;
+
+	$head[$h][0] = dol_buildpath('/questionnaire/conf.php', 1).'?id='.$object->id;
+	$head[$h][1] = '<i class="fa fa-cogs" aria-hidden="true"></i> '.$langs->trans("questionnaireConf");
+	$head[$h][2] = 'config';
 	$h++;
 
 	if ($object->fk_statut > 0)
 	{
 
 		$head[$h][0] = dol_buildpath('/questionnaire/invitation.php', 1).'?id='.$object->id;
-		$head[$h][1] = $langs->trans("questionnaireInvitationCard");
+		$head[$h][1] = '<i class="fa fa-paper-plane" aria-hidden="true"></i> '.$langs->trans("questionnaireInvitationCard");
 		$head[$h][2] = 'invitation';
 		$h++;
 
 		$head[$h][0] = dol_buildpath('/questionnaire/answer/answer.php', 1).'?id='.$object->id;
-		$head[$h][1] = $langs->trans("questionnaireAnswerCard");
+		$head[$h][1] = '<i class="fa fa-commenting-o" aria-hidden="true"></i> '.$langs->trans("questionnaireAnswerCard");
 		$head[$h][2] = 'answer';
 		$h++;
 	}

@@ -73,6 +73,9 @@ Delete=Supprimer
 noElement=Aucun élément à afficher
 questionnaire_date_limite_reponse=Date limite de réponse
 
+# CARD Conf
+questionnaireConf=Configuration
+
 # Libellés types choix
 questionnaireTypeString=Chaîne
 questionnaireTypeTextArea=Chaîne longue
@@ -105,6 +108,8 @@ CloneQuestionnaire=Cloner questionnaire
 # ANSWERS
 questionnaireUserAnswersOf=<h3>Réponses de : %s</h3>
 QuestionnaireSeeAnswerLink=Visualisation réponses
+HtmlCodeDisplayAtEndOfSurvey=Code HTML à afficher à la fin du questionnaire
+HtmlCodeDisplayAtEndOfSurveyHelp=Code HTML brute permettant d'ajouter par exemple du code Js pour API type sendinblue, piwik, google ...
 
 # ADMIN
 questionnaireSimpleNumRefModelDesc=Renvoie le numéro sous la forme QUyymm-nnnn où yy est l'année, mm le mois et nnnn un compteur séquentiel sans rupture et sans remise à 0
