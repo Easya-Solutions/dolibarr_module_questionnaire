@@ -1760,7 +1760,7 @@ function draw_question_for_admin(&$q)
 			$style = '';
 		if ($q->type == 'paragraph')
 			$style = 'style="font-size:120%;white-space: pre-wrap;"';
-		$res .= '<div class="refid" '.$style.'>'.$q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
+		$res .= '<div class="refid" '.$style.'>'.dol_htmlentities($q->label).(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
 
 		switch ($q->type) {
 
