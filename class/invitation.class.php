@@ -224,6 +224,13 @@ class InvitationUser extends SeedObject
 	 */
 	const STATUS_SAVED = 2;
 
+    public static $TStatus = array(
+        self::STATUS_DRAFT => 'Draft'
+    , self::STATUS_VALIDATED => 'Validate'
+    , self::STATUS_SAVED => 'Saved'
+    );
+
+
 	public function __construct($db)
 	{
 		global $conf, $langs;
