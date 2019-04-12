@@ -139,6 +139,7 @@ ColumnName=Intitulé de la colonne (Pour les questions de types 'grille')
 GroupName=Nom du groupe
 AnsweringLineName=Ligne séléctionnée (réponse de type checkbox, radio, select, grille)
 AnsweringColumnName=Colonne séléctionnée (réponse de type grille)
+NotSent=Non envoyé
 
 #MAIL
 

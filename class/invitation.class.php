@@ -226,8 +226,14 @@ class InvitationUser extends SeedObject
 
     public static $TStatus = array(
         self::STATUS_DRAFT => 'Draft'
-    , self::STATUS_VALIDATED => 'Validate'
+    , self::STATUS_VALIDATED => 'Validated'
     , self::STATUS_SAVED => 'Saved'
+    );
+
+
+    public static $TSentStatus = array(
+        self::STATUS_DRAFT => 'NotSent'
+      , self::STATUS_VALIDATED => 'Sent'
     );
 
 
