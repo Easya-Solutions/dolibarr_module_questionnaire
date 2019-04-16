@@ -71,6 +71,16 @@ class Questionnaire extends SeedObject
 		$this->entity = $conf->entity;
 	}
 
+	public function get_substitutionArray($prefix=''){
+        $this->substitutionarray=array();
+
+	    foreach ($this->fields as $key => $val){
+            $this->substitutionarray['__'.(!empty($prefix)?$prefix.'_':'').$key.'__'] = $this->{$key};
+        }
+
+	    return $this->substitutionarray;
+    }
+
 	public function save($addprov = false)
 	{
 		global $user;

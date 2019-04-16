@@ -83,12 +83,33 @@ print '<input type="hidden" name="action" value="save">';
 
 print '<table>';
 print '<tr class="oddeven">';
-print '<td>';
+print '<td valign="top">';
 print $form->textwithtooltip( $langs->trans('HtmlCodeDisplayAtEndOfSurvey') , $langs->trans('HtmlCodeDisplayAtEndOfSurveyHelp'),2,1,img_help(1,''));
 print '</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print '<textarea  name="after_answer_html"  rows="8" cols="65" >'.dol_htmlentities($object->after_answer_html).'</textarea>';
+
+$invitationUser = new InvitationUser($db);
+
+$subtitution_questionnaire = $object->get_substitutionArray('questionnaire');
+$subtitution_invitation_user = $invitationUser->get_substitutionArray('invitation');
+print '<div class="left" >';
+print '<h5>'.$langs->trans('SubtitutionsForQuestionnaire').'</h5>';
+print '<ul>';
+foreach ($subtitution_questionnaire as $key => $val){
+    print '<li>'.$key.'</li>';
+}
+print '</ul>';
+
+print '<h5>'.$langs->trans('SubtitutionsForInvitationUser').'</h5>';
+print '<ul>';
+foreach ($subtitution_invitation_user as $key => $val){
+    print '<li>'.$key.'</li>';
+}
+print '</ul>';
+print '</div>';
+
 print '</form>';
 print '</td></tr>';
 

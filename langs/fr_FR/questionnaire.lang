@@ -13,6 +13,9 @@ QuestionnaireAreaIndex=Espace de gestion des questionnaires
 QuestionnaireArea=Liste des questionnaires
 QuestionnaireToAnswerArea=Liste des questionnaires à compléter
 
+# SETUP
+DEFAULT_AFTER_ANSWER_HTML=Code HTML par défaut à afficher lors de la validation d'une réponse au questionnaire
+
 # MENU
 TopMenuquestionnaire=questionnaire
 questionnaireListDraft=Brouillon
@@ -59,6 +62,8 @@ questionnaireValidated=Questionnaire validé définitivement
 questionnaireNotValidated=Attention, certaines réponses sont obligatoires !
 questionnaireDeleteChoice=Supprimer choix
 questionnaireDeleteQuestion=Supprimer question
+SubtitutionsForQuestionnaire=Codes de subtitution QUESTIONNAIRE
+SubtitutionsForInvitationUser=Codes de subtitution INVITATION
 
 # CARD TPL
 Save=Enregistrer

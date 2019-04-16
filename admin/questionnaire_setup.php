@@ -30,6 +30,7 @@ if (! $res) {
 
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
+dol_include_once('abricot/includes/lib/admin.lib.php');
 require_once '../lib/questionnaire.lib.php';
 dol_include_once('/questionnaire/class/questionnaire.class.php');
 dol_include_once('/questionnaire/class/invitation.class.php');
@@ -192,9 +193,14 @@ dol_fiche_head(
     $head,
     'settings',
     $langs->trans("Module104961Name"),
-    0,
+    1,
     "questionnaire@questionnaire"
 );
+
+if(!function_exists('setup_print_title')){
+    print '<div class="error" >'.$langs->trans('AbricotNeedUpdate').' : <a href="http://wiki.atm-consulting.fr/index.php/Accueil#Abricot" target="_blank"><i class="fa fa-info"></i> Wiki</a></div>';
+    exit;
+}
 
 // Setup page goes here
 $dirmodels = array_merge(array (
@@ -345,9 +351,18 @@ print '&nbsp;<input type="submit" class="button" value="' . $langs->trans("Modif
 
 print '</form>';
 print '</td></tr>';
+
+
+// Example with imput
+setup_print_input_form_part('DEFAULT_AFTER_ANSWER_HTML', '', '', array(), 'textarea');
+
+
 print '</table>';
 
 print '<div class="warning">'.$langs->trans("warningHtAccess").'</div>';
+
+
+
 /*
 print "</table><br>\n";
 

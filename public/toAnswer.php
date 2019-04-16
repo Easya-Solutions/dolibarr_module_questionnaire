@@ -69,9 +69,6 @@ if($action === 'answer' && empty($res) ||  empty($invitation_user->id) ||  $invi
 	
 	print('Date limite de reponse atteinte, ou token invalide.');
 	exit;
-} else if($invitation_user->fk_statut==1 ){
-	print('Merci pour votre participation.');
-	exit;
 }
 
 
@@ -83,6 +80,23 @@ if (!empty($id))
 	$object->load($id);
 elseif (!empty($ref))
 	$object->load('', $ref);
+
+if($invitation_user->fk_statut==1 ){
+    print('Merci pour votre participation.');
+
+    $justvalidated = GETPOST('justvalidated', 'int');
+    if(!empty($justvalidated))
+    {
+        $subtitution_questionnaire = $object->get_substitutionArray('questionnaire');
+        $subtitution_invitation_user = $invitation_user->get_substitutionArray('invitation');
+        $subtitution = array_replace ($subtitution_questionnaire, $subtitution_invitation_user );
+        print make_substitutions($object->after_answer_html,$subtitution);
+
+        //print_r($subtitution);
+    }
+    exit;
+}
+
 
 $object->loadInvitations();
 
@@ -204,7 +218,7 @@ else if ($action == 'validate_answers')
 		$object->checkAllAnswer();
 
 		setEventMessage($langs->trans('questionnaireValidated'));
-		header('Location: '.dol_buildpath('/questionnaire/public/toAnswer.php', 1).'?id='.$id.'&action=answer&fk_invitation='.$fk_invitation."&token=".$token);
+		header('Location: '.dol_buildpath('/questionnaire/public/toAnswer.php', 1).'?id='.$id.'&action=answer&fk_invitation='.$fk_invitation."&token=".$token."&justvalidated=1");
 	}
 	else
 	{
