@@ -88,6 +88,11 @@ print $form->textwithtooltip( $langs->trans('HtmlCodeDisplayAtEndOfSurvey') , $l
 print '</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
+
+if(empty($object->after_answer_html) && !empty($conf->global->DEFAULT_AFTER_ANSWER_HTML)){
+    $object->after_answer_html = $conf->global->DEFAULT_AFTER_ANSWER_HTML;
+}
+
 print '<textarea  name="after_answer_html"  rows="8" cols="65" >'.dol_htmlentities($object->after_answer_html).'</textarea>';
 
 $invitationUser = new InvitationUser($db);
