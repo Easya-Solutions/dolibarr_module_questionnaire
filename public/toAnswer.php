@@ -87,6 +87,10 @@ if($invitation_user->fk_statut==1 ){
     $justvalidated = GETPOST('justvalidated', 'int');
     if(!empty($justvalidated))
     {
+        if(empty($object->after_answer_html) && !empty($conf->global->QUESTIONNAIRE_DEFAULT_AFTER_ANSWER_HTML)){
+            $object->after_answer_html = $conf->global->QUESTIONNAIRE_DEFAULT_AFTER_ANSWER_HTML;
+        }
+
         $subtitution_questionnaire = $object->get_substitutionArray('questionnaire');
         $subtitution_invitation_user = $invitation_user->get_substitutionArray('invitation');
         $subtitution = array_replace ($subtitution_questionnaire, $subtitution_invitation_user );

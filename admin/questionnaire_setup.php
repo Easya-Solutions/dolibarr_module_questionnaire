@@ -353,8 +353,9 @@ print '</form>';
 print '</td></tr>';
 
 
-// Example with imput
-setup_print_input_form_part('DEFAULT_AFTER_ANSWER_HTML', '', '', array(), 'textarea');
+// DEFAULT AFTER ANSWER HTML
+setup_print_input_form_part('QUESTIONNAIRE_DEFAULT_AFTER_ANSWER_HTML', '', '', array(), 'textarea');
+
 
 
 print '</table>';

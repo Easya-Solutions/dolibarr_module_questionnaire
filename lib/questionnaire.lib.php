@@ -416,10 +416,49 @@ function draw_string_for_user(&$q)
 	return '<input type="text" name="TAnswer['.$q->id.']" value="'.$q->answers[0]->value.'" />';
 }
 
-function draw_textarea_for_user(&$q)
+function draw_textarea_for_user(&$q, $readOnly = false)
 {
+    global $conf;
 
-	return '<textarea rows="7" cols="50" type="text" name="TAnswer['.$q->id.']" id="rep_q'.$q->id.'">'.$q->answers[0]->value.'</textarea>';
+    $input = '<textarea rows="7" cols="50" type="text" name="TAnswer['.$q->id.']" id="rep_q'.$q->id.'">'.$q->answers[0]->value.'</textarea>';
+
+    if(!empty($conf->global->QUESTIONNAIRE_TEXTAREA_WYSWYG)){
+
+
+        $input .= '<script>CKEDITOR.replace("rep_q'.$q->id.'",{ ';
+
+        if($readOnly){
+            $input .= ' readOnly: true, ' . "\n";
+        }
+        $input .= ' simpleImageBase64allowed: false, ';
+
+        $input .= ' toolbarGroups : [
+                { name: \'document\', groups: [ \'mode\', \'document\', \'doctools\' ] },
+                { name: \'clipboard\', groups: [ \'clipboard\', \'undo\' ] },
+                { name: \'editing\', groups: [ \'find\', \'selection\', \'spellchecker\', \'editing\' ] },
+                { name: \'forms\', groups: [ \'forms\' ] },
+                \'/\',
+                { name: \'basicstyles\', groups: [ \'basicstyles\', \'cleanup\' ] },
+                { name: \'paragraph\', groups: [ \'list\', \'indent\', \'blocks\', \'align\', \'bidi\', \'paragraph\' ] },
+                { name: \'links\', groups: [ \'links\' ] },
+                { name: \'insert\', groups: [ \'insert\' ] },
+                \'/\',
+                { name: \'styles\', groups: [ \'styles\' ] },
+                { name: \'colors\', groups: [ \'colors\' ] },
+                { name: \'tools\', groups: [ \'tools\' ] },
+                { name: \'others\', groups: [ \'others\' ] },
+                { name: \'about\', groups: [ \'about\' ] }
+            ],
+            
+            removeButtons : "Save,NewPage,Preview,Print,Source,Replace,Find,SelectAll,Scayt,Form,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,CreateDiv,BidiLtr,BidiRtl,Language,Anchor,Flash,HorizontalRule,Smiley,PageBreak,Iframe,ShowBlocks,About"
+            ';
+
+        $input .= '}); 
+
+</script>';
+    }
+
+    return $input;
 }
 
 function draw_select_for_user(&$q)
@@ -1355,6 +1394,7 @@ function llxHeaderQuest()
 	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/flot/jquery.flot.stack.min.js', 1).'"></script>
 	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/select2/dist/js/select2.full.min.js', 1).'"></script>
 	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/lib_head.js.php', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/js/ckeditor/ckeditor.js', 1).'"></script>
 	</head>
 	
 

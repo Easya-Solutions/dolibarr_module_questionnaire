@@ -14,7 +14,10 @@ QuestionnaireArea=Liste des questionnaires
 QuestionnaireToAnswerArea=Liste des questionnaires à compléter
 
 # SETUP
-DEFAULT_AFTER_ANSWER_HTML=Code HTML par défaut à afficher lors de la validation d'une réponse au questionnaire
+QUESTIONNAIRE_DEFAULT_AFTER_ANSWER_HTML=Code HTML par défaut à afficher lors de la validation d'une réponse au questionnaire
+QUESTIONNAIRE_TEXTAREA_WYSWYG=Utiliser un champ texte WYSWYG
+QUESTIONNAIRE_ANSWER_CONFIG=Configuration des réponses
+
 
 # MENU
 TopMenuquestionnaire=questionnaire

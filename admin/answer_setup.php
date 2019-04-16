@@ -33,6 +33,7 @@ require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once '../lib/questionnaire.lib.php';
 dol_include_once('/questionnaire/class/questionnaire.class.php');
 dol_include_once('/questionnaire/class/invitation.class.php');
+dol_include_once('abricot/includes/lib/admin.lib.php');
 
 // Translations
 $langs->load("questionnaire@questionnaire");
@@ -144,7 +145,7 @@ dol_fiche_head(
     $head,
     'answer',
     $langs->trans("Module104961Name"),
-    0,
+    1,
     "questionnaire@questionnaire"
 );
 
@@ -244,8 +245,14 @@ foreach ( $dirmodels as $reldir ) {
 		}
 	}
 }*/
-print "</table><br>\n";
+//print "</table><br>\n";
 
+
+print '<table class="noborder" width="100%">';
+setup_print_title('QUESTIONNAIRE_ANSWER_CONFIG');
+// DEFAULT AFTER ANSWER HTML
+setup_print_on_off('QUESTIONNAIRE_TEXTAREA_WYSWYG');
+print '</table>';
 
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
@@ -338,6 +345,10 @@ foreach ( $dirmodels as $reldir ) {
 		}
 	}
 }
+
+
+
+
 print "</table><br>\n";
 
 /*
@@ -483,6 +494,7 @@ foreach ($dirmodels as $reldir)
         }
     }
 }
+
 
 print '</table>';
 
