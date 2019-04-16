@@ -771,4 +771,5 @@ if($action === 'apercu' || $action === 'answer') {
 </script>
 
 <?php
+dol_htmloutput_events();
 //llxFooter();

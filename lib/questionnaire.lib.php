@@ -1306,9 +1306,7 @@ function prepareMailContent($invuser, $fk_questionnaire)
 	
 	$content = "Bonjour $name, \nNous vous invitons à répondre au questionnaire suivant : ";
 
-	if (!empty($invuser->fk_user))
-		$content .= dol_buildpath('/questionnaire/card.php?id='.$fk_questionnaire.'&action=answer&fk_invitation='.$invuser->id.'&token='.$invuser->token, 2);
-	else if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN))
+	if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN))
         $content .= $conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN.'toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $invuser->id . '&token=' . $invuser->token;
     else
         $content .= dol_buildpath('/questionnaire/public/toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $invuser->id . '&token=' . $invuser->token, 2);

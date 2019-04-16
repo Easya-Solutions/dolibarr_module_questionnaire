@@ -42,6 +42,7 @@ $sql = 'SELECT t.rowid, t.title, t.fk_statut, \'\' AS action';
 $sql.= ' FROM '.MAIN_DB_PREFIX.'quest_questionnaire t ';
 $sql.= ' WHERE 1=1';
 $sql.= ' AND t.entity IN ('.getEntity('questionnaire', 1).')';
+$sql.= ' ORDER BY t.ref DESC';
 
 if(is_numeric($status)) $sql.=' AND t.fk_statut='.$status;
 if(empty($user->rights->questionnaire->readall)) $sql.= ' AND fk_user_author = '.$user->id;
@@ -53,7 +54,8 @@ if($action === 'to_answer') {
 			INNER JOIN '.MAIN_DB_PREFIX.'quest_invitation_user i_usr ON (i_usr.fk_questionnaire = q.rowid)
 			WHERE i_usr.fk_element = '.$user->id.' AND type_element="user" 
 			AND i_usr.fk_statut != 1
-			AND i_usr.date_limite_reponse >= "'.date('Y-m-d').'"';
+			AND i_usr.date_limite_reponse >= "'.date('Y-m-d').'"
+			ORDER BY q.ref DESC';
 }
 $resql = $db->query($sql);
 $TData=array();

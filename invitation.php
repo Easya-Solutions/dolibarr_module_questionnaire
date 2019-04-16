@@ -301,9 +301,7 @@ function _getListInvitations(&$object)
 function _getLinkUrl($type_element, $fk_element,$fk_questionnaire,$fk_invit,$token){
 
     global $conf, $langs;
-    if ($type_element == 'user' && $fk_element > 0)
-        return  ' <input style="opacity:0;width:1px;" type="text"  value="'.dol_buildpath('/questionnaire/card.php?id='.$fk_questionnaire.'&action=answer&fk_invitation='.$fk_invit.'&token='.$token, 2).'" class="copyToClipboard"><input style="width:100px;" class="button" type="text" value="'.$langs->trans('CopyLink').'" onclick="copyLink(this);"/>';
-    else if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN))
+    if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN))
         return ' <input style="opacity:0;width:1px;" type="text"  value="'.$conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN.'toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $fk_invit. '&token=' . $token.'" class="copyToClipboard"><input style="width:100px;" class="button" type="text" value="'.$langs->trans('CopyLink').'" onclick="copyLink(this);"/>';
     else
         return ' <input style="opacity:0;width:1px;" type="text"  value="'.dol_buildpath('/questionnaire/public/toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $fk_invit . '&token=' . $token, 2).'" class="copyToClipboard"><input style="width:100px;" class="button" type="text" value="'.$langs->trans('CopyLink').'" onclick="copyLink(this);"/>';
