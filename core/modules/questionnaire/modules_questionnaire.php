@@ -57,6 +57,12 @@ abstract class ModeleQuestionnaire extends CommonDocGeneratorQuestionnaire
 
 }
 
+class ModelePDFQuestionnaire extends ModeleQuestionnaire
+{
+
+}
+
+
 /**
  * Classe mere des modeles de numerotation des references de lead
  */

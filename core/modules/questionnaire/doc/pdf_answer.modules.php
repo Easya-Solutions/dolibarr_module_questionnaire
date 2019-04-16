@@ -30,6 +30,9 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 
+
+
+
 /**
  * 	Class to build documents using ODF templates generator
  */
@@ -434,7 +437,8 @@ class pdf_answer extends ModelePDFProduct
 									}
 									$pdf->SetXY($this->marge_gauche, $pdf->GetY());
 									$pdf->SetFont('', '', $default_font_size);
-									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $questionnaire->questions[$i]->answers[0]->value, 0, 'L', 0);
+
+									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $questionnaire->questions[$i]->answers[0]->value, 0, 'L', 0, 1, '', '', true, 0, !empty($conf->global->QUESTIONNAIRE_TEXTAREA_WYSWYG));
 
 									break;
 								case 'select':
