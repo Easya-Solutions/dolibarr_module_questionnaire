@@ -208,6 +208,7 @@ class InvitationUser extends SeedObject
 	public $table_element = 'quest_invitation_user';
 	public $element = 'invitation_user';
 	public $fk_element;
+    public $isextrafieldmanaged = 1; // enable extrafields
 
 	/**
 	 * Draft status

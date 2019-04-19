@@ -39,6 +39,8 @@ class Questionnaire extends SeedObject
 	public $element = 'questionnaire';
 	public $picto = 'questionnaire@questionnaire';
 
+    public $isextrafieldmanaged = 1; // enable extrafields
+
 	public function __construct($db)
 	{
 		global $conf, $langs;

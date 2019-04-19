@@ -40,10 +40,18 @@ function questionnaireAdminPrepareHead()
 	$head[$h][1] = $langs->trans("answerCard");
 	$head[$h][2] = 'answer';
 	$h++;
-	$head[$h][0] = dol_buildpath("/questionnaire/admin/questionnaire_about.php", 1);
-	$head[$h][1] = $langs->trans("About");
-	$head[$h][2] = 'about';
-	$h++;
+    $head[$h][0] = dol_buildpath("/questionnaire/admin/questionnaire_about.php", 1);
+    $head[$h][1] = $langs->trans("About");
+    $head[$h][2] = 'about';
+    $h++;
+    $head[$h][0] = dol_buildpath("/questionnaire/admin/questionnaire_extrafields.php", 1);
+    $head[$h][1] = $langs->trans("ExtraFields");
+    $head[$h][2] = 'extrafields';
+    $h++;
+    $head[$h][0] = dol_buildpath("/questionnaire/admin/invitation_user_extrafields.php", 1);
+    $head[$h][1] = $langs->trans("ExtraFieldsInvitation");
+    $head[$h][2] = 'extrafieldsInvitationUser';
+    $h++;
 
 	// Show more tabs from modules
 	// Entries must be declared in modules descriptor with line
