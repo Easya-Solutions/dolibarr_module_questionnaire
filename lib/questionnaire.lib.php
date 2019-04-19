@@ -187,9 +187,36 @@ function draw_question(&$q, $fk_statut_questionnaire = 0)
 	else $res .= '<div class="refid">Question : '.$q->TTypes[$q->type].'<br /></div>';
 	
 	if (empty($fk_statut_questionnaire))
-		if ($q->type == 'paragraph')
-			$res .= '<textarea size="100" placeholder="Paragraphe" type="text" name="label" rows="7"  cols="50" class="field" id="label" name="label" >'.$q->label.'</textarea>';
-		else if($q->type == 'title')
+		if ($q->type == 'paragraph'){
+
+            require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
+            $doleditor=new DolEditor('label', $q->label);
+            $res.=$doleditor->Create(1);
+            //$res .= '<textarea size="100" placeholder="Paragraphe" type="text" name="label" rows="7"  cols="50" class="field" id="label" name="label" >'.$q->label.'</textarea>';
+
+            $res .= '<script>
+                    $( document ).ready(function() {
+
+                        if(typeof CKEDITOR.instances[\'label\'] !=== undefined)
+                        {
+                            $("#label").attr("class" ,"field"); 
+                            
+                            var editor = CKEDITOR.instances[\'label\'];
+                            if(editor !== undefined)
+                            {
+                                editor.on( \'blur\', function() {
+                                    console.log(editor.getData().trim());
+                                    $("#label").text(editor.getData().trim());
+                                    $("#label").trigger( "change" );
+                               });
+                            }
+                            
+                        }
+                    });
+                    </script>';
+
+        }
+	    else if($q->type == 'title')
 			$res .= '<input size="100" placeholder="Titre" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
 		else 
 			$res .= '<input size="100" placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';

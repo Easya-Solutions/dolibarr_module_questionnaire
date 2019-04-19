@@ -91,12 +91,12 @@ if($invitation_user->fk_statut==1 ){
             $object->after_answer_html = $conf->global->QUESTIONNAIRE_DEFAULT_AFTER_ANSWER_HTML;
         }
 
-        $subtitution_questionnaire = $object->get_substitutionArray('questionnaire');
-        $subtitution_invitation_user = $invitation_user->get_substitutionArray('invitation');
-        $subtitution = array_replace ($subtitution_questionnaire, $subtitution_invitation_user );
-        print make_substitutions($object->after_answer_html,$subtitution);
+        $substitution_questionnaire = $object->get_substitutionArray('questionnaire');
+        $substitution_invitation_user = $invitation_user->get_substitutionArray('invitation');
+        $substitution = array_replace ($substitution_questionnaire, $substitution_invitation_user );
+        print make_substitutions($object->after_answer_html,$substitution);
 
-        //print_r($subtitution);
+        //print_r($substitution);
     }
     exit;
 }

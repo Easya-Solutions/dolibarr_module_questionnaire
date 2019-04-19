@@ -65,8 +65,8 @@ questionnaireValidated=Questionnaire validé définitivement
 questionnaireNotValidated=Attention, certaines réponses sont obligatoires !
 questionnaireDeleteChoice=Supprimer choix
 questionnaireDeleteQuestion=Supprimer question
-SubtitutionsForQuestionnaire=Codes de subtitution QUESTIONNAIRE
-SubtitutionsForInvitationUser=Codes de subtitution INVITATION
+SubstitutionsForQuestionnaire=Codes de substitution QUESTIONNAIRE
+SubstitutionsForInvitationUser=Codes de substitution INVITATION
 
 # CARD TPL
 Save=Enregistrer
