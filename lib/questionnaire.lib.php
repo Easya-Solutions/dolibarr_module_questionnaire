@@ -194,10 +194,10 @@ function draw_question(&$q, $fk_statut_questionnaire = 0)
             $res.=$doleditor->Create(1);
             //$res .= '<textarea size="100" placeholder="Paragraphe" type="text" name="label" rows="7"  cols="50" class="field" id="label" name="label" >'.$q->label.'</textarea>';
 
-            $res .= '<script>
+            $res .= '<script  type="text/javascript" >
                     $( document ).ready(function() {
 
-                        if(typeof CKEDITOR.instances[\'label\'] !=== undefined)
+                        if(typeof CKEDITOR.instances[\'label\'] !== undefined)
                         {
                             $("#label").attr("class" ,"field"); 
                             
