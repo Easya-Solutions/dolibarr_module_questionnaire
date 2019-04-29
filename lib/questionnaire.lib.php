@@ -1322,6 +1322,10 @@ function prepareMailContent($invuser, $fk_questionnaire)
 
 function llxHeaderQuest()
 {
+global $conf;
+
+	if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN)) $path = '';
+	else $path = '/questionnaire/public';
 	print '<!doctype html>
 	<html lang="fr">
 	<head>
@@ -1331,23 +1335,23 @@ function llxHeaderQuest()
 	<meta name="author" content="Dolibarr Development Team">
 	<title>Questionnaire</title>
 	<!-- Includes CSS for JQuery (Ajax library) -->
-	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/public/includes/jquery/css/base/jquery-ui.css', 1).'">
-	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/jnotify/jquery.jnotify-alt.min.css', 1).'">
-	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/select2/dist/css/select2.css', 1).'">
+	<link rel="stylesheet" type="text/css" href="'.dol_buildpath($path.'/includes/jquery/css/base/jquery-ui.css', 1).'">
+	<link rel="stylesheet" type="text/css" href="'.dol_buildpath($path.'/includes/jquery/plugins/jnotify/jquery.jnotify-alt.min.css', 1).'">
+	<link rel="stylesheet" type="text/css" href="'.dol_buildpath($path.'/includes/jquery/plugins/select2/dist/css/select2.css', 1).'">
 	<!-- Includes CSS for font awesome -->
-	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/public/includes/common/fontawesome/css/font-awesome.min.css', 1).'">
+	<link rel="stylesheet" type="text/css" href="'.dol_buildpath($path.'/includes/common/fontawesome/css/font-awesome.min.css', 1).'">
 	<!-- Includes CSS added by page -->
-	<link rel="stylesheet" type="text/css" title="default" href="'.dol_buildpath('/questionnaire/public/css/styles.css', 1).'">
+	<link rel="stylesheet" type="text/css" title="default" href="'.dol_buildpath($path.'/css/styles.css', 1).'">
 		<!-- Includes JS for JQuery -->
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/js/jquery.min.js', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/js/jquery-ui.min.js', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/tablednd/jquery.tablednd.min.js', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/jnotify/jquery.jnotify.min.js', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/flot/jquery.flot.min.js', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/flot/jquery.flot.pie.min.js', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/flot/jquery.flot.stack.min.js', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/select2/dist/js/select2.full.min.js', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/lib_head.js.php', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/js/jquery.min.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/js/jquery-ui.min.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/plugins/tablednd/jquery.tablednd.min.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/plugins/jnotify/jquery.jnotify.min.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/plugins/flot/jquery.flot.min.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/plugins/flot/jquery.flot.pie.min.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/plugins/flot/jquery.flot.stack.min.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/plugins/select2/dist/js/select2.full.min.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/lib_head.js.php', 1).'"></script>
 	</head>
 	
 
