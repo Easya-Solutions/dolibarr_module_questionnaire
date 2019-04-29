@@ -438,7 +438,7 @@ class pdf_answer extends ModelePDFProduct
 									$pdf->SetXY($this->marge_gauche, $pdf->GetY());
 									$pdf->SetFont('', '', $default_font_size);
 
-									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $questionnaire->questions[$i]->answers[0]->value, 0, 'L', 0, 1, '', '', true, 0, !empty($conf->global->QUESTIONNAIRE_TEXTAREA_WYSWYG));
+									$pdf->MultiCell($this->page_largeur - ($this->marge_droite + $this->marge_gauche), 3, $questionnaire->questions[$i]->answers[0]->value, 0, 'L', 0, 1, '', '', true, 0, !empty($conf->global->QUESTIONNAIRE_ANSWER_TEXTAREA_WYSWYG));
 
 									break;
 								case 'select':

@@ -207,6 +207,13 @@ $dirmodels = array_merge(array (
 		'/'
 ), ( array ) $conf->modules_parts['models']);
 
+
+print '<table class="noborder" width="100%">';
+setup_print_title('QUESTIONNAIRE_CONFIG');
+// DEFAULT AFTER ANSWER HTML
+setup_print_on_off('QUESTIONNAIRE_TEXTAREA_WYSWYG');
+print '</table>';
+
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
 print '<td>' . $langs->trans("Name") . "</td>\n";

@@ -251,7 +251,7 @@ foreach ( $dirmodels as $reldir ) {
 print '<table class="noborder" width="100%">';
 setup_print_title('QUESTIONNAIRE_ANSWER_CONFIG');
 // DEFAULT AFTER ANSWER HTML
-setup_print_on_off('QUESTIONNAIRE_TEXTAREA_WYSWYG');
+setup_print_on_off('QUESTIONNAIRE_ANSWER_TEXTAREA_WYSWYG');
 print '</table>';
 
 print '<table class="noborder" width="100%">';

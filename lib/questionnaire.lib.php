@@ -168,7 +168,7 @@ function getFormConfirmquestionnaire(&$form, &$object, $action)
 function draw_question(&$q, $fk_statut_questionnaire = 0)
 {
 
-	global $db, $langs, $bg_color;
+	global $db, $langs, $bg_color, $conf;
 
 	if (!isset($bg_color))
 		$bg_color = 0;
@@ -188,33 +188,39 @@ function draw_question(&$q, $fk_statut_questionnaire = 0)
 	
 	if (empty($fk_statut_questionnaire))
 		if ($q->type == 'paragraph'){
+            $res .= '<textarea size="100" placeholder="Paragraphe" type="text" name="label" rows="7"  cols="50" class="field" id="label'.$q->id.'" name="label" >'.$q->label.'</textarea>';
 
-            require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
-            $doleditor=new DolEditor('label', $q->label);
-            $res.=$doleditor->Create(1);
-            //$res .= '<textarea size="100" placeholder="Paragraphe" type="text" name="label" rows="7"  cols="50" class="field" id="label" name="label" >'.$q->label.'</textarea>';
-
-            $res .= '<script  type="text/javascript" >
+            if(!empty($conf->global->QUESTIONNAIRE_TEXTAREA_WYSWYG))
+            {
+                $res .= '<button class="button" type="button" id="savetexarealabel' . $q->id . '" >' . $langs->trans('Save') . '</button>';
+                $res .= '<script  type="text/javascript" >
                     $( document ).ready(function() {
-
-                        if(typeof CKEDITOR.instances[\'label\'] !== undefined)
-                        {
-                            $("#label").attr("class" ,"field"); 
+                        CKEDITOR.replace( \'label' . $q->id . '\');
                             
-                            var editor = CKEDITOR.instances[\'label\'];
+                        if ( typeof CKEDITOR.instances != undefined && CKEDITOR.instances[\'label' . $q->id . '\'] )
+                        {
+                            $("#label' . $q->id . '").attr("class" ,"field"); 
+                            var editor = CKEDITOR.instances[\'label' . $q->id . '\'];
+                            console.log(editor.getData().trim());
                             if(editor !== undefined)
                             {
                                 editor.on( \'blur\', function() {
                                     console.log(editor.getData().trim());
-                                    $("#label").text(editor.getData().trim());
-                                    $("#label").trigger( "change" );
+                                    $("#label' . $q->id . '").text(editor.getData().trim());
+                                    $("#label' . $q->id . '").trigger( "change" );
                                });
+                                
+                                $("#savetexarealabel' . $q->id . '").click(function() {
+                                    console.log(editor.getData().trim());
+                                    $("#label' . $q->id . '").text(editor.getData().trim());
+                                    $("#label' . $q->id . '").trigger( "change" );
+                                    $(this).fadeOut(500).fadeIn(500);
+                                })
                             }
-                            
                         }
                     });
                     </script>';
-
+            }
         }
 	    else if($q->type == 'title')
 			$res .= '<input size="100" placeholder="Titre" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
@@ -457,7 +463,7 @@ function draw_textarea_for_user(&$q, $readOnly = false)
 
     $input = '<textarea rows="7" cols="50" type="text" name="TAnswer['.$q->id.']" id="rep_q'.$q->id.'">'.$q->answers[0]->value.'</textarea>';
 
-    if(!empty($conf->global->QUESTIONNAIRE_TEXTAREA_WYSWYG)){
+    if(!empty($conf->global->QUESTIONNAIRE_ANSWER_TEXTAREA_WYSWYG)){
 
 
         $input .= '<script>CKEDITOR.replace("rep_q'.$q->id.'",{ ';
