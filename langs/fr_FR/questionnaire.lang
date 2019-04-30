@@ -51,6 +51,8 @@ Accepted=Accepté
 questionnaireList=Liste questionnaires
 questionnaireListToAnswer=Questionnaires à compléter
 Noquestionnaire=(vide)
+ValidationDate=Date de validation
+QuestionnaireGuestList=Liste des invitations
 
 # INDEX
 QuestionnaireLastCreated=Les 5 derniers questionnaires créés %s

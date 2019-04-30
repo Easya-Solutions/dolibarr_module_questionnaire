@@ -217,14 +217,16 @@ function _getListInvitations(&$object)
 	$nbLine = !empty($user->conf->MAIN_SIZE_LISTE_LIMIT) ? $user->conf->MAIN_SIZE_LISTE_LIMIT : $conf->global->MAIN_SIZE_LISTE_LIMIT;
     $r = new Listview($db, 'questionnaire-guests-list');
 
-	$sql = 'SELECT invu.rowid, invu.fk_usergroup,COALESCE(NULLIF(invu.type_element,""), "External") as type_element,  invu.fk_questionnaire as fk_questionnaire, invu.token as token, invu.fk_element, invu.email, invu.date_limite_reponse, invu.sent, invu.rowid as id_user,\'\' AS link_invit, \'\' AS action';
+	$sql = 'SELECT invu.rowid, invu.fk_usergroup, invu.ref, COALESCE(NULLIF(invu.type_element,""), "External") as type_element,  invu.fk_questionnaire as fk_questionnaire, invu.token as token, invu.fk_element, invu.fk_questionnaire,invu.email, invu.date_limite_reponse, invu.fk_statut as status, invu.date_validation, invu.sent, invu.rowid as id_user,\'\' AS link_invit, \'\' AS action';
 	$sql .= ' FROM '.MAIN_DB_PREFIX.'quest_invitation_user invu ';
 	$sql .= ' WHERE fk_questionnaire = '.$object->id;
 	$sql .= ' AND (invu.fk_element > 0 OR invu.email != "") ';
 
+
+
     $TStatus = InvitationUser::$TStatus;
 
-    $param = array(
+    $listViewConfig = array(
         'view_type' => 'list' // default = [list], [raw], [chart]
     ,'limit'=>array('nbLine' => 500)
     ,'subQuery' => array()
@@ -234,7 +236,7 @@ function _getListInvitations(&$object)
         ,'date_validation' => 'date'
         )
     ,'search' => array(
-            'date_limite_reponse' => array('search_type' => 'calendars', 'allow_is_null' => true)
+        'date_limite_reponse' => array('search_type' => 'calendars', 'allow_is_null' => true)
         ,'date_validation' => array('search_type' => 'calendars', 'allow_is_null' => true)
         ,'status' => array('search_type' => $TStatus , 'to_translate' => true) // selec
         ,'sent' => array('search_type' => InvitationUser::$TSentStatus , 'to_translate' => true) // select html, la clé = le status de l'objet, 'to_translate' à true si nécessaire
@@ -245,7 +247,7 @@ function _getListInvitations(&$object)
 
     ,'list' => array(
             'param_url' => 'id='.$object->id,
-            'title' => $langs->trans('QuestionnaireList')
+            'title' => $langs->trans('QuestionnaireGuestList')
             ,'massactions'=>array(
                     'send' => $langs->trans("SendByMail"),
                     'delete'=>$langs->trans("Delete"),
@@ -253,18 +255,18 @@ function _getListInvitations(&$object)
             )
     ,'hide'=> array('rowid')
     ,'title'=>array(
-            'ref' => $langs->trans('Ref')
+        'ref' => $langs->trans('Ref')
+        ,'fk_usergroup' => $langs->trans('Group')
+        , 'fk_element' => $langs->trans('Element')
+        , 'email' => $langs->trans('Email')
         ,'date_limite_reponse' => $langs->trans('questionnaire_date_limite_reponse')
         ,'date_validation' => $langs->trans('ValidationDate')
         , 'sent' => $langs->trans('Sent')
         , 'status' => $langs->trans('Status')
 
-        , 'email' => $langs->trans('Email')
-        , 'fk_element' => $langs->trans('Element')
-        , 'fk_usergroup' => $langs->trans('Group')
         , 'link_invit' => $langs->trans('LinkInvit')
         ,'selectedfields' => ''
-        )
+    )
     , 'eval' => array(
             'date_limite_reponse' => '_getDateFr("@date_limite_reponse@")'
         , 'fk_element' => '_getNomUrl("@fk_element@","Externe","@type_element@")'
@@ -272,12 +274,26 @@ function _getListInvitations(&$object)
         , 'action' => '_actionLink("@id_user@")'
         , 'fk_usergroup' => '_getNomUrlGrp("@fk_usergroup@")'
         , 'link_invit' => '_getLinkUrl("@type_element@","@fk_element@","@fk_questionnaire@","@id_user@","@token@")'
+
+        ,'status' => '_getLinkAnswersStatut("@status@")'
         )
     );
 
     $formcore = new TFormCore();
+    $url = $_SERVER['PHP_SELF'].'?id='.$session->id.'&idQuestionnaire='.$object->id;
+
+    // Change view from hooks
+    $parameters=array(  'listViewConfig' => $listViewConfig, 'url' =>& $url);
+
+    $reshook=$hookmanager->executeHooks('listViewConfig',$parameters,$r);    // Note that $action and $object may have been modified by hook
+    if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+    if ($reshook>0)
+    {
+        $listViewConfig = $hookmanager->resArray;
+    }
+
     $res = $formcore->begin_form($url, 'form_list_questionnaire', 'POST');
-    $res.= $r->render($sql, $param);
+    $res.= $r->render($sql, $listViewConfig);
 
 
 	$parameters = array('sql' => $sql);
@@ -308,6 +324,23 @@ function _getLinkUrl($type_element, $fk_element,$fk_questionnaire,$fk_invit,$tok
         return ' <input style="opacity:0;width:1px;" type="text"  value="'.$conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN.'toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $fk_invit. '&token=' . $token.'" class="copyToClipboard"><input style="width:100px;" class="button" type="text" value="'.$langs->trans('CopyLink').'" onclick="copyLink(this);"/>';
     else
         return ' <input style="opacity:0;width:1px;" type="text"  value="'.dol_buildpath('/questionnaire/public/toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $fk_invit . '&token=' . $token, 2).'" class="copyToClipboard"><input style="width:100px;" class="button" type="text" value="'.$langs->trans('CopyLink').'" onclick="copyLink(this);"/>';
+}
+
+function _getLinkAnswersStatut($status)
+{
+
+    global $db, $id, $questionnaire_status_forced_key;
+
+    if ($status == 1)
+        $questionnaire_status_forced_key = 'answerValidate';
+    else
+        $questionnaire_status_forced_key = '';
+
+    // Juste pour utiliser la fonction LibStatus
+    $q = new Questionnaire($db);
+    $q->fetch($id);
+
+    return $q->LibStatut($status, 6);
 }
 
 function _getUsers()
