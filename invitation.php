@@ -238,7 +238,7 @@ function _getListInvitations(&$object)
     ,'search' => array(
         'date_limite_reponse' => array('search_type' => 'calendars', 'allow_is_null' => true)
         ,'date_validation' => array('search_type' => 'calendars', 'allow_is_null' => true)
-        ,'status' => array('search_type' => $TStatus , 'to_translate' => true) // selec
+        ,'status' => array('search_type' => $TStatus , 'to_translate' => true, 'field' => array('fk_statut')) // selec
         ,'sent' => array('search_type' => InvitationUser::$TSentStatus , 'to_translate' => true) // select html, la clé = le status de l'objet, 'to_translate' à true si nécessaire
         ,'email' => array('search_type' => true, 'table' => array('invu', 'invu'), 'field' => array('email'))
         ,'ref' => array('search_type' => true, 'table' => array('invu', 'invu'), 'field' => array('ref'))
