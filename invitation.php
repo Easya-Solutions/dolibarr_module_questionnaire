@@ -280,7 +280,7 @@ function _getListInvitations(&$object)
     );
 
     $formcore = new TFormCore();
-    $url = $_SERVER['PHP_SELF'].'?id='.$session->id.'&idQuestionnaire='.$object->id;
+    $url = $_SERVER['PHP_SELF'].'?id='.$object->id;
 
     // Change view from hooks
     $parameters=array(  'listViewConfig' => $listViewConfig, 'url' =>& $url);
