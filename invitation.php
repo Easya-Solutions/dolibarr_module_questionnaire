@@ -188,7 +188,7 @@ print $TBS->render('tpl/invitation.tpl.php'
 			, 'showTitle' => $object->title
 			, 'showStatus' => $object->getLibStatut(1)
 			, 'list_invitations' => _getListInvitations($object)
-			, 'massaction' => printMassActionButton()
+			//, 'massaction' => printMassActionButton()
 			,'fk_user' => $invitation->fk_element
 		)
 		, 'langs' => $langs
@@ -215,68 +215,69 @@ function _getListInvitations(&$object)
 	global $db, $langs, $hookmanager, $user, $form, $formcore;
 
 	$nbLine = !empty($user->conf->MAIN_SIZE_LISTE_LIMIT) ? $user->conf->MAIN_SIZE_LISTE_LIMIT : $conf->global->MAIN_SIZE_LISTE_LIMIT;
+    $r = new Listview($db, 'questionnaire-guests-list');
 
-	$r = new TListviewTBS('invitation_list', dol_buildpath('/questionnaire/tpl/questionnaire_list.tpl.php'));
-
-	$sql = 'SELECT invu.fk_usergroup,COALESCE(NULLIF(invu.type_element,""), "External") as type_element,  invu.fk_questionnaire as fk_questionnaire, invu.token as token, invu.fk_element, invu.email, invu.date_limite_reponse, invu.sent, invu.rowid as id_user,\'\' AS link_invit, \'\' AS action';
+	$sql = 'SELECT invu.rowid, invu.fk_usergroup,COALESCE(NULLIF(invu.type_element,""), "External") as type_element,  invu.fk_questionnaire as fk_questionnaire, invu.token as token, invu.fk_element, invu.email, invu.date_limite_reponse, invu.sent, invu.rowid as id_user,\'\' AS link_invit, \'\' AS action';
 	$sql .= ' FROM '.MAIN_DB_PREFIX.'quest_invitation_user invu ';
 	$sql .= ' WHERE fk_questionnaire = '.$object->id;
 	$sql .= ' AND (invu.fk_element > 0 OR invu.email != "") ';
-	$resql = $db->query($sql);
-	
-	$TData = array();
-	if (!empty($resql) && $db->num_rows($resql) > 0)
-	{
-		while ($res = $db->fetch_object($resql))
-		{
-			$TData[] = $res;
-		}
-	}
 
-//if($user->rights->societe->creer) $arrayofmassactions['createbills']=$langs->trans("CreateInvoiceForThisCustomer");
-	
+    $TStatus = InvitationUser::$TStatus;
 
-	$res = $r->renderArray($db, $TData, array(
-		'limit' => array(
-			'page' => 1
-			, 'nbLine' => 500
-		)
-		, 'translate' => array(
-		)
-		, 'link' => array(
-		)
-		, 'hide' => array('id_user','type_element','fk_questionnaire','token')
-		, 'type' => array()
-		, 'liste' => array(
-			'titre' => $langs->trans('TitleConformiteNormeList')
-			, 'image' => img_picto('', 'title.png', '', 0)
-			, 'picto_precedent' => img_picto('', 'previous.png', '', 0)
-			, 'picto_suivant' => img_picto('', 'next.png', '', 0)
-			, 'order_down' => img_picto('', '1downarrow.png', '', 0)
-			, 'order_up' => img_picto('', '1uparrow.png', '', 0)
-			, 'noheader' => FALSE
-			, 'messageNothing' => $langs->transnoentities('noElement')
-			, 'picto_search' => img_picto('', 'search.png', '', 0)
-		)
-		, 'title' => array(
-			 'date_limite_reponse' => $langs->trans('questionnaire_date_limite_reponse')
-			, 'sent' => $langs->trans('Status')
-			, 'email' => $langs->trans('Email')
-			, 'fk_element' => $langs->trans('Element')
-			, 'action' => $langs->trans('Action').'&nbsp;&nbsp;&nbsp;'.$form->showCheckAddButtons('checkforselect', 1)
-			, 'fk_usergroup' => $langs->trans('Group')
-             , 'link_invit' => $langs->trans('LinkInvit')
-		)
-		, 'orderBy' => array('cn.rowid' => 'DESC')
-		, 'eval' => array(
-			'date_limite_reponse' => '_getDateFr("@date_limite_reponse@")'
-			, 'fk_element' => '_getNomUrl(@fk_element@,Externe,@type_element@)'
-			, 'sent' => '_libStatut(@sent@)'
-			, 'action' => '_actionLink(@id_user@)'
-			, 'fk_usergroup' => '_getNomUrlGrp(@fk_usergroup@)'
-            , 'link_invit' => '_getLinkUrl(@type_element@,@fk_element@,@fk_questionnaire@,@id_user@,"@token@")'
-		)
-	));
+    $param = array(
+        'view_type' => 'list' // default = [list], [raw], [chart]
+    ,'limit'=>array('nbLine' => 500)
+    ,'subQuery' => array()
+    ,'link' => array()
+    ,'type' => array(
+            'date_limite_reponse' => 'date' // [datetime], [hour], [money], [number], [integer]
+        ,'date_validation' => 'date'
+        )
+    ,'search' => array(
+            'date_limite_reponse' => array('search_type' => 'calendars', 'allow_is_null' => true)
+        ,'date_validation' => array('search_type' => 'calendars', 'allow_is_null' => true)
+        ,'status' => array('search_type' => $TStatus , 'to_translate' => true) // selec
+        ,'sent' => array('search_type' => InvitationUser::$TSentStatus , 'to_translate' => true) // select html, la clé = le status de l'objet, 'to_translate' à true si nécessaire
+        ,'email' => array('search_type' => true, 'table' => array('iu', 'iu'), 'field' => array('email'))
+        ,'ref' => array('search_type' => true, 'table' => array('iu', 'iu'), 'field' => array('ref'))
+        )
+    ,'translate' => array()
+
+    ,'list' => array(
+            'param_url' => 'id='.$object->id,
+            'title' => $langs->trans('QuestionnaireList')
+            ,'massactions'=>array(
+                    'send' => $langs->trans("SendByMail"),
+                    'delete'=>$langs->trans("Delete"),
+                )
+            )
+    ,'hide'=> array('rowid')
+    ,'title'=>array(
+            'ref' => $langs->trans('Ref')
+        ,'date_limite_reponse' => $langs->trans('questionnaire_date_limite_reponse')
+        ,'date_validation' => $langs->trans('ValidationDate')
+        , 'sent' => $langs->trans('Sent')
+        , 'status' => $langs->trans('Status')
+
+        , 'email' => $langs->trans('Email')
+        , 'fk_element' => $langs->trans('Element')
+        , 'fk_usergroup' => $langs->trans('Group')
+        , 'link_invit' => $langs->trans('LinkInvit')
+        ,'selectedfields' => ''
+        )
+    , 'eval' => array(
+            'date_limite_reponse' => '_getDateFr("@date_limite_reponse@")'
+        , 'fk_element' => '_getNomUrl("@fk_element@","Externe","@type_element@")'
+        , 'sent' => '_libStatut("@sent@")'
+        , 'action' => '_actionLink("@id_user@")'
+        , 'fk_usergroup' => '_getNomUrlGrp("@fk_usergroup@")'
+        , 'link_invit' => '_getLinkUrl("@type_element@","@fk_element@","@fk_questionnaire@","@id_user@","@token@")'
+        )
+    );
+
+    $formcore = new TFormCore();
+    $res = $formcore->begin_form($url, 'form_list_questionnaire', 'POST');
+    $res.= $r->render($sql, $param);
 
 
 	$parameters = array('sql' => $sql);

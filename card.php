@@ -697,11 +697,8 @@ if ((empty($action) || $action === 'view') && empty($object->fk_statut))
 	                }
 
 	            }).done(function (res) {
-
 	                $input.css('background-color', '');
-
 	            });
-
 	        });
 
 	        $(document).on('click', '[name*=link_element_]', function () {
