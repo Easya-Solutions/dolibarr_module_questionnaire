@@ -75,6 +75,8 @@ if($action === 'answer' && empty($res) ||  empty($invitation_user->id) ||  $invi
 }
 
 
+if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN)) $path = '';
+else $path = '/questionnaire/public';
 
 
 $object = new Questionnaire($db);
@@ -183,11 +185,11 @@ if ($action == 'save_answer')
 		$invitation_user->fk_statut=2;
 		$invitation_user->save();
 
-		header('Location: '.dol_buildpath('/questionnaire/public/toAnswer.php', 1).'?id='.$object->id.'&action=answer&fk_invitation='.$fk_invitation."&token=".$token.'&page='.$gotopage);
+		header('Location: '.dol_buildpath($path.'/toAnswer.php', 1).'?id='.$object->id.'&action=answer&fk_invitation='.$fk_invitation."&token=".$token.'&page='.$gotopage);
 	}
 	else
 	{ // Validation finale
-		header('Location: '.dol_buildpath('/questionnaire/public/toAnswer.php', 1).'?id='.$object->id.'&action=validate_answers&fk_invitation='.$fk_invitation."&token=".$token);
+		header('Location: '.dol_buildpath($path.'/toAnswer.php', 1).'?id='.$object->id.'&action=validate_answers&fk_invitation='.$fk_invitation."&token=".$token);
 	}
 	exit;
 }
@@ -204,12 +206,12 @@ else if ($action == 'validate_answers')
 		$object->checkAllAnswer();
 
 		setEventMessage($langs->trans('questionnaireValidated'));
-		header('Location: '.dol_buildpath('/questionnaire/public/toAnswer.php', 1).'?id='.$id.'&action=answer&fk_invitation='.$fk_invitation."&token=".$token);
+		header('Location: '.dol_buildpath($path.'/toAnswer.php', 1).'?id='.$id.'&action=answer&fk_invitation='.$fk_invitation."&token=".$token);
 	}
 	else
 	{
 		setEventMessage($langs->trans('questionnaireNotValidated'), 'errors');
-		header('Location: '.dol_buildpath('/questionnaire/public/toAnswer.php', 1).'?id='.$id.'&action=answer&fk_invitation='.$fk_invitation."&token=".$token);
+		header('Location: '.dol_buildpath($path.'/toAnswer.php', 1).'?id='.$id.'&action=answer&fk_invitation='.$fk_invitation."&token=".$token);
 	}
 	exit;
 }
@@ -219,7 +221,7 @@ else if ($action == 'validate_answers')
 $title = $langs->trans("Module104961Name");
 llxHeaderQuest();
 //llxHeader('', $title,'', '',1, 0,'', array('/questionnaire/css/styles.css'));
-//llxHeader('', $title,'', '', 0, 0,'', array('/questionnaire/public/css/styles.css.php'));
+//llxHeader('', $title,'', '', 0, 0,'', array($path.'/css/styles.css.php'));
 
 print $formconfirm;
 ?>
@@ -273,7 +275,7 @@ else
 {
 	if ($action !== 'answer')
 		$head = questionnaire_prepare_head($object);
-	$picto = dol_buildpath('/questionnaire/public/img/object_questionnaire.png', 2);
+	$picto = dol_buildpath($path.'/img/object_questionnaire.png', 1);
 	dol_fiche_head($head, 'card', $langs->trans("questionnaire"), 0, $picto, 1);
 }
 
@@ -330,7 +332,7 @@ print $TBS->render('../tpl/card.tpl.php'
 			'mode' => $mode
 			, 'action' => 'save'
 			,'act'=>$action
-			, 'urlcard' => dol_buildpath('/questionnaire/public/toAnswer.php', 1)
+			, 'urlcard' => dol_buildpath($path.'/toAnswer.php', 1)
 			, 'urllist' => dol_buildpath('/questionnaire/list.php', 1)
 			, 'showRef' => ($action == 'create') ? $langs->trans('Draft') : ($mode === 'answer' ? '<div class="refid">'.$object->ref.'</div>' : $form->showrefnav($object, 'ref', $linkback, 1, 'ref', 'ref', ''))
 			, 'showTitle' => $formcore->texte('', 'title', $object->title, 80, 255)
