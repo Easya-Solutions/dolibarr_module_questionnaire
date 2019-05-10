@@ -226,11 +226,18 @@ function _getListInvitations(&$object)
 
     $TStatus = InvitationUser::$TStatus;
 
+    $link = '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&fk_invitation=@rowid@&action=edit">@val@</a>';
+
+
     $listViewConfig = array(
         'view_type' => 'list' // default = [list], [raw], [chart]
     ,'limit'=>array('nbLine' => 500)
     ,'subQuery' => array()
-    ,'link' => array()
+    ,'link' => array(
+            'ref' => $link,
+            'date_limite_reponse' => $link,
+            'email' => $link,
+        )
     ,'type' => array(
             'date_limite_reponse' => 'date' // [datetime], [hour], [money], [number], [integer]
         ,'date_validation' => 'date'
