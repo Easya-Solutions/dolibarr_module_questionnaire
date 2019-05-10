@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+define("NOSCANPOSTFORINJECTION", true);
+
 /**
  * 	\file		admin/questionnaire.php
  * 	\ingroup	questionnaire

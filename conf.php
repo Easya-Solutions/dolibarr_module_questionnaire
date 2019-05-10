@@ -1,4 +1,9 @@
 <?php
+
+
+define("NOSCANGETFORINJECTION", true);
+define("NOSCANPOSTFORINJECTION", true);
+
 require 'config.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.form.class.php';
@@ -46,12 +51,13 @@ if (empty($reshook))
 		if ($error > 0)
 		{
 			$mode = 'edit';
+            setEventMessage($langs->trans('Error'), 'errors');
 		}
 		else
 		{
 			$object->save(empty($object->ref));
-
-			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
+			setEventMessage($langs->trans('Saved'));
+			header('Location: '.dol_buildpath('/questionnaire/conf.php', 1).'?id='.$object->id);
 			exit;
 		}
 	}
@@ -95,6 +101,22 @@ if(empty($object->after_answer_html) && !empty($conf->global->QUESTIONNAIRE_DEFA
 
 print '<textarea  name="after_answer_html"  rows="8" cols="65" >'.dol_htmlentities($object->after_answer_html).'</textarea>';
 
+
+print '</form>';
+print '</td></tr>';
+
+
+print '</table>';
+
+print '<div class="tabsAction">';
+
+print '<div class="inline-block divButAction"><button class="butAction" name="save" value="true" >' . $langs->trans('Save') . '</button></div>';
+
+
+print '</div>';
+
+
+
 $invitationUser = new InvitationUser($db);
 
 $substitution_questionnaire = $object->get_substitutionArray('questionnaire');
@@ -115,18 +137,7 @@ foreach ($substitution_invitation_user as $key => $val){
 print '</ul>';
 print '</div>';
 
-print '</form>';
-print '</td></tr>';
 
-
-print '</table>';
-
-print '<div class="tabsAction">';
-
-print '<div class="inline-block divButAction"><button class="butAction" name="save" value="true" >' . $langs->trans('Save') . '</button></div>';
-
-
-print '</div>';
 
 print '</div>';
 
