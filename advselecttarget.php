@@ -247,7 +247,7 @@ if ($action == 'add') {
 			setEventMessage($advTarget->error, 'errors');
 		}
 		// If use contact but no result use artefact to so not use socid into add_to_target
-		if (!empty($advTarget->contact_lines) == 0) {
+		if (!empty($advTarget->contact_lines)) {
 			$advTarget->contact_lines = array (
 					0
 			);
@@ -256,7 +256,7 @@ if ($action == 'add') {
 		$advTarget->contact_lines = array ();
 	}
 	
-	if ((!empty($advTarget->thirdparty_lines) > 0) || (!empty($advTarget->contact_lines) > 0)) {
+	if ((!empty($advTarget->thirdparty_lines)) || (!empty($advTarget->contact_lines))) {
 		// Add targets into database
 		$obj = new InvitationUser($db);
 		$cibles = $obj->add_to_target_spec($id, $advTarget->thirdparty_lines, $array_query['type_of_target'], $advTarget->contact_lines);
