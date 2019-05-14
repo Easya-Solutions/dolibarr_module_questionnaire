@@ -67,6 +67,17 @@ $arrayofselected = is_array($toselect) ? $toselect : array();
 
 //var_dump($massaction,$arrayofselected);exit;
 
+if (!empty($massaction) && $massaction == 'reopen' && !empty($arrayofselected))
+{
+	foreach ($arrayofselected as $inv_selected)
+    {
+        $invitation_user = new InvitationUser($db);
+        $invitation_user->load($inv_selected);
+        $invitation_user->reopen();
+    }
+}
+
+
 if (!empty($massaction) && $massaction == 'send' && !empty($arrayofselected))
 {
 	$langs->load('mails');
@@ -231,6 +242,7 @@ function _getListInvitations(&$object)
 
     $listViewConfig = array(
         'view_type' => 'list' // default = [list], [raw], [chart]
+    ,'allow-fields-select' => true
     ,'limit'=>array('nbLine' => 500)
     ,'subQuery' => array()
     ,'link' => array(
@@ -257,6 +269,7 @@ function _getListInvitations(&$object)
             'title' => $langs->trans('QuestionnaireGuestList')
             ,'massactions'=>array(
                     'send' => $langs->trans("SendByMail"),
+                    'reopen' => $langs->trans("Reopen"),
                     'delete'=>$langs->trans("Delete"),
                 )
             )

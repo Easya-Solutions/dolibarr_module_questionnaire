@@ -66,8 +66,7 @@ if ($massaction == 'reopen')
 		$invitation_user->reopen();
 	}
 }
-else
-if ($action == 'reopen')
+elseif ($action == 'reopen')
 {
 	$invitation_user = new InvitationUser($db);
 	$invitation_user->load($fk_invitation_user);
