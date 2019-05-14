@@ -269,7 +269,7 @@ function _getListInvitations(&$object)
         ,'date_limite_reponse' => $langs->trans('questionnaire_date_limite_reponse')
         ,'date_validation' => $langs->trans('ValidationDate')
         , 'sent' => $langs->trans('Sent')
-        , 'status' => $langs->trans('Status')
+        , 'status' => $langs->trans('StatusInvitation')
 
         , 'link_invit' => $langs->trans('LinkInvit')
         ,'selectedfields' => ''
