@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+define("NOSCANPOSTFORINJECTION", true);
+
 /**
  * 	\file		admin/questionnaire.php
  * 	\ingroup	questionnaire
@@ -30,9 +32,16 @@ if (! $res) {
 
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
+dol_include_once('abricot/includes/lib/admin.lib.php');
 require_once '../lib/questionnaire.lib.php';
 dol_include_once('/questionnaire/class/questionnaire.class.php');
 dol_include_once('/questionnaire/class/invitation.class.php');
+require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 
 // Translations
 $langs->load("questionnaire@questionnaire");
@@ -49,6 +58,87 @@ $value = GETPOST('value', 'alpha');
 /*
  * Actions
  */
+$dirforimage=dol_buildpath('/questionnaire/public/img/');
+if($action == 'updatelogo'){
+    $varforimage='logo';
+
+    if ($_FILES[$varforimage]["tmp_name"])
+    {
+        if (preg_match('/([^\\/:]+)$/i',$_FILES[$varforimage]["name"],$reg))
+        {
+            $original_file=$reg[1];
+
+            $isimage=image_format_supported($original_file);
+            if ($isimage >= 0)
+            {
+                dol_syslog("Move file ".$_FILES[$varforimage]["tmp_name"]." to ".$dirforimage.$original_file);
+
+                if (! is_dir($dirforimage))
+                {
+                    dol_mkdir($dirforimage);
+                }
+                $result=dol_move_uploaded_file($_FILES[$varforimage]["tmp_name"],$dirforimage.$original_file,1,0,$_FILES[$varforimage]['error']);
+
+                if ($result > 0)
+                {
+                    dolibarr_set_const($db, "QUESTIONNAIRE_COMPANY_LOGO",$original_file,'chaine',0,'',$conf->entity);
+
+                    // Create thumbs of logo (Note that PDF use original file and not thumbs)
+                    if ($isimage > 0)
+                    {
+                        // Create thumbs
+                        //$object->addThumbs($newfile);    // We can't use addThumbs here yet because we need name of generated thumbs to add them into constants. TODO Check if need such constants. We should be able to retreive value with get...
+
+                        // Create small thumb, Used on logon for example
+                        $imgThumbSmall = vignette($dirforimage.$original_file, $maxwidthsmall, $maxheightsmall, '_small', $quality);
+                        if (image_format_supported($imgThumbSmall) >= 0 && preg_match('/([^\\/:]+)$/i',$imgThumbSmall,$reg))
+                        {
+                            $imgThumbSmall = $reg[1];    // Save only basename
+                            dolibarr_set_const($db, "QUESTIONNAIRE_COMPANY_LOGO_SMALL",$imgThumbSmall,'chaine',0,'',$conf->entity);
+                        }
+                        else dol_syslog($imgThumbSmall);
+
+
+                    }
+                    else dol_syslog("ErrorImageFormatNotSupported",LOG_WARNING);
+                }
+                else if (preg_match('/^ErrorFileIsInfectedWithAVirus/',$result))
+                {
+                    $error++;
+                    $langs->load("errors");
+                    $tmparray=explode(':',$result);
+                    setEventMessages($langs->trans('ErrorFileIsInfectedWithAVirus',$tmparray[1]), null, 'errors');
+                }
+                else
+                {
+                    $error++;
+                    setEventMessages($langs->trans("ErrorFailedToSaveFile"), null, 'errors');
+                }
+            }
+            else
+            {
+                $error++;
+                $langs->load("errors");
+                setEventMessages($langs->trans("ErrorBadImageFormat"), null, 'errors');
+            }
+        }
+    }
+}
+if ($action == 'removelogo')
+{
+    require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+
+    $logofile=$dirforimage.$conf->global->QUESTIONNAIRE_COMPANY_LOGO;
+    if(!empty($conf->global->QUESTIONNAIRE_COMPANY_LOGO))dol_delete_file($logofile);
+
+    $logosmallfile=$dirforimage.'/thumbs/'.$conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL;
+    if(!empty($conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL))dol_delete_file($logosmallfile);
+
+    dolibarr_del_const($db, "QUESTIONNAIRE_COMPANY_LOGO",$conf->entity);
+    dolibarr_del_const($db, "QUESTIONNAIRE_COMPANY_LOGO_SMALL",$conf->entity);
+
+}
+
 if ($action == 'updateMask') {
 	
 	$maskconstrefleter = GETPOST('maskconstrefletter', 'alpha');
@@ -62,8 +152,9 @@ if ($action == 'updateMask') {
 } elseif($action === 'setmod') dolibarr_set_const($db, "QUESTIONNAIRE_ADDON", $value, 'chaine', 0, '', $conf->entity);
 elseif($action === 'setmodanswer') dolibarr_set_const($db, "QUESTIONNAIRE_ANSWER_ADDON", $value, 'chaine', 0, '', $conf->entity);
 else if (preg_match('/set_(.*)/',$action,$reg)) {
-	
+
 	$code=$reg[1];
+
 	if (dolibarr_set_const($db, $code, GETPOST($code), 'chaine', 0, '', $conf->entity) > 0)
 	{
 		header("Location: ".$_SERVER["PHP_SELF"]);
@@ -104,14 +195,26 @@ dol_fiche_head(
     $head,
     'settings',
     $langs->trans("Module104961Name"),
-    0,
+    1,
     "questionnaire@questionnaire"
 );
+
+if(!function_exists('setup_print_title')){
+    print '<div class="error" >'.$langs->trans('AbricotNeedUpdate').' : <a href="http://wiki.atm-consulting.fr/index.php/Accueil#Abricot" target="_blank"><i class="fa fa-info"></i> Wiki</a></div>';
+    exit;
+}
 
 // Setup page goes here
 $dirmodels = array_merge(array (
 		'/'
 ), ( array ) $conf->modules_parts['models']);
+
+
+print '<table class="noborder" width="100%">';
+setup_print_title('QUESTIONNAIRE_CONFIG');
+// DEFAULT AFTER ANSWER HTML
+setup_print_on_off('QUESTIONNAIRE_TEXTAREA_WYSWYG');
+print '</table>';
 
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
@@ -203,7 +306,74 @@ foreach ( $dirmodels as $reldir ) {
 			closedir($handle);
 		}
 	}
-}/*
+}
+print '</table>';
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre">';
+print '<td>' . $langs->trans("Parameters") . '</td>';
+print '<td align="center" width="200">&nbsp;</td>';
+print '<td align="center" width="150">' . $langs->trans("Value") . '</td>';
+
+
+print '<tr class="oddeven"><td><div class="inline-block"><label for="logo">'.$langs->trans("Logo").' (png,jpg)</label></div></td>';
+
+if (! empty($conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL)) {
+    print '<td class="nocellnopadd" valign="middle" text-align="right"><a href="'.$_SERVER["PHP_SELF"].'?action=removelogo">'.img_delete($langs->trans("Delete")).'</a>';
+    if (file_exists(dol_buildpath('/questionnaire/public/img/thumbs/'.$conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL))) {
+        print ' &nbsp; ';
+        print '<img src="'.dol_buildpath('/questionnaire/public/img/thumbs/'.$conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL,2).'"></td>';
+    }
+} else {
+    print '<td><div class="warning">'.$langs->trans("warningImgDirWritable").'</div></td>';
+}
+
+print '<td valign="right" text-align="right" colspan="" class="nocellnopadd">';
+print '<form enctype="multipart/form-data" method="POST" action="'.$_SERVER["PHP_SELF"].'" name="form_index">';
+print '<span style="display:inline-block;text-align:right;width:100%" >';
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="action" value="updatelogo">';
+print '<input type="file" class="flat class=minwidth200" name="logo" id="logo">';
+print '<input class="button" type="submit" name="btUpdateLogo" value="'.$langs->trans('Modify').'"/>';
+print '</span>';
+print '</form>';
+print '</td>';
+print '</tr>';
+
+//Domain
+$var = !$var;
+print '<tr ' . $bc[$var] . '>';
+
+print '<td>';
+print $form->textwithpicto(
+    '<label for="QUESTIONNAIRE_CUSTOM_DOMAIN">' . $langs->trans("UseCustomDomain") . '</label>',
+    $langs->trans("CustomDomainHelp")
+);
+print '</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+
+print '<td align="right" width="500">';
+print '<form method="POST" action="' . $_SERVER['PHP_SELF'] . '">';
+print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+print '<input type="hidden" name="action" value="set_QUESTIONNAIRE_CUSTOM_DOMAIN">';
+print '<input type="text" id="QUESTIONNAIRE_CUSTOM_DOMAIN" name="QUESTIONNAIRE_CUSTOM_DOMAIN" value="' . $conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN . '"  />';
+print '&nbsp;<input type="submit" class="button" value="' . $langs->trans("Modify") . '">';
+
+print '</form>';
+print '</td></tr>';
+
+
+// DEFAULT AFTER ANSWER HTML
+setup_print_input_form_part('QUESTIONNAIRE_DEFAULT_AFTER_ANSWER_HTML', '', '', array(), 'textarea');
+
+
+
+print '</table>';
+
+print '<div class="warning">'.$langs->trans("warningHtAccess").'</div>';
+
+
+
+/*
 print "</table><br>\n";
 
 

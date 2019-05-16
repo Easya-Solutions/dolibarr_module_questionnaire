@@ -29,9 +29,10 @@ if (empty($page))
 	$page = 1;
 
 
-
-if ($action === 'answer' && empty($res) || $invitation->date_limite_reponse < strtotime(date('Y-m-d')))
+if ($action === 'answer' && empty($res) || $invitation->date_limite_reponse < strtotime(date('Y-m-d')) || ($invitation->type_element=='user' && $invitation->fk_element != $user->id))
 	accessforbidden();
+if($invitation->fk_statut==1 ) accessforbidden('Merci pour votre participation.');
+
 
 $form = new Form($db);
 
@@ -513,9 +514,13 @@ elseif ($action === 'answer')
 			print '<br /><br />';
 		}
 	}
-	print '</div>';
-	print '<div class="center"><input class="butAction" name="subSave" type="SUBMIT" value="'.$langs->trans('SaveAnswer').'"/><input name="subValid" type="SUBMIT" class="butAction"  value="'.$langs->trans('Validate').'"/>';
-	print '</form>';
+	print '</div>';print '<div class="center">';
+    if ($page > 1) print '<span class="paginationbt" ><a  href="#" page='.($page - 1).'><input class="butAction" name="previousPage" type="button" value="'.$langs->trans('PreviousPage').'"/></a></span>';
+    print '<input class="butAction" name="subSave" type="SUBMIT" value="'.$langs->trans('SaveAnswer').'"/>';
+    if ($page < $object->nbpages + 1) print '<span class="paginationbt" ><a  href="#" page='.($page + 1).'><input class="butAction" name="nextPage" type="button" value="'.$langs->trans('NextPage').'"/></a></span>';
+    if($page == $object->nbpages + 1 || $object->nbpages ==1) print '<input name="subValid" type="SUBMIT" class="butAction"  value="'.$langs->trans('Publish').'"/>';
+
+    print '</form>';
 }
 
 print '</div>';
@@ -692,11 +697,8 @@ if ((empty($action) || $action === 'view') && empty($object->fk_statut))
 	                }
 
 	            }).done(function (res) {
-
 	                $input.css('background-color', '');
-
 	            });
-
 	        });
 
 	        $(document).on('click', '[name*=link_element_]', function () {
@@ -1083,7 +1085,12 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
             $("input[name='subSave']").click();
 
         });
+        $(".paginationbt a").on('click', function(){
+            $("input[name='gotopage']").val($(this).attr('page'));
 
+            $("input[name='subSave']").click();
+
+        });
 
 			if($("#allElements tr").length === 1){
 				$('.bt-add-element').click();

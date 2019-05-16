@@ -1,4 +1,8 @@
-
+## Apache 2.2
 order allow,deny
 allow from all
 Satisfy any
+
+## Apache 2.4
+#Require all granted
+

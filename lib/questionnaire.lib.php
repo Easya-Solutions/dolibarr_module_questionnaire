@@ -40,10 +40,21 @@ function questionnaireAdminPrepareHead()
 	$head[$h][1] = $langs->trans("answerCard");
 	$head[$h][2] = 'answer';
 	$h++;
-	$head[$h][0] = dol_buildpath("/questionnaire/admin/questionnaire_about.php", 1);
-	$head[$h][1] = $langs->trans("About");
-	$head[$h][2] = 'about';
-	$h++;
+    $head[$h][0] = dol_buildpath("/questionnaire/admin/questionnaire_about.php", 1);
+    $head[$h][1] = $langs->trans("About");
+    $head[$h][2] = 'about';
+    $h++;
+
+    if(!empty($conf->global->QUESTIONNAIRE_USE_EXTRAFIELD)) {
+        $head[$h][0] = dol_buildpath("/questionnaire/admin/questionnaire_extrafields.php", 1);
+        $head[$h][1] = $langs->trans("ExtraFields");
+        $head[$h][2] = 'extrafields';
+        $h++;
+        $head[$h][0] = dol_buildpath("/questionnaire/admin/invitation_user_extrafields.php", 1);
+        $head[$h][1] = $langs->trans("ExtraFieldsInvitation");
+        $head[$h][2] = 'extrafieldsInvitationUser';
+        $h++;
+    }
 
 	// Show more tabs from modules
 	// Entries must be declared in modules descriptor with line
@@ -71,20 +82,25 @@ function questionnaire_prepare_head(Questionnaire $object)
 	$h = 0;
 	$head = array();
 	$head[$h][0] = dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id;
-	$head[$h][1] = $langs->trans("questionnaireCard");
+	$head[$h][1] = '<i class="fa fa-check-square-o" aria-hidden="true"></i> '.$langs->trans("questionnaireCard");
 	$head[$h][2] = 'card';
+	$h++;
+
+	$head[$h][0] = dol_buildpath('/questionnaire/conf.php', 1).'?id='.$object->id;
+	$head[$h][1] = '<i class="fa fa-cogs" aria-hidden="true"></i> '.$langs->trans("questionnaireConf");
+	$head[$h][2] = 'config';
 	$h++;
 
 	if ($object->fk_statut > 0)
 	{
 
 		$head[$h][0] = dol_buildpath('/questionnaire/invitation.php', 1).'?id='.$object->id;
-		$head[$h][1] = $langs->trans("questionnaireInvitationCard");
+		$head[$h][1] = '<i class="fa fa-paper-plane" aria-hidden="true"></i> '.$langs->trans("questionnaireInvitationCard");
 		$head[$h][2] = 'invitation';
 		$h++;
 
 		$head[$h][0] = dol_buildpath('/questionnaire/answer/answer.php', 1).'?id='.$object->id;
-		$head[$h][1] = $langs->trans("questionnaireAnswerCard");
+		$head[$h][1] = '<i class="fa fa-commenting-o" aria-hidden="true"></i> '.$langs->trans("questionnaireAnswerCard");
 		$head[$h][2] = 'answer';
 		$h++;
 	}
@@ -155,7 +171,7 @@ function getFormConfirmquestionnaire(&$form, &$object, $action)
 function draw_question(&$q, $fk_statut_questionnaire = 0)
 {
 
-	global $db, $langs, $bg_color;
+	global $db, $langs, $bg_color, $conf;
 
 	if (!isset($bg_color))
 		$bg_color = 0;
@@ -174,9 +190,42 @@ function draw_question(&$q, $fk_statut_questionnaire = 0)
 	else $res .= '<div class="refid">Question : '.$q->TTypes[$q->type].'<br /></div>';
 	
 	if (empty($fk_statut_questionnaire))
-		if ($q->type == 'paragraph')
-			$res .= '<textarea size="100" placeholder="Paragraphe" type="text" name="label" rows="7"  cols="50" class="field" id="label" name="label" >'.$q->label.'</textarea>';
-		else if($q->type == 'title')
+		if ($q->type == 'paragraph'){
+            $res .= '<textarea size="100" placeholder="Paragraphe" type="text" name="label" rows="7"  cols="50" class="field" id="label'.$q->id.'" name="label" >'.$q->label.'</textarea>';
+
+            if(!empty($conf->global->QUESTIONNAIRE_TEXTAREA_WYSWYG))
+            {
+                $res .= '<button class="button" type="button" id="savetexarealabel' . $q->id . '" >' . $langs->trans('Save') . '</button>';
+                $res .= '<script  type="text/javascript" >
+                    $( document ).ready(function() {
+                        CKEDITOR.replace( \'label' . $q->id . '\');
+                            
+                        if ( typeof CKEDITOR.instances != undefined && CKEDITOR.instances[\'label' . $q->id . '\'] )
+                        {
+                            $("#label' . $q->id . '").attr("class" ,"field"); 
+                            var editor = CKEDITOR.instances[\'label' . $q->id . '\'];
+                            console.log(editor.getData().trim());
+                            if(editor !== undefined)
+                            {
+                                editor.on( \'blur\', function() {
+                                    console.log(editor.getData().trim());
+                                    $("#label' . $q->id . '").text(editor.getData().trim());
+                                    $("#label' . $q->id . '").trigger( "change" );
+                               });
+                                
+                                $("#savetexarealabel' . $q->id . '").click(function() {
+                                    console.log(editor.getData().trim());
+                                    $("#label' . $q->id . '").text(editor.getData().trim());
+                                    $("#label' . $q->id . '").trigger( "change" );
+                                    $(this).fadeOut(500).fadeIn(500);
+                                })
+                            }
+                        }
+                    });
+                    </script>';
+            }
+        }
+	    else if($q->type == 'title')
 			$res .= '<input size="100" placeholder="Titre" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
 		else 
 			$res .= '<input size="100" placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
@@ -411,10 +460,49 @@ function draw_string_for_user(&$q)
 	return '<input type="text" name="TAnswer['.$q->id.']" value="'.$q->answers[0]->value.'" />';
 }
 
-function draw_textarea_for_user(&$q)
+function draw_textarea_for_user(&$q, $readOnly = false)
 {
+    global $conf;
 
-	return '<textarea rows="7" cols="50" type="text" name="TAnswer['.$q->id.']" id="rep_q'.$q->id.'">'.$q->answers[0]->value.'</textarea>';
+    $input = '<textarea rows="7" cols="50" type="text" name="TAnswer['.$q->id.']" id="rep_q'.$q->id.'">'.$q->answers[0]->value.'</textarea>';
+
+    if(!empty($conf->global->QUESTIONNAIRE_ANSWER_TEXTAREA_WYSWYG)){
+
+
+        $input .= '<script>CKEDITOR.replace("rep_q'.$q->id.'",{ ';
+
+        if($readOnly){
+            $input .= ' readOnly: true, ' . "\n";
+        }
+        $input .= ' simpleImageBase64allowed: false, ';
+
+        $input .= ' toolbarGroups : [
+                { name: \'document\', groups: [ \'mode\', \'document\', \'doctools\' ] },
+                { name: \'clipboard\', groups: [ \'clipboard\', \'undo\' ] },
+                { name: \'editing\', groups: [ \'find\', \'selection\', \'spellchecker\', \'editing\' ] },
+                { name: \'forms\', groups: [ \'forms\' ] },
+                \'/\',
+                { name: \'basicstyles\', groups: [ \'basicstyles\', \'cleanup\' ] },
+                { name: \'paragraph\', groups: [ \'list\', \'indent\', \'blocks\', \'align\', \'bidi\', \'paragraph\' ] },
+                { name: \'links\', groups: [ \'links\' ] },
+                { name: \'insert\', groups: [ \'insert\' ] },
+                \'/\',
+                { name: \'styles\', groups: [ \'styles\' ] },
+                { name: \'colors\', groups: [ \'colors\' ] },
+                { name: \'tools\', groups: [ \'tools\' ] },
+                { name: \'others\', groups: [ \'others\' ] },
+                { name: \'about\', groups: [ \'about\' ] }
+            ],
+            
+            removeButtons : "Save,NewPage,Preview,Print,Source,Replace,Find,SelectAll,Scayt,Form,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,CreateDiv,BidiLtr,BidiRtl,Language,Anchor,Flash,HorizontalRule,Smiley,PageBreak,Iframe,ShowBlocks,About"
+            ';
+
+        $input .= '}); 
+
+</script>';
+    }
+
+    return $input;
 }
 
 function draw_select_for_user(&$q)
@@ -1050,11 +1138,15 @@ function _getBanner(&$object, $action, $print_link_apercu = true, $shownav = tru
 	//$morehtmlref.= '<div class="refidno">'.getFieldVal($object, 'LinkedObject', 'origin').'</div>';
 	if ($action !== 'create' && $action !== 'answer' && $print_link_apercu)
 		$morehtmlref .= '<div class="refidno">'.($action === 'apercu' ? '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'">Retour au mode édition</a>' : '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&action=apercu">Visualiser un aperçu</a>').'</div>';
+	if($action ==='answer') $morehtmlref .= '<div style="display:block;"  class="inline ">'.
+    "$object->title</div>".
+   ' <div class="underrefbanner clearboth"></div>';
 	dol_banner_tab($object, 'ref', $linkback, $shownav, 'ref', 'ref', $morehtmlref, '', 0, '', '');
 }
 
 function _getBannerToAnswer(&$object, $action, $print_link_apercu = true, $shownav = true, $show_linkback = true)
 {
+    global $conf;
 	/**
 	  global $langs, $form;
 
@@ -1118,7 +1210,12 @@ function _getBannerToAnswer(&$object, $action, $print_link_apercu = true, $shown
 	  print '<div class="'.($onlybanner ? 'arearefnobottom ' : 'arearef ').'heightref valignmiddle" width="100%">';
 
 	  print '</div>'; */
-	print '<div class="inline-block floatleft valignmiddle refid">';
+	if(!empty($conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL)) {
+        print '<span >';
+        print "<img src='" . dol_buildpath('/questionnaire/public/img/thumbs/' . $conf->global->QUESTIONNAIRE_COMPANY_LOGO_SMALL, 2) . "'></img></span>";
+        print '&nbsp; &nbsp;';
+    }
+	print '<div style="display:inline-block;font-size:200%;"  class="inline refid">';
 	print "$object->title</div>";
 	print ' <div class="underrefbanner clearboth"></div>';
 }
@@ -1283,7 +1380,7 @@ function _getLibStatus($fk_questionnaire, $fk_statut)
 
 function prepareMailContent($invuser, $fk_questionnaire)
 {
-	global $db, $langs;
+	global $db, $langs, $conf;
 	dol_include_once('/contact/class/contact.class.php');
 	if($invuser->type_element == 'contact'){
 		$contact = new Contact($db);
@@ -1299,9 +1396,12 @@ function prepareMailContent($invuser, $fk_questionnaire)
 
 	if (!empty($invuser->fk_user))
 		$content .= dol_buildpath('/questionnaire/card.php?id='.$fk_questionnaire.'&action=answer&fk_invitation='.$invuser->id.'&token='.$invuser->token, 2);
-	else
-		$content .= dol_buildpath('/questionnaire/public/toAnswer.php?id='.$fk_questionnaire.'&action=answer&fk_invitation='.$invuser->id.'&token='.$invuser->token, 2);
-	$content .= " \nVous avez jusqu'au ".date('d/m/Y', $invuser->date_limite_reponse).' pour y répondre.';
+	else if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN))
+        $content .= $conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN.'toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $invuser->id . '&token=' . $invuser->token;
+    else
+        $content .= dol_buildpath('/questionnaire/public/toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $invuser->id . '&token=' . $invuser->token, 2);
+
+    $content .= " \nVous avez jusqu'au ".date('d/m/Y', $invuser->date_limite_reponse).' pour y répondre.';
 
 
 
@@ -1338,6 +1438,7 @@ function llxHeaderQuest()
 	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/flot/jquery.flot.stack.min.js', 1).'"></script>
 	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/select2/dist/js/select2.full.min.js', 1).'"></script>
 	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/lib_head.js.php', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/js/ckeditor/ckeditor.js', 1).'"></script>
 	</head>
 	
 

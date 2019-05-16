@@ -39,6 +39,8 @@ class Questionnaire extends SeedObject
 	public $element = 'questionnaire';
 	public $picto = 'questionnaire@questionnaire';
 
+    public $isextrafieldmanaged = 1; // enable extrafields
+
 	public function __construct($db)
 	{
 		global $conf, $langs;
@@ -55,6 +57,7 @@ class Questionnaire extends SeedObject
 			, 'origin' => array('type' => 'string')
 			, 'originid' => array('type' => 'integer', 'index' => true)
 			, 'fk_user_author' => array('type' => 'integer', 'index' => true)
+			, 'after_answer_html' => array('type'=>'string')
 		);
 
 		$this->TTypeObjectLinked = array(
@@ -69,6 +72,16 @@ class Questionnaire extends SeedObject
 		$this->fk_statut = self::STATUS_DRAFT;
 		$this->entity = $conf->entity;
 	}
+
+	public function get_substitutionArray($prefix=''){
+        $this->substitutionarray=array();
+
+	    foreach ($this->fields as $key => $val){
+            $this->substitutionarray['__'.(!empty($prefix)?$prefix.'_':'').$key.'__'] = $this->{$key};
+        }
+
+	    return $this->substitutionarray;
+    }
 
 	public function save($addprov = false)
 	{

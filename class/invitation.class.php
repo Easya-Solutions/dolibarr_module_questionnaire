@@ -208,6 +208,7 @@ class InvitationUser extends SeedObject
 	public $table_element = 'quest_invitation_user';
 	public $element = 'invitation_user';
 	public $fk_element;
+    public $isextrafieldmanaged = 1; // enable extrafields
 
 	/**
 	 * Draft status
@@ -223,6 +224,19 @@ class InvitationUser extends SeedObject
 	 * Closed status
 	 */
 	const STATUS_SAVED = 2;
+
+    public static $TStatus = array(
+        self::STATUS_DRAFT => 'Draft'
+    , self::STATUS_VALIDATED => 'Validated'
+    , self::STATUS_SAVED => 'Saved'
+    );
+
+
+    public static $TSentStatus = array(
+        self::STATUS_DRAFT => 'NotSent'
+      , self::STATUS_VALIDATED => 'Sent'
+    );
+
 
 	public function __construct($db)
 	{
@@ -251,6 +265,16 @@ class InvitationUser extends SeedObject
 
 		$this->entity = $conf->entity;
 	}
+
+    public function get_substitutionArray($prefix=''){
+        $this->substitutionarray=array();
+
+        foreach ($this->fields as $key => $val){
+            $this->substitutionarray['__'.(!empty($prefix)?$prefix.'_':'').$key.'__'] = $this->{$key};
+        }
+
+        return $this->substitutionarray;
+    }
 
 	public function load($id, $ref = null, $loadChild = true)
 	{
