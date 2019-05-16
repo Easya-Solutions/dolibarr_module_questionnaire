@@ -69,10 +69,7 @@ if($action === 'answer' && empty($res) ||  empty($invitation_user->id) ||  $invi
 	
 	print('Date limite de reponse atteinte, ou token invalide.');
 	exit;
-} else if($invitation_user->fk_statut==1 ){
-	print('Merci pour votre participation.');
-	exit;
-}
+} 
 
 
 if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN)) $path = '';
@@ -85,6 +82,27 @@ if (!empty($id))
 	$object->load($id);
 elseif (!empty($ref))
 	$object->load('', $ref);
+
+if($invitation_user->fk_statut==1 ){
+    print('Merci pour votre participation.');
+
+    $justvalidated = GETPOST('justvalidated', 'int');
+    if(!empty($justvalidated))
+    {
+        if(empty($object->after_answer_html) && !empty($conf->global->QUESTIONNAIRE_DEFAULT_AFTER_ANSWER_HTML)){
+            $object->after_answer_html = $conf->global->QUESTIONNAIRE_DEFAULT_AFTER_ANSWER_HTML;
+        }
+
+        $substitution_questionnaire = $object->get_substitutionArray('questionnaire');
+        $substitution_invitation_user = $invitation_user->get_substitutionArray('invitation');
+        $substitution = array_replace ($substitution_questionnaire, $substitution_invitation_user );
+        print make_substitutions($object->after_answer_html,$substitution);
+
+        //print_r($substitution);
+    }
+    exit;
+}
+
 
 $object->loadInvitations();
 

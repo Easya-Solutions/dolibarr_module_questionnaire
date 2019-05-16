@@ -13,6 +13,14 @@ QuestionnaireAreaIndex=Espace de gestion des questionnaires
 QuestionnaireArea=Liste des questionnaires
 QuestionnaireToAnswerArea=Liste des questionnaires à compléter
 
+# SETUP
+QUESTIONNAIRE_DEFAULT_AFTER_ANSWER_HTML=Code HTML par défaut à afficher lors de la validation d'une réponse au questionnaire
+QUESTIONNAIRE_TEXTAREA_WYSWYG=Utiliser un champ texte WYSWYG
+QUESTIONNAIRE_ANSWER_TEXTAREA_WYSWYG=Utiliser un champ texte WYSWYG
+QUESTIONNAIRE_ANSWER_CONFIG=Configuration des réponses
+QUESTIONNAIRE_CONFIG=Configuration
+
+
 # MENU
 TopMenuquestionnaire=questionnaire
 questionnaireListDraft=Brouillon
@@ -43,6 +51,9 @@ Accepted=Accepté
 questionnaireList=Liste questionnaires
 questionnaireListToAnswer=Questionnaires à compléter
 Noquestionnaire=(vide)
+ValidationDate=Date de validation
+QuestionnaireGuestList=Liste des invitations
+StatusInvitation=État réponse
 
 # INDEX
 QuestionnaireLastCreated=Les 5 derniers questionnaires créés %s
@@ -59,6 +70,8 @@ questionnaireValidated=Questionnaire validé définitivement
 questionnaireNotValidated=Attention, certaines réponses sont obligatoires !
 questionnaireDeleteChoice=Supprimer choix
 questionnaireDeleteQuestion=Supprimer question
+SubstitutionsForQuestionnaire=Codes de substitution QUESTIONNAIRE
+SubstitutionsForInvitationUser=Codes de substitution INVITATION
 
 # CARD TPL
 Save=Enregistrer
@@ -72,6 +85,9 @@ ToClone=Cloner
 Delete=Supprimer
 noElement=Aucun élément à afficher
 questionnaire_date_limite_reponse=Date limite de réponse
+
+# CARD Conf
+questionnaireConf=Configuration
 
 # Libellés types choix
 questionnaireTypeString=Chaîne
@@ -105,10 +121,17 @@ CloneQuestionnaire=Cloner questionnaire
 # ANSWERS
 questionnaireUserAnswersOf=<h3>Réponses de : %s</h3>
 QuestionnaireSeeAnswerLink=Visualisation réponses
+HtmlCodeDisplayAtEndOfSurvey=Code HTML à afficher à la fin du questionnaire
+HtmlCodeDisplayAtEndOfSurveyHelp=Code HTML brute permettant d'ajouter par exemple du code Js pour API type sendinblue, piwik, google ...
 
 # ADMIN
 questionnaireSimpleNumRefModelDesc=Renvoie le numéro sous la forme QUyymm-nnnn où yy est l'année, mm le mois et nnnn un compteur séquentiel sans rupture et sans remise à 0
 answerSimpleNumRefModelDesc=Renvoie le numéro sous la forme ANSyymm-nnnn où yy est l'année, mm le mois et nnnn un compteur séquentiel sans rupture et sans remise à 0
+
+# EXTRAFIELDS
+ExtraFieldsInvitation=Attributs supplémentaires (Invitations)
+QuestionnaireExtrafieldPage=Attributs supplémentaires
+
 
 # RIGHTS
 questionnaire_right_read=Créer / visualiser ses questionnaires
@@ -134,6 +157,7 @@ ColumnName=Intitulé de la colonne (Pour les questions de types 'grille')
 GroupName=Nom du groupe
 AnsweringLineName=Ligne séléctionnée (réponse de type checkbox, radio, select, grille)
 AnsweringColumnName=Colonne séléctionnée (réponse de type grille)
+NotSent=Non envoyé
 
 #MAIL
 

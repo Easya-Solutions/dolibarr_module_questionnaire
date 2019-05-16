@@ -57,6 +57,6 @@
 	<a href="[view.urladvselecttarget]?id=[object.id]" class="butAction">Inviter des tiers/contacts</a>
 	<a href="[view.urlinvitation]?id=[object.id]&action=create" class="butAction">Inviter des utilisateurs/emails</a>
 </div>
-[view.massaction;strconv=no]
+
 [view.list_invitations;strconv=no]
 [onshow;block=end]
