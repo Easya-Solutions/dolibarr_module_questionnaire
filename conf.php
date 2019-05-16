@@ -27,6 +27,10 @@ $ref = GETPOST('ref');
 
 $object = new Questionnaire($db);
 
+
+$hookmanager->initHooks(array('questionnairecardconf'));
+
+
 if (!empty($id))
 	$object->load($id);
 elseif (!empty($ref))

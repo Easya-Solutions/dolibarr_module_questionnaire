@@ -260,7 +260,8 @@ function _getListInvitations(&$object)
         ,'status' => array('search_type' => $TStatus , 'to_translate' => true, 'field' => array('fk_statut')) // selec
         ,'sent' => array('search_type' => InvitationUser::$TSentStatus , 'to_translate' => true) // select html, la clé = le status de l'objet, 'to_translate' à true si nécessaire
         ,'email' => array('search_type' => true, 'table' => array('invu', 'invu'), 'field' => array('email'))
-        ,'ref' => array('search_type' => true, 'table' => array('invu', 'invu'), 'field' => array('ref'))
+		,'ref' => array('search_type' => true, 'table' => array('invu', 'invu'), 'field' => array('ref'))
+		,'ref' => array('search_type' => true, 'table' => array('invu', 'invu'), 'field' => array('ref'))
         )
     ,'translate' => array()
 
