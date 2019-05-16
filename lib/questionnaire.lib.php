@@ -40,10 +40,10 @@ function questionnaireAdminPrepareHead()
 	$head[$h][1] = $langs->trans("answerCard");
 	$head[$h][2] = 'answer';
 	$h++;
-    $head[$h][0] = dol_buildpath("/questionnaire/admin/questionnaire_about.php", 1);
-    $head[$h][1] = $langs->trans("About");
-    $head[$h][2] = 'about';
-    $h++;
+	$head[$h][0] = dol_buildpath("/questionnaire/admin/questionnaire_about.php", 1);
+	$head[$h][1] = $langs->trans("About");
+	$head[$h][2] = 'about';
+	$h++;
 
     if(!empty($conf->global->QUESTIONNAIRE_USE_EXTRAFIELD)) {
         $head[$h][0] = dol_buildpath("/questionnaire/admin/questionnaire_extrafields.php", 1);
@@ -225,7 +225,7 @@ function draw_question(&$q, $fk_statut_questionnaire = 0)
                     </script>';
             }
         }
-	    else if($q->type == 'title')
+		else if($q->type == 'title')
 			$res .= '<input size="100" placeholder="Titre" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
 		else 
 			$res .= '<input size="100" placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
@@ -1394,9 +1394,7 @@ function prepareMailContent($invuser, $fk_questionnaire)
 	
 	$content = "Bonjour $name, \nNous vous invitons à répondre au questionnaire suivant : ";
 
-	if (!empty($invuser->fk_user))
-		$content .= dol_buildpath('/questionnaire/card.php?id='.$fk_questionnaire.'&action=answer&fk_invitation='.$invuser->id.'&token='.$invuser->token, 2);
-	else if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN))
+	if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN))
         $content .= $conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN.'toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $invuser->id . '&token=' . $invuser->token;
     else
         $content .= dol_buildpath('/questionnaire/public/toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $invuser->id . '&token=' . $invuser->token, 2);
@@ -1412,6 +1410,10 @@ function prepareMailContent($invuser, $fk_questionnaire)
 
 function llxHeaderQuest()
 {
+global $conf;
+
+	if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN)) $path = '';
+	else $path = '/questionnaire/public';
 	print '<!doctype html>
 	<html lang="fr">
 	<head>
@@ -1421,24 +1423,23 @@ function llxHeaderQuest()
 	<meta name="author" content="Dolibarr Development Team">
 	<title>Questionnaire</title>
 	<!-- Includes CSS for JQuery (Ajax library) -->
-	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/public/includes/jquery/css/base/jquery-ui.css', 1).'">
-	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/jnotify/jquery.jnotify-alt.min.css', 1).'">
-	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/select2/dist/css/select2.css', 1).'">
+	<link rel="stylesheet" type="text/css" href="'.dol_buildpath($path.'/includes/jquery/css/base/jquery-ui.css', 1).'">
+	<link rel="stylesheet" type="text/css" href="'.dol_buildpath($path.'/includes/jquery/plugins/jnotify/jquery.jnotify-alt.min.css', 1).'">
+	<link rel="stylesheet" type="text/css" href="'.dol_buildpath($path.'/includes/jquery/plugins/select2/dist/css/select2.css', 1).'">
 	<!-- Includes CSS for font awesome -->
-	<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/questionnaire/public/includes/common/fontawesome/css/font-awesome.min.css', 1).'">
+	<link rel="stylesheet" type="text/css" href="'.dol_buildpath($path.'/includes/common/fontawesome/css/font-awesome.min.css', 1).'">
 	<!-- Includes CSS added by page -->
-	<link rel="stylesheet" type="text/css" title="default" href="'.dol_buildpath('/questionnaire/public/css/styles.css', 1).'">
+	<link rel="stylesheet" type="text/css" title="default" href="'.dol_buildpath($path.'/css/styles.css', 1).'">
 		<!-- Includes JS for JQuery -->
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/js/jquery.min.js', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/js/jquery-ui.min.js', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/tablednd/jquery.tablednd.min.js', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/jnotify/jquery.jnotify.min.js', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/flot/jquery.flot.min.js', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/flot/jquery.flot.pie.min.js', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/flot/jquery.flot.stack.min.js', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/jquery/plugins/select2/dist/js/select2.full.min.js', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/includes/lib_head.js.php', 1).'"></script>
-	<script type="text/javascript" src="'.dol_buildpath('/questionnaire/public/js/ckeditor/ckeditor.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/js/jquery.min.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/js/jquery-ui.min.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/plugins/tablednd/jquery.tablednd.min.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/plugins/jnotify/jquery.jnotify.min.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/plugins/flot/jquery.flot.min.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/plugins/flot/jquery.flot.pie.min.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/plugins/flot/jquery.flot.stack.min.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/plugins/select2/dist/js/select2.full.min.js', 1).'"></script>
+	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/lib_head.js.php', 1).'"></script>
 	</head>
 	
 
@@ -1849,7 +1850,7 @@ function draw_question_for_admin(&$q)
 			$style = '';
 		if ($q->type == 'paragraph')
 			$style = 'style="font-size:120%;white-space: pre-wrap;"';
-		$res .= '<div class="refid" '.$style.'>'.$q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
+		$res .= '<div class="refid" '.$style.'>'.dol_htmlentities($q->label).(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
 
 		switch ($q->type) {
 
@@ -1915,17 +1916,17 @@ function draw_add_element_line()
 		.'<span class="elements question" type="title"><span class="qt-icon">T</span><span class="qt-label">Titre</span></span>'
 		.'<span class="elements question" type="separator"><span class="qt-icon">/</span><span class="qt-label">Séparateur</span></span>'
 		.'<span class="elements question" type="paragraph"><span class="qt-icon"><i class="fa fa-paragraph" aria-hidden="true"></i></span><span class="qt-label">Paragraphe</span></span>'
-		.'<span class="questions" type="string"><span class="qt-icon"><i class="fa fa-font" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeString').' </span></span>'
-		.'<span class="questions" type="textarea"><span class="qt-icon"><i class="fa fa-font" aria-hidden="true"></i>...</span><span class="qt-label">'.$langs->trans('questionnaireTypeTextArea').' </span></span>'
-		.'<span class="questions" type="select"><span class="qt-icon"><i class="fa fa-list" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeSelect').' </span></span>'
-		.'<span class="questions" type="listradio"><span class="qt-icon"><i class="fa fa-dot-circle-o" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeRadio').' </span></span>'
-		.'<span class="questions" type="listcheckbox"><span class="qt-icon"><i class="fa fa-check-square-o" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeCheckbox').' </span></span>'
-		.'<span class="questions" type="grilleradio"><span class="qt-icon">G<i class="fa fa-dot-circle-o" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeGrilleRadio').' </span></span>'
-		.'<span class="questions" type="grillecheckbox"><span class="qt-icon">G<i class="fa fa-check-square-o" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeGrilleCheckbox').' </span></span>'
-		.'<span class="questions" type="grillestring"><span class="qt-icon">G<i class="fa fa-font" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeGrilleString').'</span> </span>'
-		.'<span class="questions" type="date"><span class="qt-icon"><i class="fa fa-calendar" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeDate').' </span></span>'
-		.'<span class="questions" type="hour"><span class="qt-icon"><i class="fa fa-clock-o" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeHour').' </span></span>'
-		.'<span class="questions" type="linearscale"><span class="qt-icon"><i class="fa fa-sliders" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeLinearScale').'</span> </span>'
+		.'<span class="questions" type="string" style="display: none;"><span class="qt-icon"><i class="fa fa-font" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeString').' </span></span>'
+		.'<span class="questions" type="textarea" style="display: none;"><span class="qt-icon"><i class="fa fa-font" aria-hidden="true"></i>...</span><span class="qt-label">'.$langs->trans('questionnaireTypeTextArea').' </span></span>'
+		.'<span class="questions" type="select" style="display: none;"><span class="qt-icon"><i class="fa fa-list" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeSelect').' </span></span>'
+		.'<span class="questions" type="listradio" style="display: none;"><span class="qt-icon"><i class="fa fa-dot-circle-o" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeRadio').' </span></span>'
+		.'<span class="questions" type="listcheckbox" style="display: none;"><span class="qt-icon"><i class="fa fa-check-square-o" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeCheckbox').' </span></span>'
+		.'<span class="questions" type="grilleradio" style="display: none;"><span class="qt-icon">G<i class="fa fa-dot-circle-o" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeGrilleRadio').' </span></span>'
+		.'<span class="questions" type="grillecheckbox" style="display: none;"><span class="qt-icon">G<i class="fa fa-check-square-o" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeGrilleCheckbox').' </span></span>'
+		.'<span class="questions" type="grillestring" style="display: none;"><span class="qt-icon">G<i class="fa fa-font" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeGrilleString').'</span> </span>'
+		.'<span class="questions" type="date" style="display: none;"><span class="qt-icon"><i class="fa fa-calendar" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeDate').' </span></span>'
+		.'<span class="questions" type="hour" style="display: none;"><span class="qt-icon"><i class="fa fa-clock-o" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeHour').' </span></span>'
+		.'<span class="questions" type="linearscale" style="display: none;"><span class="qt-icon"><i class="fa fa-sliders" aria-hidden="true"></i></span><span class="qt-label">'.$langs->trans('questionnaireTypeLinearScale').'</span> </span>'
 		.'</div>'
 		.'</div></td></tr>';
 
