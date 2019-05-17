@@ -57,7 +57,7 @@ class Questionnaire extends SeedObject
 			, 'origin' => array('type' => 'string')
 			, 'originid' => array('type' => 'integer', 'index' => true)
 			, 'fk_user_author' => array('type' => 'integer', 'index' => true)
-			, 'after_answer_html' => array('type'=>'string')
+			, 'after_answer_html' => array('type'=>'text')
 		);
 
 		$this->TTypeObjectLinked = array(
