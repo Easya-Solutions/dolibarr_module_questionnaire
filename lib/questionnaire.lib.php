@@ -373,7 +373,7 @@ function draw_linearscale_choice(&$choice, $title, $fk_statut_questionnaire = 0)
 function draw_question_for_user(&$q)
 {
 
-	global $db;
+	global $db, $conf;
 
 	dol_include_once('/questionnaire/class/question_link.class.php');
 	$ql = new Questionlink($db);
@@ -397,10 +397,25 @@ function draw_question_for_user(&$q)
 			$style = 'style="font-size:200%;"';
 		else
 			$style = '';
-		if ($q->type == 'paragraph')
-			$style = 'style="font-size:120%;white-space: pre-wrap;"';
-		$res .= '<div class="refid" '.$style.'>'.$q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
-		//$res .= '<div class="refid">'.$q->label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
+
+		// TODO : revoir completement l'affichage ...
+
+		$class = "refid";
+		if($q->type == 'paragraph'){
+			$label = $q->label;
+			$style = 'style="font-size:120%; white-space: pre-wrap;"';
+			if(!empty($conf->global->QUESTIONNAIRE_TEXTAREA_WYSWYG)){
+				$class = "questionnaire-wyswyg";
+				$style = '';
+			}
+
+		}else{
+			$label = dol_htmlentities($q->label);
+		}
+
+		$res .= '<div class="'.$class .'" '.$style.'>'.$label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
+
+
 
 		switch ($q->type) {
 
@@ -464,7 +479,7 @@ function draw_textarea_for_user(&$q, $readOnly = false)
 {
     global $conf;
 
-    $input = '<textarea rows="7" cols="50" type="text" name="TAnswer['.$q->id.']" id="rep_q'.$q->id.'">'.$q->answers[0]->value.'</textarea>';
+    $input = '<textarea rows="7" cols="50" type="text" name="TAnswer['.$q->id.']" id="rep_q'.$q->id.'" >'.$q->answers[0]->value.'</textarea>';
 
     if(!empty($conf->global->QUESTIONNAIRE_ANSWER_TEXTAREA_WYSWYG)){
 
@@ -1835,7 +1850,7 @@ function custom_select_date($set_time = '', $prefix = 're', $h = 0, $m = 0, $emp
 
 function draw_question_for_admin(&$q)
 {
-	global $db, $langs;
+	global $db, $langs, $conf;
 
 	if (empty($q->choices))
 		$q->loadChoices();
@@ -1848,9 +1863,26 @@ function draw_question_for_admin(&$q)
 			$style = 'style="font-size:200%;"';
 		else
 			$style = '';
-		if ($q->type == 'paragraph')
-			$style = 'style="font-size:120%;white-space: pre-wrap;"';
-		$res .= '<div class="refid" '.$style.'>'.dol_htmlentities($q->label).(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
+
+		// TODO : revoir completement l'affichage ...
+
+		$class = "refid";
+		if($q->type == 'paragraph'){
+			$label = $q->label;
+			$style = 'style="font-size:120%; white-space: pre-wrap;"';
+			if(!empty($conf->global->QUESTIONNAIRE_TEXTAREA_WYSWYG)){
+				$class = "questionnaire-wyswyg";
+				$style = '';
+			}
+
+		}else{
+			$label = dol_htmlentities($q->label);
+		}
+
+		$label = '<i class="fa fa-edit" ></i> '.$label;
+
+
+		$res .= '<div class="'.$class .'" '.$style.'>'.$label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';
 
 		switch ($q->type) {
 
@@ -1963,8 +1995,13 @@ function drawMandatory($q, $edit = 1)
 
 function draw_action_element($q)
 {
-	global $langs;
-	$res = '</td><td width="4%"><a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#question'.$q->id.'" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteQuestion')).'</a>&nbsp;<i   class="fa fa-th"></i>';
+	global $langs, $conf;
+	$res = '</td><td width="4%"><a id="del_element_'.$q->id.'" name="del_element_'.$q->id.'" href="#question'.$q->id.'" onclick="return false;">'.img_delete($langs->trans('questionnaireDeleteQuestion')).'</a>';
+
+	if(!empty($conf->global->QUESTIONNAIRE_SORTABLE)){
+		$res.= '&nbsp;<i   class="fa fa-th"></i>' ;
+	}
+
 	$res .= '</td></tr>';
 	return $res;
 }
