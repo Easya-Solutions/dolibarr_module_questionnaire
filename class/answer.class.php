@@ -26,7 +26,7 @@ class Answer extends SeedObject {
 				,'fk_choix'=>array('type'=>'integer')
 				,'fk_choix_col'=>array('type'=>'integer')
 				,'fk_invitation_user'=>array('type'=>'integer')
-				,'value'=>array('type'=>'string') // for types string or textarea etc...
+				,'value'=>array('type'=>'text') // for types string or textarea etc...
 		);
 		
 		$this->init();
