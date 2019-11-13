@@ -1424,9 +1424,9 @@ function prepareMailContent($invuser, $fk_questionnaire)
 	$contentATM.= "Soucieux d'améliorer la qualité de nos services, nous souhaitons recueillir votre avis sur la façon dont s'est déroulé votre projet avec nous.\n";
 	$contentATM.= "Pour cela, nous vous invitons à exprimer votre niveau de satisfaction en répondant au questionnaire suivant : $link\n\n";
 	$contentATM.= "Ce questionnaire est disponible jusqu'au $datelim, il comporte 3 pages : il ne vous faudra pas plus de 5 minutes pour y répondre.\n\n";
-	$contentATM.= "Votre contact commercial reprendra contact avec vous très prochainement à ce sujet.\nNous vous en remercions par avance.\n\n";
+	$contentATM.= "Votre contact commercial reprendra contact avec vous très prochainement à ce sujet.\n\nNous vous en remercions par avance.\n\n";
 	$contentATM.= "L'équipe ATM Consulting";
-	$content = $contentATM;
+	$content = nl2br($contentATM);
 
 	return $content;
 }

@@ -94,7 +94,7 @@ if (!empty($massaction) && $massaction == 'send' && !empty($arrayofselected))
 		$content = prepareMailContent($invuser,$id);
 		include_once DOL_DOCUMENT_ROOT.'/core/class/CMailFile.class.php';
 		
-		$mailfile = new CMailFile($subject, $invuser->email, $conf->email_from, $content);
+		$mailfile = new CMailFile($subject, $invuser->email, $conf->email_from, $content, array(), array(), array(), "", "", 0, 1);
 		if (!$mailfile->sendfile())
 		{
 			setEventMessages($langs->transnoentities($langs->trans("ErrorFailedToSendMail", $conf->email_from,  $invuser->email).'. '.$mailfile->error), null, 'errors');
