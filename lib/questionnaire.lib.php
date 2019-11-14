@@ -1403,11 +1403,14 @@ function prepareMailContent($invuser, $fk_questionnaire)
 		$civilite = $contact->getCivilityLabel();
 		if(!empty($civilite)) $name = $civilite.' '.ucfirst($contact->lastname);
 		else $name = ucfirst($contact->lastname);
+
+		$name = $contact->getFullName();
 	}else {
 		$name = '';
 	}
 
-	$link = dol_buildpath('/questionnaire/public/toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $invuser->id . '&token=' . $invuser->token, 2);
+	if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN)) $link = $conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN.'toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $invuser->id . '&token=' . $invuser->token;
+	else $link = dol_buildpath('/questionnaire/public/toAnswer.php?id=' . $fk_questionnaire . '&action=answer&fk_invitation=' . $invuser->id . '&token=' . $invuser->token, 2);
 	$datelim = date('d/m/Y', $invuser->date_limite_reponse);
 	
 	$content = "Bonjour $name, \nNous vous invitons à répondre au questionnaire suivant : ";
