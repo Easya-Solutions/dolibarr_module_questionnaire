@@ -42,10 +42,11 @@ $sql = 'SELECT t.rowid, t.title, t.fk_statut, \'\' AS action';
 $sql.= ' FROM '.MAIN_DB_PREFIX.'quest_questionnaire t ';
 $sql.= ' WHERE 1=1';
 $sql.= ' AND t.entity IN ('.getEntity('questionnaire', 1).')';
-$sql.= ' ORDER BY t.ref DESC';
 
 if(is_numeric($status)) $sql.=' AND t.fk_statut='.$status;
 if(empty($user->rights->questionnaire->readall)) $sql.= ' AND fk_user_author = '.$user->id;
+
+$sql.= ' ORDER BY t.ref DESC';
 
 // Peu importe les droits, on ne peut répondre qu'aux questionnaires auxquels on est invité à répondre
 if($action === 'to_answer') {
@@ -57,6 +58,7 @@ if($action === 'to_answer') {
 			AND i_usr.date_limite_reponse >= "'.date('Y-m-d').'"
 			ORDER BY q.ref DESC';
 }
+
 $resql = $db->query($sql);
 $TData=array();
 if(!empty($resql) && $db->num_rows($resql) > 0) {
