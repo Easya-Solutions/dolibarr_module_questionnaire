@@ -61,11 +61,38 @@ if (!GETPOST('confirmmassaction', 'alpha') && $massaction != 'presend' && $massa
 {
 	$massaction = '';
 }
+if ($massaction == 'presend') $action = 'presend';
+if (GETPOST('modelselected')) $action = 'presend';
 
+if ($action == 'presend' && !empty($toselect) && !GETPOST('sendto'))
+{
+    $sendto = array();
+    foreach ($toselect as $fk_invite)
+    {
+        $o = new InvitationUser($db);
+        $o->fetch($fk_invite);
+        if (!empty($o->email)) $sendto[] = '<'.$o->email.'>'; // Hack
+    }
+
+    if (!empty($sendto))
+    {
+        $_GET['sendto'] = implode(',', $sendto); // Hack
+    }
+
+}
 
 $arrayofselected = is_array($toselect) ? $toselect : array();
 
-//var_dump($massaction,$arrayofselected);exit;
+
+// Actions to send emails
+$actiontypecode='AC_OTH_AUTO';
+$trigger_name='QUESTIONNAIRE_SENTBYMAIL';
+$autocopy='MAIN_MAIL_AUTOCOPY_QUESTIONNAIRE_TO';
+$trackid='quest'.$object->id;
+$old_element = $object->element;
+$object->element = 'user';
+include DOL_DOCUMENT_ROOT.'/core/actions_sendmails.inc.php';
+$object->element = $old_element;
 
 if (!empty($massaction) && $massaction == 'reopen' && !empty($arrayofselected))
 {
@@ -173,6 +200,14 @@ $TBS = new TTemplateTBS();
 $TBS->TBS->protect = false;
 $TBS->TBS->noerr = true;
 
+// Presend form
+$modelmail='questionnaire';
+$defaulttopic='SendQuestionnaireRef';
+$diroutput = $conf->questionnaire->multidir_output[$object->entity];
+$trackid = 'quest'.$object->id;
+include DOL_DOCUMENT_ROOT.'/core/tpl/card_presend.tpl.php';
+
+
 $formcore = new TFormCore;
 $formcore->Set_typeaff($mode);
 if ($mode == 'edit')
@@ -181,7 +216,6 @@ $linkback = '<a href="'.dol_buildpath('/questionnaire/list.php', 1).'">'.$langs-
 
 
 //if()
-
 
 
 print $TBS->render('tpl/invitation.tpl.php'
@@ -268,7 +302,7 @@ function _getListInvitations(&$object)
             'param_url' => 'id='.$object->id,
             'title' => $langs->trans('QuestionnaireGuestList')
             ,'massactions'=>array(
-                    'send' => $langs->trans("SendByMail"),
+                    'presend' => $langs->trans("SendByMail"),
                     'reopen' => $langs->trans("Reopen"),
                     'delete'=>$langs->trans("Delete"),
                 )
@@ -467,8 +501,8 @@ function printMassActionButton()
 //	}
 
 	$arrayofmassactions = array(
-		'send' => $langs->trans("SendByMail"),
-    'delete'=>$langs->trans("Delete"),
+		'presend' => $langs->trans("SendByMail"),
+        'delete'=>$langs->trans("Delete"),
 	);
 	$massactionbutton = $form->selectMassAction('', $arrayofmassactions);
 
