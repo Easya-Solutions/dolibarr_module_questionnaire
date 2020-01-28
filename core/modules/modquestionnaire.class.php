@@ -90,7 +90,12 @@ class modquestionnaire extends DolibarrModules
 		//							'dir' => array('output' => 'othermodulename'),      // To force the default directories names
 		//							'workflow' => array('WORKFLOW_MODULE1_YOURACTIONTYPE_MODULE2'=>array('enabled'=>'! empty($conf->module1->enabled) && ! empty($conf->module2->enabled)', 'picto'=>'yourpicto@questionnaire')) // Set here all workflow context managed by module
 		//                        );
-		$this->module_parts = array('models'=>1);
+		$this->module_parts = array(
+		    'models' => 1
+            , 'hooks' => array(
+                'emailtemplates'
+            )
+        );
 
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/questionnaire/temp");

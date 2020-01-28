@@ -26,7 +26,7 @@ class Questionnaire extends SeedObject
 	 * Closed status
 	 */
 	const STATUS_CLOSED = 2;
-	
+
 	const STATUS_FULLY_VALIDATED=4;
 
 	public static $TStatus = array(
@@ -164,7 +164,7 @@ class Questionnaire extends SeedObject
 
 		return self::save();
 	}
-	
+
 	public function setFullyValid()
 		{
 //		global $user;
@@ -285,7 +285,7 @@ class Questionnaire extends SeedObject
 		elseif ($mode == 4)
 			return $langs->trans($shortkeytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
 		elseif ($mode == 5)
-			return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($this->labelstatut[$statut], $statuttrans);
+			return '<span class="hideonsmartphone">'.$langs->trans($shortkeytrans).' </span>'.img_picto($keytrans, $statustrans);
 		// mode 6 used by dol_banner() function
 		elseif ($mode == 6)
 			return '<span class="hideonsmartphone">'.$langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key).' </span>'.img_picto($langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key), $statustrans);
@@ -602,18 +602,18 @@ class Questionnaire extends SeedObject
 
 		return array($myNb[0], $nbTotal[0]);
 	}
-	
+
 	function checkAllAnswer(){
 		global $db;
-				
+
 
 		$sql = "SELECT fk_statut FROM ".MAIN_DB_PREFIX."quest_invitation_user WHERE fk_questionnaire=".$this->id." AND fk_statut!=1";
 		$db->query($sql);
-		
+
 		if($db->num_rows == 0 && $this->fk_statut ){
 			$this->setFullyValid();
 		}
-		
+
 	}
 
 }
@@ -624,18 +624,18 @@ class questionnaireDet extends TObjetStd
 	public $table_element = 'questionnairedet';
 
 	public $element = 'questionnairedet';
-	
+
 	public function __construct($db)
 	{
 		global $conf,$langs;
-		
+
 		$this->db = $db;
-		
+
 		$this->init();
-		
+
 		$this->user = null;
 	}
-	
-	
+
+
 }
 */
