@@ -120,7 +120,7 @@ class Questionnaire extends SeedObject
 		return $res;
 	}
 
-	public function delete(User &$user)
+	public function delete(User &$user, $notrigger = false)
 	{
 
 		if (empty($this->questions))

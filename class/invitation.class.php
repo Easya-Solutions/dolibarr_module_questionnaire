@@ -328,7 +328,7 @@ class InvitationUser extends SeedObject
 		return $this->id > 0 ? $this->updateCommon($user) : $this->createCommon($user);
 	}
 
-	public function delete(User &$user)
+	public function delete(User &$user, $notrigger = false)
 	{
 
 		parent::deleteCommon($user);
