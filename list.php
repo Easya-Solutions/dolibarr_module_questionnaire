@@ -11,8 +11,8 @@ $langs->load('questionnaire@questionnaire');
 
 $PDOdb = new TPDOdb;
 $object = new Questionnaire($db);
-$action = GETPOST('action');
-$status = GETPOST('status');
+$action = GETPOST('action','alpha');
+$status = GETPOST('status','int');
 
 $hookmanager->initHooks(array('questionnairelist'));
 

@@ -21,7 +21,7 @@ dol_include_once('/questionnaire/lib/questionnaire.lib.php');
 
 $langs->load('questionnaire@questionnaire');
 
-$action = GETPOST('action');
+$action = GETPOST('action','alpha');
 $id = GETPOST('id', 'int');
 
 

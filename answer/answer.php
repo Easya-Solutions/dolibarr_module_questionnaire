@@ -13,11 +13,11 @@ dol_include_once('/contact/class/contact.class.php');
 
 $langs->load('questionnaire@questionnaire');
 
-$action = GETPOST('action');
+$action = GETPOST('action','alpha');
 $id = GETPOST('id', 'int');
-$ref = GETPOST('ref');
-$fk_invitation_user = GETPOST('fk_invitation_user');
-$title = GETPOST('title');
+$ref = GETPOST('ref','alpha');
+$fk_invitation_user = GETPOST('fk_invitation_user','int');
+$title = GETPOST('title','alpha');
 $massaction = GETPOST('massaction', 'alpha');
 $toselect = GETPOST('toselect', 'array');
 
@@ -274,7 +274,7 @@ function _seeAnswersUser(&$object, $fk_invituser)
 
 	if ($invUser->fk_statut ==1)
 	{
-		$res .= '<form name="answerQuestionnaire" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'">';
+		$res .= '<form name="answerQuestionnaire" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id','int').'">';
 		$res .= '<input type="HIDDEN" name="fk_invitation_user" value="'.$fk_invituser.'"/>';
 		$res .= '<input type="HIDDEN" name="action" value="reopen"/>';
 
@@ -323,7 +323,7 @@ function printMassActionButton()
 
 	$ret = $formcore->begin_form($_SERVER['PHP_SELF'], 'form_massaction');
 
-	$ret .= '<input hidden name="id" type="text" value="'.GETPOST('id').'"/>';
+	$ret .= '<input hidden name="id" type="text" value="'.GETPOST('id','int').'"/>';
 
 	$arrayofmassactions = array(
 		'reopen' => $langs->trans("Reopen"),
