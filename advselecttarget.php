@@ -49,19 +49,19 @@ if (!$sortorder)
 if (!$sortfield)
 	$sortfield = "email";
 
-$ref = GETPOST('ref');
-$title = GETPOST('title');
+$ref = GETPOST('ref','alpha');
+$title = GETPOST('title','alpha');
 $id = GETPOST('id', 'int');
 $rowid = GETPOST('rowid', 'int');
 $action = GETPOST('action', 'aZ09');
-$search_nom = GETPOST("search_nom");
-$search_prenom = GETPOST("search_prenom");
-$search_email = GETPOST("search_email");
+$search_nom = GETPOST("search_nom",'alpha');
+$search_prenom = GETPOST("search_prenom",'alpha');
+$search_email = GETPOST("search_email",'alpha');
 $template_id = GETPOST('template_id', 'int');
-$type_element = GETPOST('type_element');
-$date_limite_reponseyear = GETPOST('date_limite_reponseyear');
-$date_limite_reponsemonth = GETPOST('date_limite_reponsemonth');
-$date_limite_reponseday = GETPOST('date_limite_reponseday');
+$type_element = GETPOST('type_element','int');
+$date_limite_reponseyear = GETPOST('date_limite_reponseyear','alpha');
+$date_limite_reponsemonth = GETPOST('date_limite_reponsemonth','alpha');
+$date_limite_reponseday = GETPOST('date_limite_reponseday','alpha');
 
 
 
@@ -168,7 +168,7 @@ if ($action == 'add') {
 					$array_query['options_' . $dtarr[1] . '_end_dt'] = dol_mktime(0, 0, 0, GETPOST('options_' . $dtarr[1] . '_end_dtmonth', 'int'), GETPOST('options_' . $dtarr[1] . '_end_dtday', 'int'), GETPOST('options_' . $dtarr[1] . '_end_dtyear', 'int'));
 				}
 			} else {
-				$array_query[$key] = GETPOST($key);
+				$array_query[$key] = GETPOST($key,'int');
 			}
 		}
 		if (preg_match("/^options_.*_cnct/", $key)) {
@@ -188,17 +188,17 @@ if ($action == 'add') {
 					$array_query['options_' . $dtarr[1] . '_end_dt' . '_cnct'] = dol_mktime(0, 0, 0, GETPOST('options_' . $dtarr[1] . '_end_dtmonth' . '_cnct', 'int'), GETPOST('options_' . $dtarr[1] . '_end_dtday' . '_cnct', 'int'), GETPOST('options_' . $dtarr[1] . '_end_dtyear' . '_cnct', 'int'));
 				}
 			} else {
-				$array_query[$key] = GETPOST($key);
+				$array_query[$key] = GETPOST($key,'int');
 			}
 		}
 
 		if (preg_match("/^cust_/", $key)) {
-			$array_query[$key] = GETPOST($key);
+			$array_query[$key] = GETPOST($key,'int');
 		}
 
 		if (preg_match("/^contact_/", $key)) {
 
-			$array_query[$key] = GETPOST($key);
+			$array_query[$key] = GETPOST($key,'int');
 
 			$specials_date_key = array (
 					'contact_update_st_dt',
@@ -208,7 +208,7 @@ if ($action == 'add') {
 			);
 			foreach ( $specials_date_key as $date_key ) {
 				if ($key == $date_key) {
-					$dt = GETPOST($date_key);
+					$dt = GETPOST($date_key,'int');
 					if (! empty($dt)) {
 						$array_query[$key] = dol_mktime(0, 0, 0, GETPOST($date_key . 'month', 'int'), GETPOST($date_key . 'day', 'int'), GETPOST($date_key . 'year', 'int'));
 					} else {
@@ -227,7 +227,7 @@ if ($action == 'add') {
 		}
 
 		if (preg_match("/^type_of_target/", $key)) {
-			$array_query[$key] = GETPOST($key);
+			$array_query[$key] = GETPOST($key,'int');
 		}
 	}
 	// if ($array_query ['type_of_target'] == 1 || $array_query ['type_of_target'] == 3) {
@@ -297,7 +297,7 @@ if ($action == 'clear') {
 
 if ($action == 'savefilter' || $action == 'createfilter') {
 
-	$template_name = GETPOST('template_name');
+	$template_name = GETPOST('template_name','alpha');
 	$error = 0;
 
 	if ($action == 'createfilter' && empty($template_name)) {
@@ -329,7 +329,7 @@ if ($action == 'savefilter' || $action == 'createfilter') {
 						// 01/02/1013=1361228400
 					}
 				} else {
-					$array_query[$key] = GETPOST($key);
+					$array_query[$key] = GETPOST($key,'int');
 				}
 			}
 			if (preg_match("/^options_.*_cnct/", $key)) {
@@ -350,17 +350,17 @@ if ($action == 'savefilter' || $action == 'createfilter') {
 						// 01/02/1013=1361228400
 					}
 				} else {
-					$array_query[$key] = GETPOST($key);
+					$array_query[$key] = GETPOST($key,'int');
 				}
 			}
 
 			if (preg_match("/^cust_/", $key)) {
-				$array_query[$key] = GETPOST($key);
+				$array_query[$key] = GETPOST($key,'int');
 			}
 
 			if (preg_match("/^contact_/", $key)) {
 
-				$array_query[$key] = GETPOST($key);
+				$array_query[$key] = GETPOST($key,'int');
 
 				$specials_date_key = array (
 						'contact_update_st_dt',
@@ -370,7 +370,7 @@ if ($action == 'savefilter' || $action == 'createfilter') {
 				);
 				foreach ( $specials_date_key as $date_key ) {
 					if ($key == $date_key) {
-						$dt = GETPOST($date_key);
+						$dt = GETPOST($date_key,'int');
 						if (! empty($dt)) {
 							$array_query[$key] = dol_mktime(0, 0, 0, GETPOST($date_key . 'month', 'int'), GETPOST($date_key . 'day', 'int'), GETPOST($date_key . 'year', 'int'));
 						} else {
@@ -381,7 +381,7 @@ if ($action == 'savefilter' || $action == 'createfilter') {
 			}
 
 			if (preg_match("/^type_of_target/", $key)) {
-				$array_query[$key] = GETPOST($key);
+				$array_query[$key] = GETPOST($key,'int');
 			}
 		}
 		$advTarget->filtervalue = json_encode($array_query);
