@@ -21,9 +21,9 @@ $langs->load('questionnaire@questionnaire');
 
 
 
-$action = GETPOST('action');
+$action = GETPOST('action','alpha');
 $id = GETPOST('id', 'int');
-$ref = GETPOST('ref');
+$ref = GETPOST('ref','alpha');
 
 $object = new Questionnaire($db);
 

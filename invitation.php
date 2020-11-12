@@ -13,20 +13,20 @@ dol_include_once('/contact/class/contact.class.php');
 
 $langs->load('questionnaire@questionnaire');
 
-$action = GETPOST('action');
+$action = GETPOST('action','alpha');
 $id = GETPOST('id', 'int');
-$ref = GETPOST('ref');
-$fk_invitation = GETPOST('fk_invitation');
-$groups = GETPOST('usergroups');
-$users = GETPOST('users');
-$emails = GETPOST('emails');
-$date_limite_year = GETPOST('date_limiteyear');
-$date_limite_month = GETPOST('date_limitemonth');
-$date_limite_day = GETPOST('date_limiteday');
+$ref = GETPOST('ref','alpha');
+$fk_invitation = GETPOST('fk_invitation','int');
+$groups = GETPOST('usergroups','none');
+$users = GETPOST('users','none');
+$emails = GETPOST('emails','alpha');
+$date_limite_year = GETPOST('date_limiteyear','int');
+$date_limite_month = GETPOST('date_limitemonth','int');
+$date_limite_day = GETPOST('date_limiteday','int');
 $massaction = GETPOST('massaction', 'alpha');
 $toselect = GETPOST('toselect', 'array');
 
-$title=GETPOST('title');
+$title=GETPOST('title','alpha');
 $mode = 'view';
 if ($action == 'create' || $action == 'edit')
 	$mode = 'edit';
@@ -62,9 +62,9 @@ if (!GETPOST('confirmmassaction', 'alpha') && $massaction != 'presend' && $massa
 	$massaction = '';
 }
 if ($massaction == 'presend') $action = 'presend';
-if (GETPOST('modelselected')) $action = 'presend';
+if (GETPOST('modelselected','none')) $action = 'presend';
 
-if ($action == 'presend' && !empty($toselect) && !GETPOST('sendto'))
+if ($action == 'presend' && !empty($toselect) && !GETPOST('sendto','none'))
 {
     $sendto = array();
     foreach ($toselect as $fk_invite)
@@ -492,7 +492,7 @@ function printMassActionButton()
 	
 	
 	$ret = $formcore->begin_form($_SERVER['PHP_SELF'], 'form_massaction');
-	$ret .= '<input hidden name="id" type="text" value="'.GETPOST('id').'"/>';
+	$ret .= '<input hidden name="id" type="text" value="'.GETPOST('id','int').'"/>';
 	
 //	if ($massaction == 'predelete')
 //	{

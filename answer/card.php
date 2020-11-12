@@ -21,11 +21,11 @@ dol_include_once('/questionnaire/lib/questionnaire.lib.php');
 
 $langs->load('questionnaire@questionnaire');
 
-$action = GETPOST('action');
+$action = GETPOST('action','alpha');
 $id = GETPOST('id', 'int');
-$ref = GETPOST('ref');
+$ref = GETPOST('ref','alpha');
 
-$page=GETPOST('page');
+$page=GETPOST('page','none');
 if(empty($page))$page=1;
 
 
@@ -88,7 +88,7 @@ print '<a name="builddoc"></a>'; // ancre
  */
 $filename = dol_sanitizeFileName($object->ref);
 $filedir = $upload_dir."/".dol_sanitizeFileName($object->ref);
-$urlsource = $_SERVER["PHP_SELF"]."?id=".$object->id."&page=".GETPOST('page');
+$urlsource = $_SERVER["PHP_SELF"]."?id=".$object->id."&page=".GETPOST('page','none');
 $genallowed = 1;
 $delallowed = 1;
 

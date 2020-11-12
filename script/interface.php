@@ -7,23 +7,23 @@ dol_include_once('/questionnaire/class/choice.class.php');
 dol_include_once('/questionnaire/lib/questionnaire.lib.php');
 dol_include_once('/core/class/html.form.class.php');
 
-$get = GETPOST('get');
-$put = GETPOST('put');
+$get = GETPOST('get','none');
+$put = GETPOST('put','none');
 
-$fk_questionnaire = GETPOST('fk_questionnaire');
-$fk_question = GETPOST('fk_question');
+$fk_questionnaire = GETPOST('fk_questionnaire','int');
+$fk_question = GETPOST('fk_question','int');
 $fk_choix = GETPOST('fk_choix', 'int');
-$is_section = GETPOST('is_section');
-$type_question = GETPOST('type_question');
-$type_object = GETPOST('type_object');
-$type_choice = GETPOST('type_choice');
-$fk_object = GETPOST('fk_object');
-$field = GETPOST('field');
-$value = GETPOST('value');
-$origin = GETPOST('origin');
-$links = GETPOST('links');
-$group = GETPOST('group');
-$rang = GETPOST('rang');
+$is_section = GETPOST('is_section','none');
+$type_question = GETPOST('type_question','none');
+$type_object = GETPOST('type_object','none');
+$type_choice = GETPOST('type_choice','none');
+$fk_object = GETPOST('fk_object','int');
+$field = GETPOST('field','alpha');
+$value = GETPOST('value','none');
+$origin = GETPOST('origin','none');
+$links = GETPOST('links','alpha');
+$group = GETPOST('group','none');
+$rang = GETPOST('rang','int');
 
 $form = new Form($db);
 _get($get);

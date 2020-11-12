@@ -14,17 +14,17 @@ dol_include_once('/questionnaire/lib/questionnaire.lib.php');
 
 $langs->load('questionnaire@questionnaire');
 
-$action = GETPOST('action');
+$action = GETPOST('action','alpha');
 $id = GETPOST('id', 'int');
-$ref = GETPOST('ref');
-$fk_invitation = GETPOST('fk_invitation');
-$title = GETPOST('title');
-$origin = GETPOST('origin');
-$originid = GETPOST('originid');
-$page = GETPOST('page');
+$ref = GETPOST('ref','alpha');
+$fk_invitation = GETPOST('fk_invitation','int');
+$title = GETPOST('title','alpha');
+$origin = GETPOST('origin','alpha');
+$originid = GETPOST('originid','int');
+$page = GETPOST('page','int');
 $invitation = new InvitationUser($db);
 $res = $invitation->load($fk_invitation);
-$gotopage = GETPOST('gotopage');
+$gotopage = GETPOST('gotopage','int');
 if (empty($page))
 	$page = 1;
 
@@ -108,7 +108,7 @@ if (empty($reshook))
 			// Suppression anciennes réponses
 			$object->deleteAllAnswersUser($fk_invitation, $page);
 
-			$TAnswer = GETPOST('TAnswer');
+			$TAnswer = GETPOST('TAnswer','array');
 			foreach ($_REQUEST as $k => &$v)
 			{
 
@@ -128,7 +128,7 @@ if (empty($reshook))
 									continue;
 
 								$answer = new Answer($db);
-								$answer->fk_invitation_user = GETPOST('fk_invitation');
+								$answer->fk_invitation_user = GETPOST('fk_invitation','int');
 								$answer->fk_question = $fk_question;
 
 								if (strpos($pos, '_') !== false)
@@ -153,7 +153,7 @@ if (empty($reshook))
 						} elseif (!is_array($content) && !empty($content))
 						{
 							$answer = new Answer($db);
-							$answer->fk_invitation_user = GETPOST('fk_invitation');
+							$answer->fk_invitation_user = GETPOST('fk_invitation','int');
 							$answer->fk_question = $fk_question;
 							$answer->value = $content;
 							$answer->save();
@@ -171,15 +171,15 @@ if (empty($reshook))
 
 					$answer = new Answer($db);
 					$answer->fk_question = $fk_question;
-					$answer->fk_invitation_user = GETPOST('fk_invitation');
+					$answer->fk_invitation_user = GETPOST('fk_invitation','int');
 					$answer->value = $v;
 
-					$year = GETPOST('date_q'.$fk_question.'year');
-					$month = GETPOST('date_q'.$fk_question.'month');
-					$day = GETPOST('date_q'.$fk_question.'day');
+					$year = GETPOST('date_q'.$fk_question.'year','alpha');
+					$month = GETPOST('date_q'.$fk_question.'month','alpha');
+					$day = GETPOST('date_q'.$fk_question.'day','alpha');
 
-					$hour = GETPOST('time_q'.$fk_question.'hour');
-					$min = GETPOST('time_q'.$fk_question.'min');
+					$hour = GETPOST('time_q'.$fk_question.'hour','alpha');
+					$min = GETPOST('time_q'.$fk_question.'min','alpha');
 
 					if (strpos($k, 'date_q') !== false && !empty($year))
 						$answer->value = strtotime($year.'-'.$month.'-'.$day);
@@ -238,8 +238,8 @@ if (empty($reshook))
 			$invitation_user = new InvitationUser($db);
 
 
-			$invitation_user->loadBy(array('rowid' => GETPOST('fk_invitation')));
-			$isOkForValidation = $object->isOkForValidation(GETPOST('fk_invitation'));
+			$invitation_user->loadBy(array('rowid' => GETPOST('fk_invitation','int')));
+			$isOkForValidation = $object->isOkForValidation(GETPOST('fk_invitation','int'));
 
 			if ($isOkForValidation)
 			{
@@ -278,7 +278,7 @@ if (empty($reshook))
 			break;
 		// link from llx_element_element
 		case 'dellink':
-			$object->deleteObjectLinked(null, '', null, '', GETPOST('dellinkid'));
+			$object->deleteObjectLinked(null, '', null, '', GETPOST('dellinkid','int'));
 			header('Location: '.dol_buildpath('/questionnaire/card.php', 1).'?id='.$object->id);
 			exit;
 	}

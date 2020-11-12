@@ -162,7 +162,7 @@ function getFormConfirmquestionnaire(&$form, &$object, $action)
 	elseif ($action == 'validate_answers'/* && !empty($user->rights->questionnaire->write) */)
 	{
 		$text = $langs->trans('ConfirmValidateAnswersQuestionnaire');
-		$formconfirm = $form->formconfirm($_SERVER['PHP_SELF'].'?id='.$object->id, $langs->trans('ValidateAnswersQuestionnaire'), $text, 'confirm_validate_answers', array(array('type' => 'hidden', 'name' => 'fk_invitation', 'value' => GETPOST('fk_invitation')), array('type' => 'hidden', 'name' => 'fk_userinvit', 'value' => GETPOST('fk_userinvit')), array('type' => 'hidden', 'name' => 'token', 'value' => GETPOST('token'))), 0, 1);
+		$formconfirm = $form->formconfirm($_SERVER['PHP_SELF'].'?id='.$object->id, $langs->trans('ValidateAnswersQuestionnaire'), $text, 'confirm_validate_answers', array(array('type' => 'hidden', 'name' => 'fk_invitation', 'value' => GETPOST('fk_invitation','int')), array('type' => 'hidden', 'name' => 'fk_userinvit', 'value' => GETPOST('fk_userinvit','int')), array('type' => 'hidden', 'name' => 'token', 'value' => GETPOST('token','none'))), 0, 1);
 	}
 
 	return $formconfirm;
@@ -1243,7 +1243,7 @@ function getFieldVal(&$object, $trans, $field)
 	if ($field === 'origin')
 	{
 
-		if (GETPOST('action') !== 'editorigin')
+		if (GETPOST('action','alpha') !== 'editorigin')
 		{
 			$object->origin = _showLinkedObject($object->origin, $object->originid);
 			$res .= $form->editfieldkey($trans, $field, $object->{$field}, $object, 1, 'string', '', 0, 1);
@@ -1275,7 +1275,7 @@ function _formSetObjectLinked($origin, $originid, $print_form = true)
 
 	if ($print_form)
 	{
-		$res = $langs->trans('LinkedObject').' : <form name="updateLinkedObject" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'">';
+		$res = $langs->trans('LinkedObject').' : <form name="updateLinkedObject" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id','int').'">';
 		$res .= '<input type="hidden" name="action" value="setorigin" />';
 	}
 
@@ -1296,7 +1296,7 @@ function _formSetObjectLinked($origin, $originid, $print_form = true)
 	if ($print_form)
 	{
 		$res .= '<input type="SUBMIT" class="button" name="subFormUpdateObjectLinked" value="'.$langs->trans('Modify').'" />';
-		$res .= '<a href="'.dol_buildpath('/questionnaire/card.php', 1).'?id='.GETPOST('id').'" class="button" name="subFormUpdateObjectLinked">'.$langs->trans('Cancel').'</a>';
+		$res .= '<a href="'.dol_buildpath('/questionnaire/card.php', 1).'?id='.GETPOST('id','int').'" class="button" name="subFormUpdateObjectLinked">'.$langs->trans('Cancel').'</a>';
 		$res .= '</form>';
 	}
 
@@ -2010,8 +2010,8 @@ function draw_pagination($page, $object)
 {
 	global $action, $mode;
 	
-	$id= GETPOST('id');
-	$ref=GETPOST('ref');
+	$id= GETPOST('id','int');
+	$ref=GETPOST('ref','alpha');
 	
 	if (!empty($object->nbpages))
 	{

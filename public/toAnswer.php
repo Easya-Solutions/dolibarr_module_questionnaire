@@ -47,17 +47,17 @@ $form = new Form($db);
 
 $mode = 'view';
 
-$action = GETPOST('action');
+$action = GETPOST('action','alpha');
 $id = GETPOST('id', 'int');
-$ref = GETPOST('ref');
-$fk_invitation = GETPOST('fk_invitation');
-$title = GETPOST('title');
-$origin = GETPOST('origin');
-$originid = GETPOST('originid');
-$fk_user_invitation = GETPOST('fk_userinvit');
-$token = GETPOST('token');
-$page=GETPOST('page');
-$gotopage = GETPOST('gotopage');
+$ref = GETPOST('ref','alpha');
+$fk_invitation = GETPOST('fk_invitation','int');
+$title = GETPOST('title','alpha');
+$origin = GETPOST('origin','alpha');
+$originid = GETPOST('originid','int');
+$fk_user_invitation = GETPOST('fk_userinvit','int');
+$token = GETPOST('token','alpha');
+$page=GETPOST('page','int');
+$gotopage = GETPOST('gotopage','int');
 if(empty($page))$page=1;
 
 
@@ -113,7 +113,7 @@ if ($action == 'save_answer')
 	// Suppression anciennes réponses
 	$object->deleteAllAnswersUser($fk_invitation,$page);
 
-	$TAnswer = GETPOST('TAnswer');
+	$TAnswer = GETPOST('TAnswer','array');
 
 	foreach ($_REQUEST as $k => &$v)
 	{
@@ -181,12 +181,12 @@ if ($action == 'save_answer')
 			$answer->fk_invitation_user= $fk_invitation;
 			$answer->value = $v;
 
-			$year = GETPOST('date_q'.$fk_question.'year');
-			$month = GETPOST('date_q'.$fk_question.'month');
-			$day = GETPOST('date_q'.$fk_question.'day');
+			$year = GETPOST('date_q'.$fk_question.'year','alpha');
+			$month = GETPOST('date_q'.$fk_question.'month','alpha');
+			$day = GETPOST('date_q'.$fk_question.'day','alpha');
 
-			$hour = GETPOST('time_q'.$fk_question.'hour');
-			$min = GETPOST('time_q'.$fk_question.'min');
+			$hour = GETPOST('time_q'.$fk_question.'hour','alpha');
+			$min = GETPOST('time_q'.$fk_question.'min','alpha');
 
 			if (strpos($k, 'date_q') !== false && !empty($year))
 				$answer->value = strtotime($year.'-'.$month.'-'.$day);
