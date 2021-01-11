@@ -545,8 +545,8 @@ if ($action !== 'answer' && $action != 'create')
 {
 	print '<div class="tabsAction">';
 	print '<input type="submit" value="'.$langs->transnoentities('CreateDraft').'" class="butAction" />
-	
-	
+
+
 	<input type="button" onclick="javascript:history.go(-1)" value="'.$langs->transnoentities('Cancel').'" class="butActionDelete"/>';
 	print '</div>';
 	echo $formcore->end_form();
@@ -573,8 +573,8 @@ if ((empty($action) || $action === 'view') && empty($object->fk_statut))
 	<script type="text/javascript">
 
 	    $(document).ready(function () {
-			
-			
+
+
 
 	        $("#butAddQuestion").click(function () {
 
@@ -941,6 +941,7 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
 
 
         $to_hide = $(".edit");
+		$titleContent = $('#label.field').val;
         $.ajax({
             dataType: 'json'
             , url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
@@ -952,7 +953,7 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
         }).done(function (res) {
             $to_hide.closest('tr').next('tr').remove();//delete add element
 			$to_hide.closest('tr').after(res);
-			if(res.indexOf('<div class="refid" style="font-size:200%;">') !== -1 && res.substr(res.indexOf('<div class="refid" style="font-size:200%;">')+43,1) == ('<')){
+			if($titleContent == ''){
 				$to_hide.closest('tr').next('tr').find('a[id^=del_element]').click();
 			}
             $to_hide.closest('tr').remove();
@@ -1051,6 +1052,7 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
             });
 
             $to_hide = $(".edit");
+            $titleContent = $('#label.field').val;
             $.ajax({
                 dataType: 'json'
                 , url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
@@ -1063,11 +1065,12 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
                 $to_hide.closest('tr').next('tr').remove();//delete add element
 				$to_hide.closest('tr').after(res);
 				//IF TITLE IS EMPTY WE SIMULATE DELETE
-				if(res.indexOf('<div class="refid" style="font-size:200%;">') !== -1 && res.substr(res.indexOf('<div class="refid" style="font-size:200%;">')+43,1) == ('<')){
+				if($titleContent == ''){
 					$to_hide.closest('tr').next('tr').find('a[id^=del_element]').click();
 				}
+
                 $to_hide.closest('tr').remove();
-				
+
 
                 setQuestionDivCSS();
             });
