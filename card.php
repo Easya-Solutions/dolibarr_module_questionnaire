@@ -1052,7 +1052,7 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
             });
 
             $to_hide = $(".edit");
-            $titleContent = $('#label.field').val;
+
             $.ajax({
                 dataType: 'json'
                 , url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
@@ -1064,6 +1064,9 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
             }).done(function (res) {
                 $to_hide.closest('tr').next('tr').remove();//delete add element
 				$to_hide.closest('tr').after(res);
+				$titleContent = $(res).find('.questtitle');
+				if($titleContent.length > 0) $titleContent = $titleContent.first().html();
+				console.log($titleContent);
 				//IF TITLE IS EMPTY WE SIMULATE DELETE
 				if($titleContent == ''){
 					$to_hide.closest('tr').next('tr').find('a[id^=del_element]').click();
