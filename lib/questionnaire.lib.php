@@ -1880,7 +1880,7 @@ function draw_question_for_admin(&$q)
 			$label = dol_htmlentities($q->label);
 		}
 
-		$label = '<i class="fa fa-edit" ></i> '.$label;
+		$label = '<i class="fa fa-edit"></i>'.$label;
 
 
 		$res .= '<div class="'.$class .'" '.$style.'>'.$label.(!empty($q->compulsory_answer) ? ' (Réponse obligatoire)' : '').'</div>';

@@ -953,7 +953,9 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
         }).done(function (res) {
             $to_hide.closest('tr').next('tr').remove();//delete add element
 			$to_hide.closest('tr').after(res);
-			if($titleContent == ''){
+			$titleContent = $(res).find('.questtitle');
+			$titleContentWithoutTags = $titleContent.clone().children().remove().end().text(); // method to get only text without tags
+			if($titleContent.length > 0 && $titleContentWithoutTags == ''){
 				$to_hide.closest('tr').next('tr').find('a[id^=del_element]').click();
 			}
             $to_hide.closest('tr').remove();
@@ -1065,10 +1067,10 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
                 $to_hide.closest('tr').next('tr').remove();//delete add element
 				$to_hide.closest('tr').after(res);
 				$titleContent = $(res).find('.questtitle');
-				if($titleContent.length > 0) $titleContent = $titleContent.first().html();
-				console.log($titleContent);
+				$titleContentWithoutTags = $titleContent.clone().children().remove().end().text(); // method to get only text without tags
+				//if($titleContent.length > 0) $titleContent = $titleContent.first().html();
 				//IF TITLE IS EMPTY WE SIMULATE DELETE
-				if($titleContent == ''){
+				if($titleContent.length > 0 && $titleContentWithoutTags == ''){
 					$to_hide.closest('tr').next('tr').find('a[id^=del_element]').click();
 				}
 
