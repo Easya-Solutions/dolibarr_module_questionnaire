@@ -143,7 +143,7 @@ function _getListAnswers(&$object)
 
 	// On regarde s'il existe une réponse à au moins une question du questionnaire sur lequel on se trouve
 	// Subquery pour chercher s'il existe une réponse validée
-	$sql = 'SELECT DISTINCT iu.fk_element as id_element,iu.ref, iu.rowid as fk_invitation_user, "" as link_answer,COALESCE(NULLIF(iu.type_element,""), "External") as type_element, iu.fk_element,  iu.email, IFNULL(iu.fk_statut,0) as fk_statut,  "" as action
+	$sql = 'SELECT DISTINCT iu.fk_element as id_element,iu.ref, iu.rowid as fk_invitation_user, "" as link_answer, COALESCE(NULLIF(iu.type_element,""), "External") as type_element, iu.fk_element, iu.email, iu.fk_statut as fk_statut, "" as action
 			FROM '.MAIN_DB_PREFIX.'quest_invitation_user iu
 			WHERE iu.fk_questionnaire = '.$object->id.'
 			AND (fk_element > 0 OR email != "")';
