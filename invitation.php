@@ -73,10 +73,9 @@ if ($action == 'presend' && !empty($toselect) && !GETPOST('sendto'))
         $o->fetch($fk_invite);
         if (!empty($o->email)) $sendto[] = '<'.$o->email.'>'; // Hack
     }
-
     if (!empty($sendto))
     {
-        $_GET['sendto'] = implode(',', $sendto); // Hack
+	    $_GET['sendto'] = implode(',', $sendto); // Hack
     }
 
 }
@@ -113,14 +112,14 @@ if (!empty($massaction) && $massaction == 'send' && !empty($arrayofselected))
 	foreach ($arrayofselected as $inv_selected)
 	{
 
-		
+
 		$invuser->load($inv_selected);
-		
+
 		$subject = $langs->transnoentitiesnoconv('MailSubjQuest',$object->title);
-		
+
 		$content = prepareMailContent($invuser,$id);
 		include_once DOL_DOCUMENT_ROOT.'/core/class/CMailFile.class.php';
-		
+
 		$mailfile = new CMailFile($subject, $invuser->email, $conf->email_from, $content);
 		if (!$mailfile->sendfile())
 		{
@@ -142,7 +141,7 @@ if (!empty($massaction) && $massaction == 'send' && !empty($arrayofselected))
 		$invitation->load($inv_selected);
 		$invitation->delete($user);
 		$object->deleteAllAnswersUser($inv_selected);
-		
+
 	}
 }
 // Si vide alors le comportement n'est pas remplacé
@@ -157,7 +156,7 @@ if (empty($reshook))
 			$invitation = new InvitationUser($db);
 			$invitation->load($fk_invitation);
 			$emails = $invitation->email;
-			
+
 			break;
 
 		case 'save':
@@ -174,15 +173,15 @@ if (empty($reshook))
 			}else {
 				$invitation->addInvitationsUser($groups, $users, $emails);
 			}
-			
+
 			$mode = 'view';
 			break;
 
-	
+
 		case 'settitle':
 			$object->title = $title;
 			$object->save();
-			
+
 			header('Location: '.dol_buildpath('/questionnaire/invitation.php', 1).'?id='.$object->id);
 			exit;
 			break;
@@ -202,7 +201,7 @@ $TBS->TBS->noerr = true;
 
 // Presend form
 $modelmail='questionnaire';
-$defaulttopic='SendQuestionnaireRef';
+$defaulttopic=$langs->trans('SendQuestionnaireRef', $object->title);
 $diroutput = $conf->questionnaire->multidir_output[$object->entity];
 $trackid = 'quest'.$object->id;
 include DOL_DOCUMENT_ROOT.'/core/tpl/card_presend.tpl.php';
@@ -441,10 +440,10 @@ function _getNomUrl($fk_element, $email,$type_element)
 	$type_element= ucfirst($type_element);
 	if($type_element == 'Thirdparty')$type_element='Societe';
 	if(class_exists($type_element))$u = new $type_element($db);
-	
+
 	if (!empty($fk_element) && method_exists($u, 'getNomUrl')){
 		$u->fetch($fk_element);
-		$res = $u->getNomUrl(1);	
+		$res = $u->getNomUrl(1);
 	}else
 		$res = $email;
 	return $res;
@@ -489,11 +488,11 @@ function _actionLink(  $fk_invit)
 function printMassActionButton()
 {
 	global $formcore, $langs, $form, $massaction, $toselect;
-	
-	
+
+
 	$ret = $formcore->begin_form($_SERVER['PHP_SELF'], 'form_massaction');
 	$ret .= '<input hidden name="id" type="text" value="'.GETPOST('id').'"/>';
-	
+
 //	if ($massaction == 'predelete')
 //	{
 //
