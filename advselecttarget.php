@@ -456,7 +456,7 @@ else
 </script>
 <?php  print '<div id="to_move" >';
 if(!empty($date_limite_reponseday))$date=strtotime($date_limite_reponseyear.'-'.$date_limite_reponsemonth.'-'.$date_limite_reponseday);
-else $date='';
+else $date=dol_now() + ($object->answer_deadline > 0 ? $object->answer_deadline : $conf->global->QUESTIONNAIRE_DEFAULT_ANSWER_DEADLINE) * 24 * 60 * 60;
 $form->select_date($date, 'date_limite_reponse');
 	print '</div>';
 	llxFooter();

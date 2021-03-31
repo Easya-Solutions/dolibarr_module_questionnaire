@@ -19,6 +19,7 @@ QUESTIONNAIRE_TEXTAREA_WYSWYG=Utiliser un champ texte WYSWYG
 QUESTIONNAIRE_ANSWER_TEXTAREA_WYSWYG=Utiliser un champ texte WYSWYG
 QUESTIONNAIRE_ANSWER_CONFIG=Configuration des réponses
 QUESTIONNAIRE_CONFIG=Configuration
+QUESTIONNAIRE_DEFAULT_ANSWER_DEADLINE=Nombre de jour par défaut pour le délais de réponse
 
 
 # MENU
@@ -38,7 +39,10 @@ questionnaireStatusNotSent=Non envoyé
 questionnaireStatusSent=Envoyé
 questionnaireStatusClosed=Sauvegardé
 answerStatusDraft=En attente de réponse
-answerStatusValidated=Validé
+answerStatusSaved=En cours
+answerStatusValidated=Répondu
+answerStatusPartially=Répondu partiellement
+answerStatusCancel=Non Répondu
 answerValidate=Validé
 questionnaireStatusAnswered=Validé - Répondu
 
@@ -46,6 +50,7 @@ Draft=Brouillon
 Validate=Validé
 Refused=Refusé
 Accepted=Accepté
+Partially=Partiel
 
 # LIST
 questionnaireList=Liste questionnaires
@@ -72,6 +77,7 @@ questionnaireDeleteChoice=Supprimer choix
 questionnaireDeleteQuestion=Supprimer question
 SubstitutionsForQuestionnaire=Codes de substitution QUESTIONNAIRE
 SubstitutionsForInvitationUser=Codes de substitution INVITATION
+questionnaireAnswerDeadline=Limite de réponse
 
 # CARD TPL
 Save=Enregistrer
@@ -88,6 +94,8 @@ questionnaire_date_limite_reponse=Date limite de réponse
 
 # CARD Conf
 questionnaireConf=Configuration
+questionnaireConfAnswerDeadline=Délai de réponse
+questionnaireConfAnswerDeadlineHelp=Nombre de jour par défaut pour le délais de réponse
 
 # Libellés types choix
 questionnaireTypeString=Chaîne
@@ -163,6 +171,27 @@ NotSent=Non envoyé
 
 MailSubjQuest=Invitation à répondre au questionnaire %s
 
+#Substitution mail
+QuestionnaireSubstitutionQuestionnaireRef=Réf. du questionnaire
+QuestionnaireSubstitutionQuestionnaireTitle=Titre du questionnaire
+QuestionnaireSubstitutionQuestionnaireStatus=Statut du questionnaire
+
+QuestionnaireSubstitutionInvitationRef=Réf. de l'invitation du questionnaire
+QuestionnaireSubstitutionInvitationToken=Token de l'invitation du questionnaire
+QuestionnaireSubstitutionInvitationEmail=Email de destination de l'invitation du questionnaire
+QuestionnaireSubstitutionInvitationContactName=Nom du contact de destination de l'invitation du questionnaire
+QuestionnaireSubstitutionInvitationContactCivilityName=Nom (avec civilité) du contact de destination de l'invitation du questionnaire
+QuestionnaireSubstitutionInvitationContactFullName=Nom complet du contact de destination de l'invitation du questionnaire
+QuestionnaireSubstitutionInvitationContactCivilityFullName=Nom complet (avec civilité) du contact de destination de l'invitation du questionnaire
+QuestionnaireSubstitutionInvitationCompany=Tiers de destination de l'invitation du questionnaire
+QuestionnaireSubstitutionInvitationSentStatus=Statut de l'envoi de l'invitation du questionnaire
+QuestionnaireSubstitutionInvitationDateAnswerDeadline=Date limite de réponse de l'invitation du questionnaire
+QuestionnaireSubstitutionInvitationDateValidation=Date de validation de l'invitation du questionnaire
+QuestionnaireSubstitutionInvitationDateSent=Date de l'envoi de l'invitation du questionnaire
+QuestionnaireSubstitutionInvitationDateSentRemind=Date de l'envoi du rappel de l'invitation du questionnaire
+QuestionnaireSubstitutionInvitationStatus=Statut de l'invitation du questionnaire
+QuestionnaireSubstitutionInvitationAnswerLink=Lien vers le formulaire de réponse
+
 #ANSWER
 answerCard=Réponse
 questionnaireAnswerMonitored=Suivi
@@ -172,9 +201,9 @@ Recipient=Destinataire
 AnswerDocumentTemplates=Modèle de document pour la fiche réponse
 DocumentModelAnswer= Modèle de document PDF pour les réponses
 
-Publish=Publier
 PreviousPage=Page Précédente
 NextPage=Page Suivante
+SaveAndClose=Enregistrer et terminer le questionnaire
 
 
 UseCustomDomain=Utilisation d'un sous-domaine (facultatif)

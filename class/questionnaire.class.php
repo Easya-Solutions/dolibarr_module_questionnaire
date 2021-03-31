@@ -51,6 +51,7 @@ class Questionnaire extends SeedObject
 			'ref' => array('type' => 'string', 'length' => 50, 'index' => true)
 			, 'title' => array('type' => 'string')
 			, 'description' => array('type' => 'string')
+			, 'answer_deadline' => array('type' => 'integer')
 			, 'entity' => array('type' => 'integer', 'index' => true)
 			, 'fk_statut' => array('type' => 'integer', 'index' => true) // date, integer, string, float, array, text
 			, 'import_key' => array('type' => 'integer', 'index' => true)
@@ -291,6 +292,8 @@ class Questionnaire extends SeedObject
 			return '<span class="hideonsmartphone">'.$langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key).' </span>'.img_picto($langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key), $statustrans);
 		elseif ($mode == 7)
 			return '<span class="hideonsmartphone">'.$langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key).' </span>';
+		elseif ($mode == 8)
+			return $langs->trans($keytrans);
 	}
 
 	function loadQuestions($page = 0)

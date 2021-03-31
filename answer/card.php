@@ -37,7 +37,7 @@ elseif (!empty($ref))
 
 
 $formfile = new FormFile($db);
-$upload_dir=DOL_DATA_ROOT.'/questionnaire';
+$upload_dir=$conf->questionnaire->dir_output;
 if(!is_dir($upload_dir))mkdir($upload_dir);
 	
 $permissioncreate=1;

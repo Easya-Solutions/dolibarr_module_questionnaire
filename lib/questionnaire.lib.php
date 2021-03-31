@@ -111,6 +111,8 @@ function questionnaire_prepare_head(Questionnaire $object)
 	// $this->tabs = array('entity:-tabname:Title:@questionnaire:/questionnaire/mypage.php?id=__ID__');   to remove a tab
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'questionnaire');
 
+	complete_head_from_modules($conf, $langs, null, $head, $h, 'questionnaire', 'remove');
+
 	return $head;
 }
 
@@ -1406,7 +1408,7 @@ function prepareMailContent($invuser, $fk_questionnaire)
 	}else {
 		$name = '';
 	}
-	
+
 	$content = "Bonjour $name, \nNous vous invitons à répondre au questionnaire suivant : ";
 
 	if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN))
@@ -1854,8 +1856,8 @@ function draw_question_for_admin(&$q)
 
 	if (empty($q->choices))
 		$q->loadChoices();
-	if (!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale' || $q->type == 'separator' || $q->type == 'page' || $q->type == 'paragraph' || $q->type == 'title'/* Pas de choix pour ces types là */)
-	{
+//	if (!empty($q->choices) || $q->type === 'string' || $q->type === 'textarea' || $q->type === 'date' || $q->type === 'hour' || $q->type === 'linearscale' || $q->type == 'separator' || $q->type == 'page' || $q->type == 'paragraph' || $q->type == 'title'/* Pas de choix pour ces types là */)
+//	{
 		//#4fa4ff
 		$res = drawMandatory($q);
 
@@ -1933,7 +1935,7 @@ function draw_question_for_admin(&$q)
 		$res .= '</div>';
 		$res .= draw_action_element($q);
 		$res .= draw_add_element_line();
-	}
+//	}
 
 	return $res;
 }

@@ -44,8 +44,10 @@ $object = new Questionnaire($db);
 
 if (!empty($id))
 	$object->load($id);
-elseif (!empty($ref))
+elseif (!empty($ref)) {
 	$object->load('', $ref);
+	$id = $object->id;
+}
 
 $object->loadInvitations();
 
@@ -518,7 +520,7 @@ elseif ($action === 'answer')
     if ($page > 1) print '<span class="paginationbt" ><a  href="#" page='.($page - 1).'><input class="butAction" name="previousPage" type="button" value="'.$langs->trans('PreviousPage').'"/></a></span>';
     print '<input class="butAction" name="subSave" type="SUBMIT" value="'.$langs->trans('SaveAnswer').'"/>';
     if ($page < $object->nbpages + 1) print '<span class="paginationbt" ><a  href="#" page='.($page + 1).'><input class="butAction" name="nextPage" type="button" value="'.$langs->trans('NextPage').'"/></a></span>';
-    if($page == $object->nbpages + 1 || $object->nbpages ==1) print '<input name="subValid" type="SUBMIT" class="butAction"  value="'.$langs->trans('Publish').'"/>';
+    if($page == $object->nbpages + 1 || $object->nbpages ==1) print '<input name="subValid" type="SUBMIT" class="butAction"  value="'.$langs->trans('SaveAndClose').'"/>';
 
     print '</form>';
 }

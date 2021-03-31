@@ -365,7 +365,19 @@ print '</td></tr>';
 // DEFAULT AFTER ANSWER HTML
 setup_print_input_form_part('QUESTIONNAIRE_DEFAULT_AFTER_ANSWER_HTML', '', '', array(), 'textarea');
 
-
+// Default deadline for the answer
+$var = !$var;
+print '<tr ' . $bc[$var] . '>';
+print '<td>' . $langs->trans("QUESTIONNAIRE_DEFAULT_ANSWER_DEADLINE") . '</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="right" width="500">';
+print '<form method="POST" action="' . $_SERVER['PHP_SELF'] . '">';
+print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+print '<input type="hidden" name="action" value="set_QUESTIONNAIRE_DEFAULT_ANSWER_DEADLINE">';
+print '<input type="number" id="QUESTIONNAIRE_DEFAULT_ANSWER_DEADLINE" name="QUESTIONNAIRE_DEFAULT_ANSWER_DEADLINE" value="' . $conf->global->QUESTIONNAIRE_DEFAULT_ANSWER_DEADLINE . '"  />';
+print '&nbsp;<input type="submit" class="button" value="' . $langs->trans("Modify") . '">';
+print '</form>';
+print '</td></tr>';
 
 print '</table>';
 

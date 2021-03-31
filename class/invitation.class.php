@@ -216,25 +216,37 @@ class InvitationUser extends SeedObject
 	const STATUS_DRAFT = 0;
 
 	/**
+	 * Saved status
+	 */
+	const STATUS_SAVED = 2;
+
+	/**
 	 * Validated status
 	 */
 	const STATUS_VALIDATED = 1;
 
 	/**
-	 * Closed status
+	 * Partially status
 	 */
-	const STATUS_SAVED = 2;
+	const STATUS_PARTIALLY = 3;
+
+	/**
+	 * Cancel status
+	 */
+	const STATUS_CANCEL = 4;
 
     public static $TStatus = array(
-        self::STATUS_DRAFT => 'Draft'
-    , self::STATUS_VALIDATED => 'Validated'
-    , self::STATUS_SAVED => 'Saved'
+        self::STATUS_DRAFT => 'answerStatusDraft'
+		, self::STATUS_SAVED => 'answerStatusSaved'
+		, self::STATUS_VALIDATED => 'answerStatusValidated'
+		, self::STATUS_PARTIALLY => 'answerStatusPartially'
+		, self::STATUS_CANCEL => 'answerStatusCancel'
     );
 
 
     public static $TSentStatus = array(
         self::STATUS_DRAFT => 'NotSent'
-      , self::STATUS_VALIDATED => 'Sent'
+      	, self::STATUS_VALIDATED => 'Sent'
     );
 
 
@@ -246,7 +258,7 @@ class InvitationUser extends SeedObject
 
 		$this->fields = array(
 			'ref'=>array('type'=>'string','length'=>50,'index'=>true)
-			,'fk_questionnaire' => array('type' => 'integer', 'index' => true)
+			, 'fk_questionnaire' => array('type' => 'integer', 'index' => true)
 			, 'fk_element' => array('type' => 'integer', 'index' => true)
 			, 'type_element' => array('type' => 'string')
 			, 'fk_usergroup' => array('type' => 'integer', 'index' => true)
@@ -259,6 +271,7 @@ class InvitationUser extends SeedObject
 			, 'date_validation' => array('type' => 'date')
 			, 'date_modification' => array('type' => 'date')
 			, 'date_envoi' => array('type' => 'date')
+			, 'date_sent_remind' => array('type' => 'date')
 		);
 
 		$this->init();
@@ -364,11 +377,13 @@ class InvitationUser extends SeedObject
 		elseif ($mode == 4)
 			return $langs->trans($shortkeytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
 		elseif ($mode == 5)
-			return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($this->labelstatut[$statut], $statuttrans);
+			return '<span class="hideonsmartphone">'.$shortkeytrans.' </span>'.img_picto($keytrans, $statustrans);
 		// mode 6 used by dol_banner() function
 
 		elseif ($mode == 6)
 			return '<span class="hideonsmartphone">'.$langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key).' </span>'.img_picto($langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key), $statustrans);
+		elseif ($mode == 7)
+			return $langs->trans($keytrans);
 	}
 	
 	public function getLibStatut($mode)
@@ -380,21 +395,32 @@ class InvitationUser extends SeedObject
 		{
 			$statustrans = 'statut0';
 			$keytrans = 'answerStatusDraft';
-			$shortkeytrans = 'Draft';
-		}
-		if ($this->fk_statut == self::STATUS_VALIDATED)
-		{
-			$statustrans = 'statut1';
-			$keytrans = 'answerStatusValidated';
-			$shortkeytrans = 'Validated';
+			$shortkeytrans = 'answerStatusDraft';
 		}
 		if ($this->fk_statut == self::STATUS_SAVED)
 		{
-			$statustrans = 'statut6';
-			$keytrans = 'questionnaireStatusClosed';
-			$shortkeytrans = 'Saved';
+			$statustrans = 'statut1';
+			$keytrans = 'answerStatusSaved';
+			$shortkeytrans = 'answerStatusSaved';
 		}
-		
+		if ($this->fk_statut == self::STATUS_VALIDATED)
+		{
+			$statustrans = 'statut4';
+			$keytrans = 'answerStatusValidated';
+			$shortkeytrans = 'answerStatusValidated';
+		}
+		if ($this->fk_statut == self::STATUS_PARTIALLY)
+		{
+			$statustrans = 'statut6';
+			$keytrans = 'answerStatusPartially';
+			$shortkeytrans = 'answerStatusPartially';
+		}
+		if ($this->fk_statut == self::STATUS_CANCEL)
+		{
+			$statustrans = 'statut8';
+			$keytrans = 'answerStatusCancel';
+			$shortkeytrans = 'answerStatusCancel';
+		}
 
 
 		if ($mode == 0)
@@ -408,11 +434,13 @@ class InvitationUser extends SeedObject
 		elseif ($mode == 4)
 			return $langs->trans($shortkeytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
 		elseif ($mode == 5)
-			return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($this->labelstatut[$statut], $statuttrans);
+			return '<span class="hideonsmartphone">'.$shortkeytrans.' </span>'.img_picto($keytrans, $statustrans);
 		// mode 6 used by dol_banner() function
 
 		elseif ($mode == 6)
 			return '<span class="hideonsmartphone">'.$langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key).' </span>'.img_picto($langs->trans(empty($questionnaire_status_forced_key) ? $keytrans : $questionnaire_status_forced_key), $statustrans);
+		elseif ($mode == 7)
+			return $langs->trans($keytrans);
 	}
 
 	function addInvitationsUser(&$groups, &$users, $emails,$selectedByTarget=null)
@@ -458,6 +486,9 @@ class InvitationUser extends SeedObject
 							$invitation_user->fk_element = $usr->id;
 							$invitation_user->type_element = 'user';
 							$invitation_user->token = bin2hex(openssl_random_pseudo_bytes(16)); // When we'll pass to php7 use random_bytes
+							$invitation_user->date_envoi = null;
+							$invitation_user->date_sent_remind = null;
+							$invitation_user->date_validation = null;
 							$invitation_user->save();
 						}
 					}
@@ -496,6 +527,9 @@ class InvitationUser extends SeedObject
 				$invitation_user->fk_element = $id_usr;
 				$invitation_user->type_element = 'user';
 				$invitation_user->token = bin2hex(openssl_random_pseudo_bytes(16));
+				$invitation_user->date_envoi = null;
+				$invitation_user->date_sent_remind = null;
+				$invitation_user->date_validation = null;
 				$invitation_user->save();
 			}
 		}
@@ -511,6 +545,9 @@ class InvitationUser extends SeedObject
 				$invitation_user->fk_element = 0;
 				$invitation_user->email = $email;
 				$invitation_user->token = bin2hex(openssl_random_pseudo_bytes(16));
+				$invitation_user->date_envoi = null;
+				$invitation_user->date_sent_remind = null;
+				$invitation_user->date_validation = null;
 				$invitation_user->save();
 			}
 		}
@@ -533,6 +570,9 @@ class InvitationUser extends SeedObject
 					$invitation_user->fk_element = $selected['source_id'];
 					$invitation_user->type_element = $selected['source_type'];
 					$invitation_user->token = bin2hex(openssl_random_pseudo_bytes(16)); // When we'll pass to php7 use random_bytes
+					$invitation_user->date_envoi = null;
+					$invitation_user->date_sent_remind = null;
+					$invitation_user->date_validation = null;
 					$invitation_user->save();
 					
 					
@@ -546,7 +586,15 @@ class InvitationUser extends SeedObject
 		$this->fk_statut = 0;
 		$this->save();
 	}
-	
+
+	function cancel()
+	{
+		if ($this->fk_statut == self::STATUS_DRAFT || $this->fk_statut == self::STATUS_SAVED) {
+			$this->fk_statut = $this->fk_statut == self::STATUS_DRAFT ? self::STATUS_CANCEL : self::STATUS_PARTIALLY;
+			$this->save();
+		}
+	}
+
 	function getFk_element(){
 		
 		

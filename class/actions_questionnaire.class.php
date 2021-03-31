@@ -74,13 +74,11 @@ class Actionsquestionnaire
      * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
      */
 	public function emailElementlist($parameters, &$object, &$action, $hookmanager)
-    {
-        if ($parameters['currentcontext'] === 'emailtemplates')
-        {
-            $this->results['questionnaire'] = 'Questionnaire';
-        }
+	{
+		if ($parameters['currentcontext'] === 'emailtemplates') {
+			$this->results['questionnaire'] = 'Questionnaire';
+		}
 
-        return 0;
-    }
-
+		return 0;
+	}
 }

@@ -153,14 +153,14 @@ class pdf_answer extends ModelePDFProduct
 			// Definition of $dir and $file
 			if ($object->specimen)
 			{
-				$dir = DOL_DATA_ROOT.'/questionnaire';
-				$file = $dir."/SPECIMEN.pdf";
+				$dir = $conf->questionnaire->dir_output;
+				$file = $dir . "/SPECIMEN.pdf";
 			}
 			else
 			{
 				$objectref = dol_sanitizeFileName($object->ref);
-				$dir = DOL_DATA_ROOT.'/questionnaire'."/".$objectref;
-				$file = $dir."/".$objectref.".pdf";
+				$dir = $conf->questionnaire->dir_output . '/' . $objectref;
+				$file = $dir . "/" . $objectref . ".pdf";
 			}
 
 			$productFournisseur = new ProductFournisseur($this->db);
