@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 - FIX : Seed Object signature *2021-05-21* - 1.2.1
   
 - NEW : Ajout d'une nouvelle option dans le module "Nombre de jour par défaut pour le délais de réponse" *2021-05-21* - 1.2.0 - OpenDsi
-- NEW : CModification des libellé des statuts des invitations au questionnaire et aujout du statut "Non Répondu" et "Répondu partiellement" *2021-05-21* - 1.2.0 - OpenDsi
+- NEW : Modification des libellé des statuts des invitations au questionnaire et aujout du statut "Non Répondu" et "Répondu partiellement" *2021-05-21* - 1.2.0 - OpenDsi
 - NEW : Les statuts sont maintenant dans l'ordre "En attente de réponse", "En cours", "Répondu", "Répondu partiellement", "Non Répondu" " *2021-05-21* - 1.2.0 - OpenDsi
 - NEW : Enregistrement de la date de rappel *2021-05-21* - 1.2.0 - OpenDsi
 - NEW : Ajout d'une action d'annulation d'une invitation *2021-05-21* - 1.2.0 - OpenDsi
