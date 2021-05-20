@@ -1869,6 +1869,7 @@ function draw_question_for_admin(&$q)
 		// TODO : revoir completement l'affichage ...
 
 		$class = "refid";
+		if($q->type == 'title') $class.=' questtitle';
 		if($q->type == 'paragraph'){
 			$label = $q->label;
 			$style = 'style="font-size:120%; white-space: pre-wrap;"';

@@ -265,7 +265,7 @@ class InvitationUser extends SeedObject
 			, 'token' => array('type' => 'string')
 			, 'email' => array('type' => 'string')
 			, 'model_pdf' => array('type' => 'string')
-			, 'fk_statut' => array('type' => 'integer', 'index' => true) // Indique si l'utilisateur a enregistré ses données pour terminer plus tard, ou s'il a terminé et validé son questionnaire
+			, 'fk_statut' => array('type' => 'integer', 'index' => true, 'notnull' => 1, 'default' => 0) // Indique si l'utilisateur a enregistré ses données pour terminer plus tard, ou s'il a terminé et validé son questionnaire
 			, 'sent' => array('type' => 'integer', 'index' => true) // Indique si l'utilisateur a enregistré ses données pour terminer plus tard, ou s'il a terminé et validé son questionnaire
 			, 'date_limite_reponse' => array('type' => 'date')
 			, 'date_validation' => array('type' => 'date')
@@ -377,7 +377,7 @@ class InvitationUser extends SeedObject
 		elseif ($mode == 4)
 			return $langs->trans($shortkeytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
 		elseif ($mode == 5)
-			return '<span class="hideonsmartphone">'.$shortkeytrans.' </span>'.img_picto($keytrans, $statustrans);
+			return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($this->labelstatut[$statut], $statuttrans);
 		// mode 6 used by dol_banner() function
 
 		elseif ($mode == 6)
@@ -434,7 +434,7 @@ class InvitationUser extends SeedObject
 		elseif ($mode == 4)
 			return $langs->trans($shortkeytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
 		elseif ($mode == 5)
-			return '<span class="hideonsmartphone">'.$shortkeytrans.' </span>'.img_picto($keytrans, $statustrans);
+			return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($this->labelstatut[$statut], $statuttrans);
 		// mode 6 used by dol_banner() function
 
 		elseif ($mode == 6)

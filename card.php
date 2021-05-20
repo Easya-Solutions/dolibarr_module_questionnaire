@@ -944,6 +944,7 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
 
 
         $to_hide = $(".edit");
+
         $.ajax({
             dataType: 'json'
             , url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
@@ -955,7 +956,9 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
         }).done(function (res) {
             $to_hide.closest('tr').next('tr').remove();//delete add element
 			$to_hide.closest('tr').after(res);
-			if(res.indexOf('<div class="refid" style="font-size:200%;">') !== -1 && res.substr(res.indexOf('<div class="refid" style="font-size:200%;">')+43,1) == ('<')){
+			$titleContent = $(res).find('.questtitle');
+			$titleContentWithoutTags = $titleContent.clone().children().remove().end().text(); // method to get only text without tags
+			if($titleContent.length > 0 && $titleContentWithoutTags == ''){
 				$to_hide.closest('tr').next('tr').find('a[id^=del_element]').click();
 			}
             $to_hide.closest('tr').remove();
@@ -1054,6 +1057,7 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
             });
 
             $to_hide = $(".edit");
+
             $.ajax({
                 dataType: 'json'
                 , url: "<?php echo dol_buildpath('/questionnaire/script/interface.php', 1) ?>"
@@ -1065,10 +1069,13 @@ if ($action === 'apercu' || $action === 'answer' || $mode == 'view' && !empty($o
             }).done(function (res) {
                 $to_hide.closest('tr').next('tr').remove();//delete add element
 				$to_hide.closest('tr').after(res);
+				$titleContent = $(res).find('.questtitle');
+				$titleContentWithoutTags = $titleContent.clone().children().remove().end().text(); // method to get only text without tags
 				//IF TITLE IS EMPTY WE SIMULATE DELETE
-				if(res.indexOf('<div class="refid" style="font-size:200%;">') !== -1 && res.substr(res.indexOf('<div class="refid" style="font-size:200%;">')+43,1) == ('<')){
+				if($titleContent.length > 0 && $titleContentWithoutTags == ''){
 					$to_hide.closest('tr').next('tr').find('a[id^=del_element]').click();
 				}
+
                 $to_hide.closest('tr').remove();
 
 

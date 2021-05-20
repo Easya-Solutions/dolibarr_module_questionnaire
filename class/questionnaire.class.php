@@ -53,7 +53,7 @@ class Questionnaire extends SeedObject
 			, 'description' => array('type' => 'string')
 			, 'answer_deadline' => array('type' => 'integer')
 			, 'entity' => array('type' => 'integer', 'index' => true)
-			, 'fk_statut' => array('type' => 'integer', 'index' => true) // date, integer, string, float, array, text
+			, 'fk_statut' => array('type' => 'integer', 'index' => true, 'notnull' => 1) // date, integer, string, float, array, text
 			, 'import_key' => array('type' => 'integer', 'index' => true)
 			, 'origin' => array('type' => 'string')
 			, 'originid' => array('type' => 'integer', 'index' => true)

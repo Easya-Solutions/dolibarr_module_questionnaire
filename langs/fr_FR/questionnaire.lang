@@ -170,6 +170,7 @@ NotSent=Non envoyé
 #MAIL
 
 MailSubjQuest=Invitation à répondre au questionnaire %s
+SendQuestionnaireRef=Invitation à répondre au questionnaire '%s'
 
 #Substitution mail
 QuestionnaireSubstitutionQuestionnaireRef=Réf. du questionnaire

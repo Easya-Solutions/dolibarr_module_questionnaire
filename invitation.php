@@ -337,7 +337,7 @@ $TBS->TBS->noerr = true;
 
 // Presend form
 $modelmail='questionnaire';
-$defaulttopic='SendQuestionnaireRef';
+$defaulttopic=$langs->trans('SendQuestionnaireRef', $object->title);
 $diroutput = $conf->questionnaire->multidir_output[$object->entity];
 $trackid = 'quest'.$object->id;
 $object->context['onlykey'] = true;
