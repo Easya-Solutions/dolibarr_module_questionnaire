@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## Version 1.0
+## Version 1.2
 
 - FIX : Seed Object signature *2021-05-21* - 1.2.1
   
@@ -42,6 +42,8 @@ All notable changes to this project will be documented in this file.
 - FIX : Corrections du dossier de generation des PDF au standard Dolibarr " *2021-05-21* - 1.2.0 - OpenDsi
 - FIX : Correction d'affichage de toutes les questions en mode edition meme les choix multiple sans reponses *2021-05-21* - 1.2.0 - OpenDsi
 - FIX : Correction de la copie du lien vers le formulaire de reponse au questionnaire *2021-05-21* - 1.2.0 - OpenDsi
+
+## Version 1.0
 
 - FIX : Compatibility V13 - add token renowal *18/05/2021* 1.0.5
 - FIX : Onglet réponse n'affiche rien [2021-01-12]
