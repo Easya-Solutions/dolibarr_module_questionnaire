@@ -86,20 +86,15 @@ elseif (!empty($ref))
 if($invitation_user->fk_statut==1 ){
     print('Merci pour votre participation.');
 
-    $justvalidated = GETPOST('justvalidated', 'int');
-    if(!empty($justvalidated))
-    {
-        if(empty($object->after_answer_html) && !empty($conf->global->QUESTIONNAIRE_DEFAULT_AFTER_ANSWER_HTML)){
-            $object->after_answer_html = $conf->global->QUESTIONNAIRE_DEFAULT_AFTER_ANSWER_HTML;
-        }
+	if(empty($object->after_answer_html) && !empty($conf->global->QUESTIONNAIRE_DEFAULT_AFTER_ANSWER_HTML)){
+		$object->after_answer_html = $conf->global->QUESTIONNAIRE_DEFAULT_AFTER_ANSWER_HTML;
+	}
 
-        $substitution_questionnaire = $object->get_substitutionArray('questionnaire');
-        $substitution_invitation_user = $invitation_user->get_substitutionArray('invitation');
-        $substitution = array_replace ($substitution_questionnaire, $substitution_invitation_user );
-        print make_substitutions($object->after_answer_html,$substitution);
+	$substitution_questionnaire = $object->get_substitutionArray('questionnaire');
+	$substitution_invitation_user = $invitation_user->get_substitutionArray('invitation');
+	$substitution = array_replace ($substitution_questionnaire, $substitution_invitation_user );
+	print make_substitutions($object->after_answer_html,$substitution);
 
-        //print_r($substitution);
-    }
     exit;
 }
 

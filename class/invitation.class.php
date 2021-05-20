@@ -377,7 +377,7 @@ class InvitationUser extends SeedObject
 		elseif ($mode == 4)
 			return $langs->trans($shortkeytrans).' '.img_picto($langs->trans($keytrans), $statustrans);
 		elseif ($mode == 5)
-			return '<span class="hideonsmartphone">'.$this->labelstatut_short[$statut].' </span>'.img_picto($this->labelstatut[$statut], $statuttrans);
+			return '<span class="hideonsmartphone">'.$langs->trans($shortkeytrans).' </span>'.img_picto($langs->trans($keytrans), $statustrans);
 		// mode 6 used by dol_banner() function
 
 		elseif ($mode == 6)
