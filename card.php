@@ -528,7 +528,8 @@ print '</div>';
 // Boutons d'actions
 if ($action !== 'answer' && $action != 'create')
 {
-
+	$urlToken = '';
+	if (function_exists('newToken')) $urlToken = "&token=".newToken();
 	print '<div class="tabsAction">';
 
 	if (empty($object->fk_statut))
@@ -538,7 +539,7 @@ if ($action !== 'answer' && $action != 'create')
 		print '<div class="inline-block divButAction"><a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=modif" class="butAction">'.$langs->transnoentities('Modify').'</a></div>';
 	print '<div class="inline-block divButAction"><a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=clone" class="butAction">'.$langs->transnoentities('ToClone').'</a></div>';
 	if (!empty($user->rights->questionnaire->delete))
-		print '<div class="inline-block divButAction"><a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=delete" class="butActionDelete">'.$langs->transnoentities('Delete').'</a></div>';
+		print '<div class="inline-block divButAction"><a href="'.$_SERVER['PHP_SELF'].'?id='.$id.$urlToken.'&action=delete" class="butActionDelete">'.$langs->transnoentities('Delete').'</a></div>';
 
 	print '</div>';
 }else if ($action == 'create')

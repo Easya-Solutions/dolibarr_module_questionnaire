@@ -66,10 +66,10 @@ $res=$invitation_user->loadBy(array( 'rowid' => $fk_invitation, 'token' => "'$to
 
 
 if($action === 'answer' && empty($res) ||  empty($invitation_user->id) ||  $invitation_user->date_limite_reponse < strtotime(date('Y-m-d')) ){
-	
+
 	print('Date limite de reponse atteinte, ou token invalide.');
 	exit;
-} 
+}
 
 
 if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN)) $path = '';
@@ -153,7 +153,7 @@ if ($action == 'save_answer')
 						}
 						else
 							$answer->fk_choix = $answer_user;
-						
+
 						$answer->save();
 					}
 				} elseif (!is_array($content) && !empty($content))
@@ -162,7 +162,7 @@ if ($action == 'save_answer')
 					$answer->fk_invitation_user = $fk_invitation;
 					$answer->fk_question = $fk_question;
 					$answer->value = $content;
-					
+
 					$answer->save();
 				}
 			}
@@ -311,7 +311,7 @@ if ($action !== 'create')
 		{
 			if ($quest->loadAnswers($fk_invitation) )
 			{
-				
+
 				if (!empty($quest->answers))
 				{
 					$questionnaire_status_forced_key = 'questionnaireStatusClosed';
@@ -447,7 +447,8 @@ print '</div>';
 // Boutons d'actions
 if ($action !== 'answer')
 {
-
+	$urlToken = '';
+	if (function_exists('newToken')) $urlToken = "&token=".newToken();
 	print '<div class="tabsAction">';
 
 	if (empty($object->fk_statut))
@@ -457,7 +458,7 @@ if ($action !== 'answer')
 		print '<div class="inline-block divButAction"><a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=modif" class="butAction">'.$langs->transnoentities('Modify').'</a></div>';
 	print '<div class="inline-block divButAction"><a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=clone" class="butAction">'.$langs->transnoentities('ToClone').'</a></div>';
 	if (!empty($user->rights->questionnaire->delete))
-		print '<div class="inline-block divButAction"><a href="'.$_SERVER['PHP_SELF'].'?id='.$id.'&action=delete" class="butActionDelete">'.$langs->transnoentities('Delete').'</a></div>';
+		print '<div class="inline-block divButAction"><a href="'.$_SERVER['PHP_SELF'].'?id='.$id.$urlToken.'&action=delete" class="butActionDelete">'.$langs->transnoentities('Delete').'</a></div>';
 
 	print '</div>';
 }
@@ -614,7 +615,7 @@ if ((empty($action) || $action === 'view') && empty($object->fk_statut))
 
 <?php
 if($action === 'apercu' || $action === 'answer') {
-    
+
     $ql = new Questionlink($db);
     $links = $ql->loadLinks($id);
     ?>
@@ -624,7 +625,7 @@ if($action === 'apercu' || $action === 'answer') {
 // 			$(this).hide();
 //         });
     <?php
-    
+
     foreach ($links as $qId => $cId){
     ?>
     	var choix = $('[value=<?php echo $cId; ?>]');
@@ -644,32 +645,32 @@ if($action === 'apercu' || $action === 'answer') {
     				else question.css('position', 'absolute');
     			});
     			choix.attr('data-done', true);
-    			
+
     		} else if (type == 'radio') {
     			var name = choix.attr('name');
-    			
+
     			$('[name="'+name+'"').each(function(){ // on récupère tous les radio du groupe pour apliquer un comportement hide/show en fonction des paramètres
     				$(this).click(function(e) {
 						if ($(this).data('enable') !== undefined) $('#question'+$(this).data('enable')).show().css('position', 'static'); // s'il y a une question liée, on l'affiche
 						if (typeof $(this).data('disable') == 'string'){ // s'il y a plusieurs question à cacher
-							
+
     						hideIt = $(this).data('disable').split('|');
     						hideIt.forEach(function(element) {
     							$('#question'+element).hide().css('position', 'absolute');
     						});
-    						
+
 						} else if (typeof $(this).data('disable') == 'number') { // s'il n'y a qu'une autre question liée dans ce group de radio
 							$('#question'+$(this).data('disable')).hide().css('position', 'absolute');
 						}
         			});
-    				
+
     				$(this).attr('data-done', true);
     			});
-    
+
     		} else if(choix.parent().find('option') !== undefined) { // cas du select
 				options = choix.parent().find('option');
 				params = choix.parent().data('params')
-				
+
 				array_val = [];
 				options.each(function(){
 					if (params[$(this).val()]['enable'].length > 0) $(this).attr('data-enable', params[$(this).val()]['enable']);//console.log($(this).val());
@@ -685,12 +686,12 @@ if($action === 'apercu' || $action === 'answer') {
 					opt = $(this).find('option[value="'+$(this).val()+'"]');
 					if (opt.data('enable') !== undefined) $('#question'+opt.data('enable')).show().css('position', 'static');
 					if (typeof opt.data('disable') == 'string'){ // s'il y a plusieurs question à cacher
-						
+
 						hideIt = opt.data('disable').split('|');
 						hideIt.forEach(function(element) {
 							$('#question'+element).hide().css('position', 'absolute');
 						});
-						
+
 					} else if (typeof opt.data('disable') == 'number') { // s'il n'y a qu'une autre question liée dans ce group d'option
 						$('#question'+opt.data('disable')).hide().css('position', 'absolute');
 					}
@@ -699,12 +700,12 @@ if($action === 'apercu' || $action === 'answer') {
     		}
     	}
 
-    	
+
 	<?php
 	}
-	
+
 	?>
-	$('[data-enable]').each(function(e){ 
+	$('[data-enable]').each(function(e){
 		console.log($(this));
     	if($(this).attr('checked') !== undefined){
     		$('#question'+$(this).data('enable')).removeClass('el_linked');
@@ -714,7 +715,7 @@ if($action === 'apercu' || $action === 'answer') {
 	$('.el_linked').each(function(){
 		$(this).hide().css('position', 'absolute');
     });
-    
+
     });
 	</script>
 	<?php
@@ -772,12 +773,12 @@ if($action === 'apercu' || $action === 'answer') {
 
             });
         });
-		
+
 		$(".paginationquest a").on('click', function(){
                        $("input[name='gotopage']").val($(this).attr('page'));
-               
+
                        $("input[name='subSave']").click();
-       
+
                });
         $(".paginationbt a").on('click', function(){
             $("input[name='gotopage']").val($(this).attr('page'));
