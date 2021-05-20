@@ -185,10 +185,10 @@ function draw_question(&$q, $fk_statut_questionnaire = 0)
 
 	$form = new Form($db);
 	//$res = '<div style="background-color:'.$bgcol_questionnaire[$bg_color].';" class="element" type="question" id="question'.$q->id.'">';
-	$res = '<div class="element edit" type="question" id="question'.$q->id.' ">';
+	$res = '<div class="element edit" type="question" id="question'.$q->id.'">';
 	if($q->type == 'title')$res .= '<div class="refid">Titre<br /></div>';
 	else $res .= '<div class="refid">Question : '.$q->TTypes[$q->type].'<br /></div>';
-	
+
 	if (empty($fk_statut_questionnaire))
 		if ($q->type == 'paragraph'){
             $res .= '<textarea size="100" placeholder="Paragraphe" type="text" name="label" rows="7"  cols="50" class="field" id="label'.$q->id.'" name="label" >'.$q->label.'</textarea>';
@@ -199,10 +199,10 @@ function draw_question(&$q, $fk_statut_questionnaire = 0)
                 $res .= '<script  type="text/javascript" >
                     $( document ).ready(function() {
                         CKEDITOR.replace( \'label' . $q->id . '\');
-                            
+
                         if ( typeof CKEDITOR.instances != undefined && CKEDITOR.instances[\'label' . $q->id . '\'] )
                         {
-                            $("#label' . $q->id . '").attr("class" ,"field"); 
+                            $("#label' . $q->id . '").attr("class" ,"field");
                             var editor = CKEDITOR.instances[\'label' . $q->id . '\'];
                             console.log(editor.getData().trim());
                             if(editor !== undefined)
@@ -212,7 +212,7 @@ function draw_question(&$q, $fk_statut_questionnaire = 0)
                                     $("#label' . $q->id . '").text(editor.getData().trim());
                                     $("#label' . $q->id . '").trigger( "change" );
                                });
-                                
+
                                 $("#savetexarealabel' . $q->id . '").click(function() {
                                     console.log(editor.getData().trim());
                                     $("#label' . $q->id . '").text(editor.getData().trim());
@@ -227,7 +227,7 @@ function draw_question(&$q, $fk_statut_questionnaire = 0)
         }
 		else if($q->type == 'title')
 			$res .= '<input size="100" placeholder="Titre" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
-		else 
+		else
 			$res .= '<input size="100" placeholder="Question" type="text" name="label" class="field" id="label" name="label" value="'.$q->label.'"/>';
 	else
 		$res .= '<STRONG>'.$q->label.'</STRONG>&nbsp;';
@@ -257,7 +257,7 @@ function draw_question(&$q, $fk_statut_questionnaire = 0)
 
 		$res .= '<div class="refid">Lignes<br /><br /></div>';
 		$q->loadChoices();
-		
+
 
 		if (!empty($q->choices))
 		{
@@ -508,11 +508,11 @@ function draw_textarea_for_user(&$q, $readOnly = false)
                 { name: \'others\', groups: [ \'others\' ] },
                 { name: \'about\', groups: [ \'about\' ] }
             ],
-            
+
             removeButtons : "Save,NewPage,Preview,Print,Source,Replace,Find,SelectAll,Scayt,Form,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,CreateDiv,BidiLtr,BidiRtl,Language,Anchor,Flash,HorizontalRule,Smiley,PageBreak,Iframe,ShowBlocks,About"
             ';
 
-        $input .= '}); 
+        $input .= '});
 
 </script>';
     }
@@ -1125,7 +1125,7 @@ function _getGlobalNomUrl($fk_element, $email, $type_element)
 	if(class_exists($type_element))$u = new $type_element($db);
 	if (!empty($fk_element) && method_exists($u, 'getNomUrl')){
 		$u->fetch($fk_element);
-		$res = $u->getNomUrl(1);	
+		$res = $u->getNomUrl(1);
 	}else
 		$res = $email;
 	return $res;
@@ -1149,7 +1149,7 @@ function _getBanner(&$object, $action, $print_link_apercu = true, $shownav = tru
 		$morehtmlref .= '<div class="refidno">'.$langs->trans('Recipient').' : '._getGlobalNomUrl($object->fk_element,'Externe',$object->type_element).'</div>';
 
 	}
-	
+
 	//$morehtmlref.= '<div class="refidno">'.getFieldVal($object, 'LinkedObject', 'origin').'</div>';
 	if ($action !== 'create' && $action !== 'answer' && $print_link_apercu)
 		$morehtmlref .= '<div class="refidno">'.($action === 'apercu' ? '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'">Retour au mode édition</a>' : '<a href="'.$_SERVER['PHP_SELF'].'?id='.$object->id.'&action=apercu">Visualiser un aperçu</a>').'</div>';
@@ -1406,7 +1406,7 @@ function prepareMailContent($invuser, $fk_questionnaire)
 	}else {
 		$name = '';
 	}
-	
+
 	$content = "Bonjour $name, \nNous vous invitons à répondre au questionnaire suivant : ";
 
 	if(!empty($conf->global->QUESTIONNAIRE_CUSTOM_DOMAIN))
@@ -1456,7 +1456,7 @@ global $conf;
 	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/jquery/plugins/select2/dist/js/select2.full.min.js', 1).'"></script>
 	<script type="text/javascript" src="'.dol_buildpath($path.'/includes/lib_head.js.php', 1).'"></script>
 	</head>
-	
+
 
 	<body id="mainbody">
 	<!-- Begin div id-container --><div id="id-container" class="id-container">
@@ -2010,20 +2010,20 @@ function draw_action_element($q)
 function draw_pagination($page, $object)
 {
 	global $action, $mode;
-	
+
 	$id= GETPOST('id','int');
 	$ref=GETPOST('ref','alpha');
-	
+
 	if (!empty($object->nbpages))
 	{
 		print '<div class="paginationquest">';
-		
+
 			list($myNb,$totalNb)=$object->getNbQuestions();
 			print '<span id="sumup">'.$myNb.'/'.$totalNb.'</span>';
 
 		if ($object->nbpages < 5)
 		{
-		
+
 			if ($action != 'answer')
 			{
 				if ($page > 1)
@@ -2101,23 +2101,23 @@ function draw_pagination($page, $object)
 /*function add_js_element(){
 	return '<script>'
 		. '$(".bt-add-element").on("click", function(e){
-			
+
 			$(this).parent().find(".add-element").slideDown();
 			$(this).parent().removeClass("close");
 			$(this).parent().addClass("open");
-			
-			
+
+
 		});
-		
+
 		$(".bt-close-element").on("click", function(e){
-			
+
 			$(this).parent().find(".add-element").slideUp();
 			$(this).parent().removeClass("open");
 			$(this).parent().addClass("close");
 			$(".elements").show();
 			$(".questions").hide();
-			
-			
+
+
 		});
 		//New question
 		$(".questions").on("click", function(e){
@@ -2131,26 +2131,26 @@ function draw_pagination($page, $object)
 									,type_question:type
 									,put:"add-question"
 								}
-	
+
 				}).done(function(res) {
-	
+
 					elem.closest("tr").after(res);
-					
+
 					$(".bt-close-element").parent().find(".add-element").slideUp();
 					$(".bt-close-element").parent().removeClass("open");
 					$(".bt-close-element").parent().addClass("close");
 					$(".elements").show();
 					$(".questions").hide();
-					
-					
+
+
 					setQuestionDivCSS();
-	
+
 				});
-				
-				
-		
+
+
+
 		});
-		
+
 		$(".questions").hide();'
 		. '</script>';
 }*/
@@ -2181,11 +2181,11 @@ function answer_prepare_head(InvitationUser $object)
 		$head[$h][1] = $langs->trans("questionnaireAnswerMonitored");
 		$head[$h][2] = 'monitor';
 		$h++;
-		
+
 		$upload_dir = DOL_DATA_ROOT . "/questionnaire/" . dol_sanitizeFileName($object->ref);
 		$nbFiles = count(dol_dir_list($upload_dir,'files',0,'','(\.meta|_preview.*\.png)$'));
 		$nbLinks=Link::count($db, $object->element, $object->id);
-	
+
 		$head[$h][0] = dol_buildpath('/questionnaire/answer/document.php', 1).'?id='.$object->id;
 		$head[$h][1] = $langs->trans("questionnaireAnswerLinkedFiles");
 		if (($nbFiles+$nbLinks) > 0) $head[$h][1].= ' <span class="badge">'.($nbFiles+$nbLinks).'</span>';
