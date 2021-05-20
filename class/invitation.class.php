@@ -334,17 +334,17 @@ class InvitationUser extends SeedObject
 	{
 
 		global $user;
-		
+
 		$this->date_modification = dol_now();
 		$this->ref=$this->getNumero();
 
 		return $this->id > 0 ? $this->updateCommon($user) : $this->createCommon($user);
 	}
 
-	public function delete(User &$user)
+	public function delete(User &$user, $notrigger = false)
 	{
 
-		parent::deleteCommon($user);
+		parent::deleteCommon($user, $notrigger);
 	}
 
 	public static function LibStatut($status, $mode)
@@ -385,7 +385,7 @@ class InvitationUser extends SeedObject
 		elseif ($mode == 7)
 			return $langs->trans($keytrans);
 	}
-	
+
 	public function getLibStatut($mode)
 	{
 		global $langs, $questionnaire_status_forced_key;
@@ -453,7 +453,7 @@ class InvitationUser extends SeedObject
 		$questionnaire = new Questionnaire($db);
 		$questionnaire->load($this->fk_questionnaire);
 		$questionnaire->setValid();
-		
+
 		list($alreadyInvitedFKElements, $alreadyInvitedEmails) = $questionnaire->getAlreadyInvitedElements();
 
 		$all_users = array();
@@ -551,7 +551,7 @@ class InvitationUser extends SeedObject
 				$invitation_user->save();
 			}
 		}
-		
+
 		if (!empty($selectedByTarget))
 		{
 			foreach ($selectedByTarget as $email => $selected)
@@ -574,8 +574,8 @@ class InvitationUser extends SeedObject
 					$invitation_user->date_sent_remind = null;
 					$invitation_user->date_validation = null;
 					$invitation_user->save();
-					
-					
+
+
 				}
 			}
 		}
@@ -596,12 +596,12 @@ class InvitationUser extends SeedObject
 	}
 
 	function getFk_element(){
-		
-		
+
+
 		return $this->fk_element;
 	}
-	
-	
+
+
 	/**
 	 *    This is the main function that returns the array of emails
 	 *
@@ -728,7 +728,7 @@ class InvitationUser extends SeedObject
 
 		return $cibles;
 	}
-	
+
 	/**
 	 *  Can include an URL link on each record provided by selector shown on target page.
 	 *
@@ -748,28 +748,28 @@ class InvitationUser extends SeedObject
 			return $contactstatic->getNomUrl(0, '', 0, '', -1, 0);
 		}
 	}
-	
+
 	public function getNumero()
 	{
 		if (preg_match('/^[\(]?PROV/i', $this->ref) || empty($this->ref))
 		{
 			return $this->getNextNumero();
 		}
-		
+
 		return $this->ref;
 	}
 	private function getNextNumero()
 	{
 		global $db,$conf;
-		
+
 		require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 		/*echo '<pre>';
 		print_r($conf->global);exit;*/
 		if($conf->global->QUESTIONNAIRE_ANSWER_ADDON === 'mod_answer_universal') $mask = $conf->global->QUESTIONNAIRE_ANSWER_UNIVERSAL_MASK;
 		else $mask = 'ANS{yy}{mm}-{00000}';
-		
+
 		$numero = get_next_value($db, $mask, 'quest_invitation_user', 'ref','','','','next', false);
-		
+
 		return $numero;
 	}
 	/**
@@ -780,7 +780,7 @@ class InvitationUser extends SeedObject
 	 */
 	function initAsSpecimen() {
 		$this->id = 0;
-		
+
 		$this->entity = '';
 		$this->title = '';
 		$this->element_type = '';
@@ -791,7 +791,7 @@ class InvitationUser extends SeedObject
 		$this->fk_user_mod = '';
 		$this->tms = '';
 	}
-	
+
 	/**
 	 *  Create a document onto disk according to template module.
 	 *
@@ -825,6 +825,6 @@ class InvitationUser extends SeedObject
 
 		return $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref);
 	}
-	
+
 
 }

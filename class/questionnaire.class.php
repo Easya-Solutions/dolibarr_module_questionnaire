@@ -121,7 +121,7 @@ class Questionnaire extends SeedObject
 		return $res;
 	}
 
-	public function delete(User &$user)
+	public function delete(User &$user, $notrigger = false)
 	{
 
 		if (empty($this->questions))
@@ -140,7 +140,7 @@ class Questionnaire extends SeedObject
 				$inv->delete($user);
 		}
 
-		parent::deleteCommon($user);
+		parent::deleteCommon($user, $notrigger);
 	}
 
 	public function setDraft()
