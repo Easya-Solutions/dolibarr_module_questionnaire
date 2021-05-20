@@ -94,7 +94,7 @@ class Questionlink extends SeedObject {
         
     }
     
-    public function delete(User &$user)
+    public function delete(User &$user, $notrigger = false)
     {
         return parent::deleteCommon($user);
     }

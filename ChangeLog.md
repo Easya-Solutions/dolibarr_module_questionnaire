@@ -3,8 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## Version 1.0.4 [ 16/12/2020 ]
+## Version 1.0
 
-### Fix 
-
-- Remove unused Box
+- FIX : Onglet réponse n'affiche rien [2021-01-12]
+- FIX : Titre et texte non affichés en mode view [2021-01-12]
+- FIX : Remove unused Box

@@ -143,8 +143,8 @@ function _getListAnswers(&$object)
 
 	// On regarde s'il existe une réponse à au moins une question du questionnaire sur lequel on se trouve
 	// Subquery pour chercher s'il existe une réponse validée
-	$sql = 'SELECT DISTINCT iu.fk_element as id_element,iu.ref, iu.rowid as fk_invitation_user, "" as link_answer,COALESCE(NULLIF(iu.type_element,""), "External") as type_element, iu.fk_element,  iu.email, iu.fk_statut as fk_statut,  "" as action
-			FROM '.MAIN_DB_PREFIX.'quest_invitation_user iu  
+	$sql = 'SELECT DISTINCT iu.fk_element as id_element,iu.ref, iu.rowid as fk_invitation_user, "" as link_answer, COALESCE(NULLIF(iu.type_element,""), "External") as type_element, iu.fk_element, iu.email, iu.fk_statut as fk_statut, "" as action
+			FROM '.MAIN_DB_PREFIX.'quest_invitation_user iu
 			WHERE iu.fk_questionnaire = '.$object->id.'
 			AND (fk_element > 0 OR email != "")';
 
@@ -197,7 +197,7 @@ function _getListAnswers(&$object)
 		, 'orderBy' => array('cn.rowid' => 'DESC')
 		, 'eval' => array(
 			'link_answer' => '_getLinkAnswersUser(@fk_invitation_user@,"@ref@")'
-			, 'fk_element' => '_getGlobalNomUrl(@fk_element@, Externe, @type_element@)'
+			, 'fk_element' => '_getGlobalNomUrl(@fk_element@, "Externe", "@type_element@")'
 			, 'fk_statut' => '_libStatut(@fk_statut@, 1)'
 			, 'action' => '_actionLink(@fk_invitation_user@)'
 		)
@@ -217,10 +217,10 @@ function _getLinkAnswersUser($fk_user,$ref)
 	global $id, $i_rep, $formfile;
 
 	$i_rep++;
-	
+
 	$filename=dol_sanitizeFileName($ref);
 	$filedir=DOL_DATA_ROOT.'/questionnaire/' . dol_sanitizeFileName($ref);
- 
+
 
 	return '<a href="'.dol_buildpath('/questionnaire/answer/card.php',1).'?id='.$fk_user.'">'.$ref.'</a>'.$formfile->getDocumentsLink('questionnaire', $filename, $filedir);
 }
@@ -232,10 +232,10 @@ function _seeAnswersUser(&$object, $fk_invituser)
 
 	global $db, $langs;
 
-	
+
 	$invUser = new InvitationUser($db);
 	$invUser->load($fk_invituser);
-	
+
 
 	$class = ucfirst($invUser->type_element);
 	if($invUser->type_element == 'thirdparty'){
@@ -247,10 +247,10 @@ function _seeAnswersUser(&$object, $fk_invituser)
 	if (!empty($fk_element) && !empty($class))
 	{
 		require_once DOL_DOCUMENT_ROOT.'/'.$invUser->type_element.'/class/'.$invUser->type_element.'.class.php';
-		
+
 		$u = new $class($db);
 		$u->fetch($fk_element);
-		
+
 		$res = $langs->trans('questionnaireUserAnswersOf', $u->getNomUrl(1));
 	}
 	else

@@ -141,7 +141,7 @@ class Question extends SeedObject {
 		
 	}
 	
-	public function delete(User &$user)
+	public function delete(User &$user, $notrigger = false)
 	{
 		
 		if(empty($this->choices)) $this->loadChoices();
