@@ -3,8 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+
+
 ## Version 1.2
 
+- FIX : Dolistore zip compatibility *30/08/2021* - 1.2.2
 - FIX : Seed Object signature *2021-05-21* - 1.2.1
   
 - NEW : Ajout d'une nouvelle option dans le module "Nombre de jour par défaut pour le délais de réponse" *2021-05-21* - 1.2.0 - OpenDsi

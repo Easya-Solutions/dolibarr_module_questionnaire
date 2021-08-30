@@ -46,7 +46,7 @@ class modquestionnaire extends DolibarrModules
 
 		$this->editor_name = 'ATM-Consulting';
 		$this->editor_url = 'https://www.atm-consulting.fr';
-		
+
 		// Id for module (must be unique).
 		// Use here a free id (See in Home -> System information -> Dolibarr for list of used modules id).
 		$this->numero = 104961; // 104000 to 104999 for ATM CONSULTING
@@ -61,7 +61,7 @@ class modquestionnaire extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module questionnaire";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.2.1';
+		$this->version = '1.2.2';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -70,7 +70,7 @@ class modquestionnaire extends DolibarrModules
 		// If file is in theme/yourtheme/img directory under name object_pictovalue.png, use this->picto='pictovalue'
 		// If file is in module/img directory under name object_pictovalue.png, use this->picto='pictovalue@module'
 		$this->picto='questionnaire@questionnaire';
-		
+
 		// Defined all module parts (triggers, login, substitutions, menus, css, etc...)
 		// for default path (eg: /questionnaire/core/xxxxx) (0=disable, 1=enable)
 		// for specific path of parts (eg: /questionnaire/core/modules/barcode)
@@ -223,25 +223,25 @@ class modquestionnaire extends DolibarrModules
 		// $this->rights[$r][4] = 'level1';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		// $this->rights[$r][5] = 'level2';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		// $r++;
-		
+
 		$this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
 		$this->rights[$r][1] = 'questionnaire_right_read';	// Permission label
 		$this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'read';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		$r++;
-		
+
 		$this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
 		$this->rights[$r][1] = 'questionnaire_right_readall';	// Permission label
 		$this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'readall';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		$r++;
-		
+
 		$this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
 		$this->rights[$r][1] = 'questionnaire_right_delete';	// Permission label
 		$this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'delete';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
 		$r++;
-		
+
 		$this->rights[$r][0] = $this->numero . $r;	// Permission id (must not be already used)
 		$this->rights[$r][1] = 'questionnaire_right_readstats';	// Permission label
 		$this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
@@ -376,9 +376,9 @@ class modquestionnaire extends DolibarrModules
 		//							'target'=>'',
 		//							'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
 		// $r++;
-		
+
 /*
-		$this->menu[$r]=array(	
+		$this->menu[$r]=array(
 			'fk_menu'=>0,			                // Put 0 if this is a top menu
 			'type'=>'top',			                // This is a Top menu entry
 			'titre'=>$langs->trans('TopMenuquestionnaire'),
@@ -409,7 +409,7 @@ class modquestionnaire extends DolibarrModules
 			'user'=>2
 		);
 		$r++;
-		
+
 		$this->menu[$r]=array(
 			'fk_menu'=>'fk_mainmenu=questionnaire,fk_leftmenu=questionnaire_left',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 			'type'=>'left',			                // This is a Left menu entry
@@ -425,7 +425,7 @@ class modquestionnaire extends DolibarrModules
 			'user'=>2
 		);				                // 0=Menu for internal users, 1=external users, 2=both
 		$r++;
-		
+
 
 		$this->menu[$r]=array(
 			'fk_menu'=>'fk_mainmenu=questionnaire,fk_leftmenu=questionnaire_left',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
@@ -443,10 +443,10 @@ class modquestionnaire extends DolibarrModules
 		);				                // 0=Menu for internal users, 1=external users, 2=both
 		$r++;
 */
-		
+
 		// Exports
 		$r=1;
-		
+
 		 $this->export_code[$r]=$this->rights_class.'_'.$r;
 		 $this->export_label[$r]='questionnaire';	// Translation key (used only if key ExportDataset_xxx_z not found)
          $this->export_enabled[$r]='1';                               // Condition to show export in list (ie: '$user->id==3'). Set to 1 to always show when module is enabled.
@@ -469,7 +469,7 @@ class modquestionnaire extends DolibarrModules
  		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'societe as soc on (soc.rowid=inv_user.fk_element AND inv_user.type_element="thirdparty")';
 		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'usergroup_user as grpusr on (grpusr.fk_user=user.rowid)';
 		 $this->export_sql_end[$r] .=' LEFT JOIN '.MAIN_DB_PREFIX.'usergroup as grp on (grp.rowid=grpusr.fk_usergroup)';
-		 
+
 		 $this->export_sql_end[$r] .=' WHERE 1 ';
 
 		 $r++;
@@ -499,7 +499,7 @@ class modquestionnaire extends DolibarrModules
 	function init($options='')
 	{
 		$sql = array();
-		
+
 		define('INC_FROM_DOLIBARR',true);
 
 		dol_include_once('/questionnaire/config.php');

@@ -81,11 +81,11 @@ if (empty($template_id))
 	$advTarget->type_element = 'questionnaire';
 	if((float) DOL_VERSION >= 8)$result = $advTarget->fetch_by_element(0,$advTarget->type_element);
 	else $result = $advTarget->fetch_by_mailing($id);
-	
+
 }
 else
 {
-	
+
 	$result = $advTarget->fetch($template_id);
 }
 
@@ -232,7 +232,7 @@ if ($action == 'add') {
 	}
 	// if ($array_query ['type_of_target'] == 1 || $array_query ['type_of_target'] == 3) {
 	$result = $advTarget->query_thirdparty($array_query);
-	
+
 
 	if ($result < 0) {
 		setEventMessage($advTarget->error, 'errors');
@@ -259,10 +259,10 @@ if ($action == 'add') {
 		$obj = new InvitationUser($db);
 		$cibles = $obj->add_to_target_spec($id, $advTarget->thirdparty_lines, $array_query['type_of_target'], $advTarget->contact_lines);
 		$obj->fk_questionnaire = $id;
-		$obj->date_limite_reponse = strtotime($date_limite_reponseyear.'-'.$date_limite_reponsemonth.'-'.$date_limite_reponseday); 
+		$obj->date_limite_reponse = strtotime($date_limite_reponseyear.'-'.$date_limite_reponsemonth.'-'.$date_limite_reponseday);
 		$empty=array();
 		$obj->addInvitationsUser($empty,$empty, $empty,$cibles);
-		
+
 		$result=1;
 	} else {
 		$result = 0;
@@ -273,7 +273,7 @@ if ($action == 'add') {
 		if (! empty($template_id)) {
 			$query_temlate_id = '&template_id=' . $template_id;
 		}
-		
+
 		header("Location: " .dol_buildpath('/questionnaire/invitation.php', 2) . "?id=" . $id);
 		exit();
 	}
@@ -393,7 +393,7 @@ if ($action == 'savefilter' || $action == 'createfilter') {
 				setEventMessage($advTarget->error, 'errors');
 			}
 		} elseif ($action == 'savefilter') {
-			
+
 			$result = $advTarget->update($user);
 			if ($result < 0) {
 				setEventMessage($advTarget->error, 'errors');
@@ -432,10 +432,17 @@ _getBanner($object, $action, false);
 
 if ((float) DOL_VERSION < 8)
 {
-	if(file_exists(DOL_DOCUMENT_ROOT.'/custom/questionnaire/tpl/advtarget.tpl.php'))
-	include DOL_DOCUMENT_ROOT.'/custom/questionnaire/tpl/advtarget.tpl.php';
-	else include DOL_DOCUMENT_ROOT.'/questionnaire/tpl/advtarget.tpl.php';
-		
+	$filePath = '/questionnaire/tpl/advtarget.tpl.php'; // fix For Dolistore zip check
+	$customFilePath = '/custom'.$filePath; // fix For Dolistore zip check
+
+	if(file_exists(DOL_DOCUMENT_ROOT.$customFilePath))
+	{
+		include DOL_DOCUMENT_ROOT . $customFilePath;
+	}
+	else
+	{
+		include DOL_DOCUMENT_ROOT . $filePath;
+	}
 }
 else
 {
@@ -444,14 +451,14 @@ else
 
 
 
-?> 
+?>
 
 <script>
 	$(document).ready(function() {
 		$('form').last().hide();
 		$('#find_customer tr:first').before("<tr><td class='fieldrequired'><?php echo $langs->trans('questionnaire_date_limite_reponse'); ?></td><td id='select_date_quest'></td><td></td></tr>");
 		$($('#to_move').detach()).appendTo($('#select_date_quest'));
-		
+
 	});
 </script>
 <?php  print '<div id="to_move" >';
