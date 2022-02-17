@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## Version 1.2.3
+Correction SQL tables (pour la v14)
 
 
 ## Version 1.2
