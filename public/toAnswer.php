@@ -148,17 +148,26 @@ if ($action == 'save_answer')
 						}
 						else
 							$answer->fk_choix = $answer_user;
+							$answer->fk_choix_col = 'DEFAULT';
 
-						$answer->save();
+						$result = $answer->save();
+						if ($result == -1) {
+							setEventMessage($answer->errors, 'errors');
+						}
 					}
 				} elseif (!is_array($content) && !empty($content))
 				{
 					$answer = new Answer($db);
 					$answer->fk_invitation_user = $fk_invitation;
 					$answer->fk_question = $fk_question;
+					$answer->fk_choix = 'DEFAULT';
+					$answer->fk_choix_col = 'DEFAULT';
 					$answer->value = $content;
 
-					$answer->save();
+					$result = $answer->save();
+					if ($result == -1) {
+						setEventMessage($answer->errors, 'errors');
+					}
 				}
 			}
 		}
