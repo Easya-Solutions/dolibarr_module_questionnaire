@@ -146,9 +146,10 @@ if ($action == 'save_answer')
 							$answer->fk_choix = $TDetailRep[0];
 							$answer->fk_choix_col = $TDetailRep[1];
 						}
-						else
+						else {
 							$answer->fk_choix = $answer_user;
 							$answer->fk_choix_col = 'DEFAULT';
+						}
 
 						$result = $answer->save();
 						if ($result == -1) {
@@ -198,6 +199,8 @@ if ($action == 'save_answer')
 				$answer->value = ((int) $hour * 60 * 60) + ((int) $min * 60);
 
 			if (!empty($answer->value))
+				$answer->fk_choix = 'DEFAULT';
+				$answer->fk_choix_col = 'DEFAULT';
 				$answer->save();
 		}
 	}
