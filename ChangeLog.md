@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ## Version 1.2
 
+- FIX : Module icon *09/08/2022* - 1.2.3
 - FIX : Dolistore zip compatibility *30/08/2021* - 1.2.2
 - FIX : Seed Object signature *2021-05-21* - 1.2.1
   
