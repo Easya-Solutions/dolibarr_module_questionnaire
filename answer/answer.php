@@ -103,6 +103,7 @@ if ($mode == 'edit')
 	echo $formcore->begin_form($_SERVER['PHP_SELF'], 'form_questionnaire');
 
 $linkback = '<a href="'.dol_buildpath('/questionnaire/list.php', 1).'">'.$langs->trans("BackToList").'</a>';
+
 print $TBS->render('../tpl/answer.tpl.php'
 		, array() // Block
 		, array(
@@ -197,7 +198,7 @@ function _getListAnswers(&$object)
 		, 'orderBy' => array('cn.rowid' => 'DESC')
 		, 'eval' => array(
 			'link_answer' => '_getLinkAnswersUser(@fk_invitation_user@,"@ref@")'
-			, 'fk_element' => '_getGlobalNomUrl(@fk_element@, "Externe", "@type_element@")'
+			, 'fk_element' => '_getGlobalNomUrl("@fk_element@", "Externe", "@type_element@")'
 			, 'fk_statut' => '_libStatut(@fk_statut@, 1)'
 			, 'action' => '_actionLink(@fk_invitation_user@)'
 		)
