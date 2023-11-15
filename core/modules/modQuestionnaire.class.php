@@ -21,7 +21,7 @@
  * 	\defgroup   questionnaire     Module questionnaire
  *  \brief      Example of a module descriptor.
  *				Such a file must be copied into htdocs/questionnaire/core/modules directory.
- *  \file       htdocs/questionnaire/core/modules/modquestionnaire.class.php
+ *  \file       htdocs/questionnaire/core/modules/modQuestionnaire.class.php
  *  \ingroup    questionnaire
  *  \brief      Description and activation file for module questionnaire
  */
@@ -31,7 +31,7 @@ include_once DOL_DOCUMENT_ROOT .'/core/modules/DolibarrModules.class.php';
 /**
  *  Description and activation class for module questionnaire
  */
-class modquestionnaire extends DolibarrModules
+class modQuestionnaire extends DolibarrModules
 {
 	/**
 	 *   Constructor. Define names, constants, directories, boxes, permissions
